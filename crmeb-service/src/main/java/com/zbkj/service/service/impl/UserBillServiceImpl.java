@@ -55,11 +55,11 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
     private UserBillDao dao;
 
     /**
-    * 列表
-    * @param request 请求参数
-    * @param pageParamRequest 分页类参数
-    * @return List<UserBill>
-    */
+     * 列表
+     * @param request          请求参数
+     * @param pageParamRequest 分页类参数
+     * @return List<UserBill>
+     */
     @Override
     public List<UserBill> getList(FundsMonitorSearchRequest request, PageParamRequest pageParamRequest) {
         PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
@@ -69,10 +69,10 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         //排序
         if (request.getSort() == null) {
             queryWrapper.orderByDesc("create_time");
-        }else{
+        } else {
             if ("asc".equals(request.getSort())) {
                 queryWrapper.orderByAsc("number");
-            }else{
+            } else {
                 queryWrapper.orderByDesc("number");
             }
         }
@@ -92,7 +92,7 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         queryWrapper.gt("status", 0); // -1无效
         if (!StringUtils.isBlank(request.getKeywords())) {
             queryWrapper.and(i -> i.
-                    or().eq("id", request.getKeywords()).   //用户账单id
+                or().eq("id", request.getKeywords()).   //用户账单id
                     or().eq("uid", request.getKeywords()). //用户uid
                     or().eq("link_id", request.getKeywords()). //关联id
                     or().like("title", request.getKeywords()) //账单标题
@@ -120,12 +120,11 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
             }
         }
 
-
         //关联id
         if (StringUtils.isNotBlank(request.getLinkId())) {
             if ("gt".equals(request.getLinkId())) {
                 queryWrapper.ne("link_id", 0);
-            }else{
+            } else {
                 queryWrapper.eq("link_id", request.getLinkId());
             }
         }
@@ -136,8 +135,6 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         } else if (ObjectUtil.isNotNull(request.getUid())) {
             queryWrapper.eq("uid", request.getUid());
         }
-
-
 
         if (StringUtils.isNotBlank(request.getCategory())) {
             queryWrapper.eq("category", request.getCategory());
@@ -150,18 +147,18 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
 
     /**
      * 新增/消耗  总金额
-     * @param pm Integer 0 = 支出 1 = 获得
-     * @param userId Integer 用户uid
+     * @param pm       Integer 0 = 支出 1 = 获得
+     * @param userId   Integer 用户uid
      * @param category String 类型
-     * @param date String 时间范围
-     * @param type String 小类型
+     * @param date     String 时间范围
+     * @param type     String 小类型
      * @return UserBill
      */
     @Override
     public BigDecimal getSumBigDecimal(Integer pm, Integer userId, String category, String date, String type) {
         QueryWrapper<UserBill> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("category", category).
-                eq("status", 1);
+            eq("status", 1);
         if (ObjectUtil.isNotNull(userId)) {
             queryWrapper.eq("uid", userId);
         }
@@ -179,7 +176,10 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         if (CollUtil.isEmpty(userBills)) {
             return BigDecimal.ZERO;
         }
-        return userBills.stream().map(UserBill::getNumber).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, BigDecimal.ROUND_DOWN);
+        return userBills.stream()
+            .map(UserBill::getNumber)
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .setScale(2, BigDecimal.ROUND_DOWN);
     }
 
     /**
@@ -197,13 +197,13 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         userBill.setLinkId(request.getOrderId().toString());
         userBill.setBalance(user.getNowMoney().add(request.getAmount()));
         userBill.setMark("订单退款到余额" + request.getAmount() + "元");
-        userBill.setPm(1);
+        userBill.setPm(2);
         return save(userBill);
     }
 
     /**
      * 资金监控
-     * @param request 查询参数
+     * @param request          查询参数
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -223,16 +223,16 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         // 明细类型筛选
         if (StrUtil.isNotBlank(request.getTitle())) {
             switch (request.getTitle()) {
-                case "recharge" :
+                case "recharge":
                     map.put("title", "充值支付");
                     break;
-                case "admin" :
+                case "admin":
                     map.put("title", "后台操作");
                     break;
-                case "productRefund" :
+                case "productRefund":
                     map.put("title", "商品退款");
                     break;
-                case "payProduct" :
+                case "payProduct":
                     map.put("title", "购买商品");
                     break;
             }
@@ -252,7 +252,7 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
 
     /**
      * 用户账单记录（现金）
-     * @param uid 用户uid
+     * @param uid  用户uid
      * @param type 记录类型：all-全部，expenditure-支出，income-收入
      * @return PageInfo
      */

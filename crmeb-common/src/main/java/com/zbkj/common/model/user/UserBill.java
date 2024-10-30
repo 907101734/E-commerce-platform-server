@@ -47,7 +47,7 @@ public class UserBill implements Serializable {
     @ApiModelProperty(value = "关联id")
     private String linkId;
 
-    @ApiModelProperty(value = "0 = 支出 1 = 获得")
+    @ApiModelProperty(value = "0 = 支出 1 = 获得 2= 退款")
     private int pm;
 
     @ApiModelProperty(value = "账单标题")
