@@ -1,21 +1,22 @@
 package com.zbkj.front.controller;
 
-
-import com.zbkj.common.page.CommonPage;
-import com.zbkj.common.response.CommonResult;
-import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.model.system.SystemConfig;
+import com.zbkj.common.page.CommonPage;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.response.CommonResult;
 import com.zbkj.common.response.IndexInfoResponse;
 import com.zbkj.common.response.IndexProductResponse;
+import com.zbkj.common.response.InformationResponse;
 import com.zbkj.front.service.IndexService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -24,15 +25,15 @@ import java.util.Map;
 
 /**
  * 用户 -- 用户中心
- *  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
  */
 @Slf4j
 @RestController("IndexController")
@@ -56,11 +57,10 @@ public class IndexController {
      * 首页商品列表
      */
     @ApiOperation(value = "首页商品列表")
-    @RequestMapping(value = "/index/product/{type}", method = RequestMethod.GET)
-    @ApiImplicitParam(name = "type", value = "类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】", dataType = "int", required = true)
-    public CommonResult<CommonPage<IndexProductResponse>> getProductList(@PathVariable(value = "type") Integer type, PageParamRequest pageParamRequest) {
-
-        return CommonResult.success(indexService.findIndexProductList(type, pageParamRequest));
+    @RequestMapping(value = "/index/product", method = RequestMethod.GET)
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", value = "类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】", dataType = "int", required = false), @ApiImplicitParam(name = "region", value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区", dataType = "int", required = false)})
+    public CommonResult<CommonPage<IndexProductResponse>> getProductList(@RequestParam(value = "type") Integer type, @RequestParam(value = "region") Integer region, PageParamRequest pageParamRequest) {
+        return CommonResult.success(indexService.findIndexProductList(type, region, pageParamRequest));
     }
 
     /**
@@ -107,6 +107,13 @@ public class IndexController {
     public CommonResult<String> getImageDomain() {
         return CommonResult.success(indexService.getImageDomain(), "成功");
     }
+
+    @ApiOperation(value = "企业信息")
+    @RequestMapping(value = "/index/information", method = RequestMethod.GET)
+    public CommonResult<InformationResponse> information() {
+        return CommonResult.success(indexService.getInformation());
+    }
+
 }
 
 

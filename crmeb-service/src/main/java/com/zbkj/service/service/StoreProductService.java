@@ -149,10 +149,11 @@ public interface StoreProductService extends IService<StoreProduct> {
     /**
      * 首页商品列表
      * @param type 类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
+     * @param region 所属区域，1-保单区 2-生活区 3-门店区 4-团购区
      * @param pageParamRequest 分页参数
      * @return CommonPage
      */
-    List<StoreProduct> getIndexProduct(Integer type, PageParamRequest pageParamRequest);
+    List<StoreProduct> getIndexProduct(Integer type,Integer region, PageParamRequest pageParamRequest);
 
     /**
      * 获取商品移动端列表

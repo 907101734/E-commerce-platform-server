@@ -32,5 +32,23 @@ public interface AdvertisementService extends IService<Advertisement> {
      * @param adDescription
      * @throws IOException
      */
-    void saveAdvertisement(MultipartFile multipart, String adName, String adDescription) throws IOException;
+    Boolean saveAdvertisement(MultipartFile multipart, String adName, String adDescription);
+
+
+    /**
+     * 更新广告
+     * @param multipart
+     * @param id
+     * @param adName
+     * @param adDescription
+     * @return
+     */
+    Boolean updateAdvertisement(MultipartFile multipart,Integer id, String adName, String adDescription);
+
+    /**
+     * 删除广告
+     * @param id
+     * @return
+     */
+    Boolean deleteById(Integer id);
 }

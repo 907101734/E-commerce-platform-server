@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreProduct>
-        implements StoreProductService {
+    implements StoreProductService {
 
     @Resource
     private StoreProductDao dao;
@@ -118,7 +118,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
     /**
      * 获取产品列表Admin
-     * @param request 筛选参数
+     * @param request          筛选参数
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -165,9 +165,9 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         //关键字搜索
         if (StrUtil.isNotBlank(request.getKeywords())) {
             lambdaQueryWrapper.and(i -> i
-                    .or().eq(StoreProduct::getId, request.getKeywords())
-                    .or().like(StoreProduct::getStoreName, request.getKeywords())
-                    .or().like(StoreProduct::getKeyword, request.getKeywords()));
+                .or().eq(StoreProduct::getId, request.getKeywords())
+                .or().like(StoreProduct::getStoreName, request.getKeywords())
+                .or().like(StoreProduct::getKeyword, request.getKeywords()));
         }
         lambdaQueryWrapper.apply(StringUtils.isNotBlank(request.getCateId()), "FIND_IN_SET ('" + request.getCateId() + "', cate_id)");
         lambdaQueryWrapper.orderByDesc(StoreProduct::getSort).orderByDesc(StoreProduct::getId);
@@ -190,20 +190,20 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             StoreProductAttrValue storeProductAttrValuePram = new StoreProductAttrValue();
             storeProductAttrValuePram.setProductId(product.getId()).setType(Constants.PRODUCT_TYPE_NORMAL);
             List<StoreProductAttrValue> storeProductAttrValues = storeProductAttrValueService.getByEntity(storeProductAttrValuePram);
-            storeProductAttrValues.stream().map(e->{
+            storeProductAttrValues.stream().map(e -> {
                 StoreProductAttrValueResponse response = new StoreProductAttrValueResponse();
-                BeanUtils.copyProperties(e,response);
+                BeanUtils.copyProperties(e, response);
                 storeProductAttrValueResponse.add(response);
                 return e;
             }).collect(Collectors.toList());
             storeProductResponse.setAttrValue(storeProductAttrValueResponse);
             // 处理富文本
             StoreProductDescription sd = storeProductDescriptionService.getOne(
-                    new LambdaQueryWrapper<StoreProductDescription>()
-                            .eq(StoreProductDescription::getProductId, product.getId())
-                            .eq(StoreProductDescription::getType, Constants.PRODUCT_TYPE_NORMAL));
+                new LambdaQueryWrapper<StoreProductDescription>()
+                    .eq(StoreProductDescription::getProductId, product.getId())
+                    .eq(StoreProductDescription::getType, Constants.PRODUCT_TYPE_NORMAL));
             if (null != sd) {
-                storeProductResponse.setContent(null == sd.getDescription()?"":sd.getDescription());
+                storeProductResponse.setContent(null == sd.getDescription() ? "" : sd.getDescription());
             }
             // 处理分类中文
             List<Category> cg = categoryService.getByIds(CrmebUtil.stringToArray(product.getCateId()));
@@ -214,7 +214,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             }
 
             storeProductResponse.setCollectCount(
-                    storeProductRelationService.getList(product.getId(),"collect").size());
+                storeProductRelationService.getList(product.getId(), "collect").size());
             storeProductResponses.add(storeProductResponse);
         }
         // 多条sql查询处理分页正确
@@ -229,7 +229,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
     @Override
     public List<StoreProduct> getListInIds(List<Integer> productIds) {
         LambdaQueryWrapper<StoreProduct> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.in(StoreProduct::getId,productIds);
+        lambdaQueryWrapper.in(StoreProduct::getId, productIds);
         lambdaQueryWrapper.eq(StoreProduct::getIsDel, false);
         return dao.selectList(lambdaQueryWrapper);
     }
@@ -269,11 +269,15 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
         List<StoreProductAttrValueAddRequest> attrValueAddRequestList = request.getAttrValue();
         //计算价格
-        StoreProductAttrValueAddRequest minAttrValue = attrValueAddRequestList.stream().min(Comparator.comparing(StoreProductAttrValueAddRequest::getPrice)).get();
+        StoreProductAttrValueAddRequest minAttrValue = attrValueAddRequestList.stream()
+            .min(Comparator.comparing(StoreProductAttrValueAddRequest::getPrice))
+            .get();
         storeProduct.setPrice(minAttrValue.getPrice());
         storeProduct.setOtPrice(minAttrValue.getOtPrice());
         storeProduct.setCost(minAttrValue.getCost());
-        storeProduct.setStock(attrValueAddRequestList.stream().mapToInt(StoreProductAttrValueAddRequest::getStock).sum());
+        storeProduct.setStock(attrValueAddRequestList.stream()
+            .mapToInt(StoreProductAttrValueAddRequest::getStock)
+            .sum());
 
         // 默认值设置
         if (ObjectUtil.isNull(request.getSort())) {
@@ -323,7 +327,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
         // 处理富文本
         StoreProductDescription spd = new StoreProductDescription();
-        spd.setDescription(request.getContent().length() > 0 ? systemAttachmentService.clearPrefix(request.getContent()) : "");
+        spd.setDescription(request.getContent()
+            .length() > 0 ? systemAttachmentService.clearPrefix(request.getContent()) : "");
         spd.setType(Constants.PRODUCT_TYPE_NORMAL);
 
         Boolean execute = transactionTemplate.execute(e -> {
@@ -365,7 +370,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             Map.Entry<String, String> next = iterator.next();
             strings.add(next.getValue());
         }
-//        List<String> strings = jsonObject.values().stream().map(o -> (String) o).collect(Collectors.toList());
+        //        List<String> strings = jsonObject.values().stream().map(o -> (String) o).collect(Collectors.toList());
         return String.join(",", strings);
     }
 
@@ -379,7 +384,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             return "0, 1, 2, 3";
         }
         List<Integer> activities = new ArrayList<>();
-        activityList.forEach(e->{
+        activityList.forEach(e -> {
             switch (e) {
                 case Constants.PRODUCT_TYPE_NORMAL_STR:
                     activities.add(Constants.PRODUCT_TYPE_NORMAL);
@@ -426,15 +431,15 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             throw new CrmebException("请先下架商品，再进行修改");
         }
         // 如果商品是活动商品主商品不允许修改
-//        if (storeSeckillService.isExistByProductId(storeProductRequest.getId())) {
-//            throw new CrmebException("商品作为秒杀商品的主商品，需要修改请先删除对应秒杀商品");
-//        }
-//        if (storeBargainService.isExistByProductId(storeProductRequest.getId())) {
-//            throw new CrmebException("商品作为砍价商品的主商品，需要修改请先删除对应砍价商品");
-//        }
-//        if (storeCombinationService.isExistByProductId(storeProductRequest.getId())) {
-//            throw new CrmebException("商品作为拼团商品的主商品，需要修改请先删除对应拼团商品");
-//        }
+        //        if (storeSeckillService.isExistByProductId(storeProductRequest.getId())) {
+        //            throw new CrmebException("商品作为秒杀商品的主商品，需要修改请先删除对应秒杀商品");
+        //        }
+        //        if (storeBargainService.isExistByProductId(storeProductRequest.getId())) {
+        //            throw new CrmebException("商品作为砍价商品的主商品，需要修改请先删除对应砍价商品");
+        //        }
+        //        if (storeCombinationService.isExistByProductId(storeProductRequest.getId())) {
+        //            throw new CrmebException("商品作为拼团商品的主商品，需要修改请先删除对应拼团商品");
+        //        }
 
         StoreProduct storeProduct = new StoreProduct();
         BeanUtils.copyProperties(storeProductRequest, storeProduct);
@@ -450,11 +455,15 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
         List<StoreProductAttrValueAddRequest> attrValueAddRequestList = storeProductRequest.getAttrValue();
         //计算价格
-        StoreProductAttrValueAddRequest minAttrValue = attrValueAddRequestList.stream().min(Comparator.comparing(StoreProductAttrValueAddRequest::getPrice)).get();
+        StoreProductAttrValueAddRequest minAttrValue = attrValueAddRequestList.stream()
+            .min(Comparator.comparing(StoreProductAttrValueAddRequest::getPrice))
+            .get();
         storeProduct.setPrice(minAttrValue.getPrice());
         storeProduct.setOtPrice(minAttrValue.getOtPrice());
         storeProduct.setCost(minAttrValue.getCost());
-        storeProduct.setStock(attrValueAddRequestList.stream().mapToInt(StoreProductAttrValueAddRequest::getStock).sum());
+        storeProduct.setStock(attrValueAddRequestList.stream()
+            .mapToInt(StoreProductAttrValueAddRequest::getStock)
+            .sum());
 
         // attr部分
         List<StoreProductAttrAddRequest> addRequestList = storeProductRequest.getAttr();
@@ -496,7 +505,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
         // 处理富文本
         StoreProductDescription spd = new StoreProductDescription();
-        spd.setDescription(storeProductRequest.getContent().length() > 0 ? systemAttachmentService.clearPrefix(storeProductRequest.getContent()) : "");
+        spd.setDescription(storeProductRequest.getContent()
+            .length() > 0 ? systemAttachmentService.clearPrefix(storeProductRequest.getContent()) : "");
         spd.setType(Constants.PRODUCT_TYPE_NORMAL);
         spd.setProductId(storeProduct.getId());
 
@@ -550,7 +560,9 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
     @Override
     public StoreProductResponse getByProductId(Integer id) {
         StoreProduct storeProduct = dao.selectById(id);
-        if (null == storeProduct) throw new CrmebException("未找到对应商品信息");
+        if (null == storeProduct) {
+            throw new CrmebException("未找到对应商品信息");
+        }
         StoreProductResponse storeProductResponse = new StoreProductResponse();
         BeanUtils.copyProperties(storeProduct, storeProductResponse);
         StoreProductAttr spaPram = new StoreProductAttr();
@@ -576,16 +588,18 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             StoreProductAttrResult attrResult = attrResults.get(0);
             //PC 端生成skuAttrInfo
             List<StoreProductAttrValueRequest> storeProductAttrValueRequests =
-                    com.alibaba.fastjson.JSONObject.parseArray(attrResult.getResult(), StoreProductAttrValueRequest.class);
+                com.alibaba.fastjson.JSONObject.parseArray(attrResult.getResult(), StoreProductAttrValueRequest.class);
             if (null != storeProductAttrValueRequests) {
                 for (int i = 0; i < storeProductAttrValueRequests.size(); i++) {
-//                    StoreProductAttrValueRequest storeProductAttrValueRequest = storeProductAttrValueRequests.get(i);
+                    //                    StoreProductAttrValueRequest storeProductAttrValueRequest = storeProductAttrValueRequests.get(i);
                     HashMap<String, Object> attrValue = new HashMap<>();
                     String currentSku = storeProductAttrValues.get(i).getSuk();
                     List<StoreProductAttrValue> hasCurrentSku =
-                            storeProductAttrValues.stream().filter(e -> e.getSuk().equals(currentSku)).collect(Collectors.toList());
+                        storeProductAttrValues.stream()
+                            .filter(e -> e.getSuk().equals(currentSku))
+                            .collect(Collectors.toList());
                     StoreProductAttrValue currentAttrValue = hasCurrentSku.get(0);
-                    attrValue.put("id", hasCurrentSku.size() > 0 ? hasCurrentSku.get(0).getId():0);
+                    attrValue.put("id", hasCurrentSku.size() > 0 ? hasCurrentSku.get(0).getId() : 0);
                     attrValue.put("image", currentAttrValue.getImage());
                     attrValue.put("cost", currentAttrValue.getCost());
                     attrValue.put("price", currentAttrValue.getPrice());
@@ -595,12 +609,13 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
                     attrValue.put("weight", currentAttrValue.getWeight());
                     attrValue.put("volume", currentAttrValue.getVolume());
                     attrValue.put("suk", currentSku);
-                    attrValue.put("attrValue", JSON.parseObject(storeProductAttrValues.get(i).getAttrValue(), Feature.OrderedField));
+                    attrValue.put("attrValue", JSON.parseObject(storeProductAttrValues.get(i)
+                        .getAttrValue(), Feature.OrderedField));
                     attrValue.put("brokerage", currentAttrValue.getBrokerage());
                     attrValue.put("brokerageTwo", currentAttrValue.getBrokerageTwo());
                     String[] skus = currentSku.split(",");
                     for (int k = 0; k < skus.length; k++) {
-                        attrValue.put("value"+k,skus[k]);
+                        attrValue.put("value" + k, skus[k]);
                     }
                     attrValues.add(attrValue);
                 }
@@ -612,24 +627,26 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
         for (StoreProductAttrValue storeProductAttrValue : storeProductAttrValues) {
             StoreProductAttrValueResponse atr = new StoreProductAttrValueResponse();
-            BeanUtils.copyProperties(storeProductAttrValue,atr);
+            BeanUtils.copyProperties(storeProductAttrValue, atr);
             sPAVResponses.add(atr);
         }
         storeProductResponse.setAttrValues(attrValues);
         storeProductResponse.setAttrValue(sPAVResponses);
-//        if (null != storeProductAttrResult) {
-            StoreProductDescription sd = storeProductDescriptionService.getOne(
-                    new LambdaQueryWrapper<StoreProductDescription>()
-                            .eq(StoreProductDescription::getProductId, storeProduct.getId())
-                            .eq(StoreProductDescription::getType, Constants.PRODUCT_TYPE_NORMAL));
-            if (null != sd) {
-                storeProductResponse.setContent(null == sd.getDescription()?"":sd.getDescription());
-            }
-//        }
+        //        if (null != storeProductAttrResult) {
+        StoreProductDescription sd = storeProductDescriptionService.getOne(
+            new LambdaQueryWrapper<StoreProductDescription>()
+                .eq(StoreProductDescription::getProductId, storeProduct.getId())
+                .eq(StoreProductDescription::getType, Constants.PRODUCT_TYPE_NORMAL));
+        if (null != sd) {
+            storeProductResponse.setContent(null == sd.getDescription() ? "" : sd.getDescription());
+        }
+        //        }
         // 获取已关联的优惠券
         List<StoreProductCoupon> storeProductCoupons = storeProductCouponService.getListByProductId(storeProduct.getId());
         if (null != storeProductCoupons && storeProductCoupons.size() > 0) {
-            List<Integer> ids = storeProductCoupons.stream().map(StoreProductCoupon::getIssueCouponId).collect(Collectors.toList());
+            List<Integer> ids = storeProductCoupons.stream()
+                .map(StoreProductCoupon::getIssueCouponId)
+                .collect(Collectors.toList());
             List<StoreCoupon> shipCoupons = storeCouponService.getByIds(ids);
             storeProductResponse.setCoupons(shipCoupons);
             storeProductResponse.setCouponIds(ids);
@@ -675,7 +692,9 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         // 获取已关联的优惠券
         List<StoreProductCoupon> storeProductCoupons = storeProductCouponService.getListByProductId(storeProduct.getId());
         if (CollUtil.isNotEmpty(storeProductCoupons)) {
-            List<Integer> ids = storeProductCoupons.stream().map(StoreProductCoupon::getIssueCouponId).collect(Collectors.toList());
+            List<Integer> ids = storeProductCoupons.stream()
+                .map(StoreProductCoupon::getIssueCouponId)
+                .collect(Collectors.toList());
             storeProductResponse.setCouponIds(ids);
         }
         return storeProductResponse;
@@ -721,11 +740,11 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
     @Override
     public List<StoreProductTabsHeader> getTabsHeader() {
         List<StoreProductTabsHeader> headers = new ArrayList<>();
-        StoreProductTabsHeader header1 = new StoreProductTabsHeader(0,"出售中商品",1);
-        StoreProductTabsHeader header2 = new StoreProductTabsHeader(0,"仓库中商品",2);
-        StoreProductTabsHeader header3 = new StoreProductTabsHeader(0,"已经售馨商品",3);
-        StoreProductTabsHeader header4 = new StoreProductTabsHeader(0,"警戒库存",4);
-        StoreProductTabsHeader header5 = new StoreProductTabsHeader(0,"商品回收站",5);
+        StoreProductTabsHeader header1 = new StoreProductTabsHeader(0, "出售中商品", 1);
+        StoreProductTabsHeader header2 = new StoreProductTabsHeader(0, "仓库中商品", 2);
+        StoreProductTabsHeader header3 = new StoreProductTabsHeader(0, "已经售馨商品", 3);
+        StoreProductTabsHeader header4 = new StoreProductTabsHeader(0, "警戒库存", 4);
+        StoreProductTabsHeader header5 = new StoreProductTabsHeader(0, "商品回收站", 5);
         headers.add(header1);
         headers.add(header2);
         headers.add(header3);
@@ -793,7 +812,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             }
             try {
                 StoreProductStockRequest storeProductStockRequest =
-                        com.alibaba.fastjson.JSONObject.toJavaObject(com.alibaba.fastjson.JSONObject.parseObject(data.toString()), StoreProductStockRequest.class);
+                    com.alibaba.fastjson.JSONObject.toJavaObject(com.alibaba.fastjson.JSONObject.parseObject(data.toString()), StoreProductStockRequest.class);
                 boolean result = doProductStock(storeProductStockRequest);
                 if (!result) {
                     redisUtil.lPush(redisKey, data);
@@ -842,7 +861,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             return idList;
         }
 
-        for (Category category: categoryList) {
+        for (Category category : categoryList) {
             List<Integer> parentIdList = CrmebUtil.stringToArrayByRegex(category.getPath(), "/");
             if (parentIdList.size() > 2) {
                 Integer secondaryCategoryId = parentIdList.get(2);
@@ -866,31 +885,30 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         try {
             switch (tag) {
                 case 1:
-                    productRequest = productUtils.getTaobaoProductInfo(url,tag);
+                    productRequest = productUtils.getTaobaoProductInfo(url, tag);
                     break;
                 case 2:
-                    productRequest = productUtils.getJDProductInfo(url,tag);
+                    productRequest = productUtils.getJDProductInfo(url, tag);
                     break;
                 case 3:
-                    productRequest = productUtils.getSuningProductInfo(url,tag);
+                    productRequest = productUtils.getSuningProductInfo(url, tag);
                     break;
                 case 4:
-                    productRequest = productUtils.getPddProductInfo(url,tag);
+                    productRequest = productUtils.getPddProductInfo(url, tag);
                     break;
                 case 5:
-                    productRequest = productUtils.getTmallProductInfo(url,tag);
+                    productRequest = productUtils.getTmallProductInfo(url, tag);
                     break;
             }
         } catch (Exception e) {
-            throw new CrmebException("确认URL和平台是否正确，以及平台费用是否足额"+e.getMessage());
+            throw new CrmebException("确认URL和平台是否正确，以及平台费用是否足额" + e.getMessage());
         }
         return productRequest;
     }
 
     /**
-     *
      * @param productId 商品id
-     * @param type 类型：recycle——回收站 delete——彻底删除
+     * @param type      类型：recycle——回收站 delete——彻底删除
      * @return Boolean
      */
     @Override
@@ -965,12 +983,12 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         // 获取商品本身信息
         StoreProduct existProduct = getById(storeProductStockRequest.getProductId());
         List<StoreProductAttrValue> existAttr =
-                storeProductAttrValueService.getListByProductIdAndAttrId(
-                        storeProductStockRequest.getProductId(),
-                        storeProductStockRequest.getAttrId().toString(),
-                        storeProductStockRequest.getType());
+            storeProductAttrValueService.getListByProductIdAndAttrId(
+                storeProductStockRequest.getProductId(),
+                storeProductStockRequest.getAttrId().toString(),
+                storeProductStockRequest.getType());
         if (null == existProduct || null == existAttr) { // 未找到商品
-            logger.info("库存修改任务未获取到商品信息"+JSON.toJSONString(storeProductStockRequest));
+            logger.info("库存修改任务未获取到商品信息" + JSON.toJSONString(storeProductStockRequest));
             return true;
         }
 
@@ -985,7 +1003,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         for (StoreProductAttrValue attrValue : existAttr) {
             int productAttrStock = isPlus ? attrValue.getStock() + storeProductStockRequest.getNum() : attrValue.getStock() - storeProductStockRequest.getNum();
             attrValue.setStock(productAttrStock);
-            attrValue.setSales(attrValue.getSales()-storeProductStockRequest.getNum());
+            attrValue.setSales(attrValue.getSales() - storeProductStockRequest.getNum());
             storeProductAttrValueService.updateById(attrValue);
         }
         return true;
@@ -994,7 +1012,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
     /**
      * 获取复制商品配置
      * @return copyType 复制类型：1：一号通
-     *         copyNum 复制条数(一号通类型下有值)
+     * copyNum 复制条数(一号通类型下有值)
      */
     @Override
     public MyRecord copyConfig() {
@@ -1028,8 +1046,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
     /**
      * 添加/扣减库存
-     * @param id 商品id
-     * @param num 数量
+     * @param id   商品id
+     * @param num  数量
      * @param type 类型：add—添加，sub—扣减
      */
     @Override
@@ -1112,16 +1130,16 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
     /**
      * 首页商品列表
-     * @param type 类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
+     * @param type             类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
      * @param pageParamRequest 分页参数
      * @return CommonPage
      */
     @Override
-    public List<StoreProduct> getIndexProduct(Integer type, PageParamRequest pageParamRequest) {
+    public List<StoreProduct> getIndexProduct(Integer type, Integer region, PageParamRequest pageParamRequest) {
         PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
         LambdaQueryWrapper<StoreProduct> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.select(StoreProduct::getId, StoreProduct::getImage, StoreProduct::getStoreName,
-                StoreProduct::getPrice, StoreProduct::getOtPrice, StoreProduct::getActivity);
+            StoreProduct::getPrice, StoreProduct::getOtPrice, StoreProduct::getActivity);
         switch (type) {
             case Constants.INDEX_RECOMMEND_BANNER: //精品推荐
                 lambdaQueryWrapper.eq(StoreProduct::getIsBest, true);
@@ -1139,7 +1157,10 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
                 lambdaQueryWrapper.eq(StoreProduct::getIsGood, true);
                 break;
         }
-
+        //所属区域
+        if (region != null) {
+            lambdaQueryWrapper.eq(StoreProduct::getRegion, region);
+        }
         lambdaQueryWrapper.eq(StoreProduct::getIsDel, false);
         lambdaQueryWrapper.eq(StoreProduct::getIsRecycle, false);
         lambdaQueryWrapper.gt(StoreProduct::getStock, 0);
@@ -1152,7 +1173,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
     /**
      * 获取商品移动端列表
-     * @param request 筛选参数
+     * @param request     筛选参数
      * @param pageRequest 分页参数
      * @return List
      */
@@ -1162,8 +1183,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         LambdaQueryWrapper<StoreProduct> lqw = Wrappers.lambdaQuery();
         // id、名称、图片、价格、销量、活动
         lqw.select(StoreProduct::getId, StoreProduct::getStoreName, StoreProduct::getImage, StoreProduct::getPrice,
-                StoreProduct::getActivity, StoreProduct::getSales, StoreProduct::getFicti, StoreProduct::getUnitName,
-                StoreProduct::getFlatPattern, StoreProduct::getStock);
+            StoreProduct::getActivity, StoreProduct::getSales, StoreProduct::getFicti, StoreProduct::getUnitName,
+            StoreProduct::getFlatPattern, StoreProduct::getStock);
 
         lqw.eq(StoreProduct::getIsRecycle, false);
         lqw.eq(StoreProduct::getIsDel, false);
@@ -1176,7 +1197,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             List<Category> childVoListByPid = categoryService.getChildVoListByPid(request.getCid());
             List<Integer> categoryIdList = childVoListByPid.stream().map(Category::getId).collect(Collectors.toList());
             categoryIdList.add(request.getCid());
-            lqw.apply(CrmebUtil.getFindInSetSql("cate_id", (ArrayList<Integer>) categoryIdList));
+            lqw.apply(CrmebUtil.getFindInSetSql("cate_id", (ArrayList<Integer>)categoryIdList));
         }
 
         if (StrUtil.isNotBlank(request.getKeyword())) {
@@ -1220,8 +1241,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
     public StoreProduct getH5Detail(Integer id) {
         LambdaQueryWrapper<StoreProduct> lqw = Wrappers.lambdaQuery();
         lqw.select(StoreProduct::getId, StoreProduct::getImage, StoreProduct::getStoreName, StoreProduct::getSliderImage,
-                StoreProduct::getOtPrice, StoreProduct::getStock, StoreProduct::getSales, StoreProduct::getPrice, StoreProduct::getActivity,
-                StoreProduct::getFicti, StoreProduct::getIsSub, StoreProduct::getStoreInfo, StoreProduct::getBrowse, StoreProduct::getUnitName);
+            StoreProduct::getOtPrice, StoreProduct::getStock, StoreProduct::getSales, StoreProduct::getPrice, StoreProduct::getActivity,
+            StoreProduct::getFicti, StoreProduct::getIsSub, StoreProduct::getStoreInfo, StoreProduct::getBrowse, StoreProduct::getUnitName);
         lqw.eq(StoreProduct::getId, id);
         lqw.eq(StoreProduct::getIsRecycle, false);
         lqw.eq(StoreProduct::getIsDel, false);
@@ -1232,9 +1253,9 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         }
 
         StoreProductDescription sd = storeProductDescriptionService.getOne(
-                new LambdaQueryWrapper<StoreProductDescription>()
-                        .eq(StoreProductDescription::getProductId, storeProduct.getId())
-                        .eq(StoreProductDescription::getType, Constants.PRODUCT_TYPE_NORMAL));
+            new LambdaQueryWrapper<StoreProductDescription>()
+                .eq(StoreProductDescription::getProductId, storeProduct.getId())
+                .eq(StoreProductDescription::getType, Constants.PRODUCT_TYPE_NORMAL));
         if (ObjectUtil.isNotNull(sd)) {
             storeProduct.setContent(StrUtil.isBlank(sd.getDescription()) ? "" : sd.getDescription());
         }

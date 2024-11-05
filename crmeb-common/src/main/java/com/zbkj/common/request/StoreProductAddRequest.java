@@ -129,4 +129,17 @@ public class StoreProductAddRequest implements Serializable {
     @ApiModelProperty(value = "展示图")
     @Length(max = 1000, message = "展示图名称长度不能超过1000个字符")
     private String flatPattern;
+
+    @ApiModelProperty(value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区")
+    private Integer region;
+
+    @ApiModelProperty(value = "是否是礼包")
+    private Boolean isGift;
+
+    @ApiModelProperty(value = "礼包属性 1-699，2-999")
+    private Integer giftProperty;
+
+    @ApiModelProperty(value = "礼包分类属性 1-美业大礼包 2-大健康礼包 3-门店礼包 4-生活礼包")
+    private Integer giftTypeProperty;
+
 }

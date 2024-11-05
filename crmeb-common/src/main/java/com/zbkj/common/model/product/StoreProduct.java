@@ -1,16 +1,17 @@
 package com.zbkj.common.model.product;
 
-import java.math.BigDecimal;
-
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.io.Serializable;
-
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 商品表
@@ -166,4 +167,17 @@ public class StoreProduct implements Serializable {
     @ApiModelProperty(value = "商品详情")
     @TableField(exist = false)
     private String content;
+
+    @ApiModelProperty(value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区")
+    private Integer region;
+
+    @ApiModelProperty(value = "是否是礼包")
+    @TableField("is_gift")
+    private Boolean isGift;
+
+    @ApiModelProperty(value = "礼包属性 1-699，2-999")
+    private Integer giftProperty;
+
+    @ApiModelProperty(value = "礼包分类属性 1-美业大礼包 2-大健康礼包 3-门店礼包 4-生活礼包")
+    private Integer giftTypeProperty;
 }

@@ -4,7 +4,7 @@
 startTime=`date +'%Y-%m-%d %H:%M:%S'`
 
 #接口项目站点路径（目录按照各自配置）
-APP_PATH=/www/wwwroot/api.java.crmeb.net
+APP_PATH=/home/op/test
 
 #jar包文件名称
 APP_NAME=$APP_PATH/Crmeb-front.jar

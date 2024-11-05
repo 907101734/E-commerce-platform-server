@@ -4,9 +4,11 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.zbkj.common.constants.InformationConstants;
 import com.zbkj.common.page.CommonPage;
 import com.zbkj.common.response.IndexInfoResponse;
 import com.zbkj.common.response.IndexProductResponse;
+import com.zbkj.common.response.InformationResponse;
 import com.zbkj.common.response.ProductActivityItemResponse;
 import com.zbkj.common.vo.MyRecord;
 import com.zbkj.common.request.PageParamRequest;
@@ -31,17 +33,17 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
-* IndexServiceImpl 接口实现
-*  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
-*/
+ * IndexServiceImpl 接口实现
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
+ */
 @Service
 public class IndexServiceImpl implements IndexService {
 
@@ -84,7 +86,7 @@ public class IndexServiceImpl implements IndexService {
         indexInfoResponse.setHomePageSaleListStyle(systemConfigService.getValueByKey(Constants.CONFIG_IS_PRODUCT_LIST_STYLE));// 首页商品列表模板配置
         indexInfoResponse.setSubscribe(false);
         User user = userService.getInfo();
-        if(ObjectUtil.isNotNull(user) && user.getSubscribe()) {
+        if (ObjectUtil.isNotNull(user) && user.getSubscribe()) {
             indexInfoResponse.setSubscribe(user.getSubscribe());
         }
 
@@ -99,7 +101,7 @@ public class IndexServiceImpl implements IndexService {
 
     /**
      * 热门搜索
-     * @return List<HashMap<String, String>>
+     * @return List<HashMap < String, String>>
      */
     @Override
     public List<HashMap<String, Object>> hotKeywords() {
@@ -114,7 +116,7 @@ public class IndexServiceImpl implements IndexService {
     public HashMap<String, String> getShareConfig() {
         HashMap<String, String> map = new HashMap<>();
         HashMap<String, String> info = systemConfigService.info(Constants.CONFIG_FORM_ID_PUBLIC);
-        if(info == null) {
+        if (info == null) {
             throw new CrmebException("请配置公众号分享信息！");
         }
         map.put("img", info.get(SysConfigConstants.CONFIG_KEY_ADMIN_WECHAT_SHARE_IMAGE));
@@ -125,17 +127,17 @@ public class IndexServiceImpl implements IndexService {
 
     /**
      * 获取首页商品列表
-     * @param type 类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
+     * @param type             类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
      * @param pageParamRequest 分页参数
      * @return List
      */
     @Override
-    public CommonPage<IndexProductResponse> findIndexProductList(Integer type, PageParamRequest pageParamRequest) {
+    public CommonPage<IndexProductResponse> findIndexProductList(Integer type, Integer region, PageParamRequest pageParamRequest) {
         if (type < Constants.INDEX_RECOMMEND_BANNER || type > Constants.INDEX_BENEFIT_BANNER) {
             return CommonPage.restPage(new ArrayList<>());
         }
-        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(type, pageParamRequest);
-        if(CollUtil.isEmpty(storeProductList)) {
+        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(type, region, pageParamRequest);
+        if (CollUtil.isEmpty(storeProductList)) {
             return CommonPage.restPage(new ArrayList<>());
         }
         CommonPage<StoreProduct> storeProductCommonPage = CommonPage.restPage(storeProductList);
@@ -152,7 +154,7 @@ public class IndexServiceImpl implements IndexService {
             }
             // 根据参与活动添加对应商品活动标示
             HashMap<Integer, ProductActivityItemResponse> activityByProduct =
-                    productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
+                productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
             if (CollUtil.isNotEmpty(activityByProduct)) {
                 for (Integer activity : activityList) {
                     if (activity.equals(Constants.PRODUCT_TYPE_NORMAL)) {
@@ -221,6 +223,18 @@ public class IndexServiceImpl implements IndexService {
     public String getImageDomain() {
         String localUploadUrl = systemConfigService.getValueByKey("localUploadUrl");
         return StrUtil.isBlank(localUploadUrl) ? "" : localUploadUrl;
+    }
+
+    @Override
+    public InformationResponse getInformation() {
+        String informationName = systemConfigService.getValueByKey(InformationConstants.INFORMATION_NAME);
+        String informationDescription = systemConfigService.getValueByKey(InformationConstants.INFORMATION_DESCRIPTION);
+        String informationImage = systemConfigService.getValueByKey(InformationConstants.INFORMATION_IMAGE);
+        InformationResponse informationResponse = new InformationResponse();
+        informationResponse.setName(informationName);
+        informationResponse.setDescription(informationDescription);
+        informationResponse.setImage(informationImage);
+        return informationResponse;
     }
 }
 

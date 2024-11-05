@@ -33,4 +33,7 @@ public class FileResultVo{
 
     //类型
     private String type;
+
+    //上传类型
+    private Integer uploadType;
 }

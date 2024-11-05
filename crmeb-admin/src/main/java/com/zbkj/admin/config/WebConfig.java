@@ -53,7 +53,7 @@ public class WebConfig implements WebMvcConfigurer {
         //addPathPatterns添加需要拦截的命名空间；
         //excludePathPatterns添加排除拦截命名空间
 
-
+        // registry.excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
 //        //后台token拦截
 //        registry.addInterceptor(adminTokenInterceptor()).
 //                addPathPatterns("/api/admin/**").

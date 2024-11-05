@@ -1,11 +1,12 @@
 package com.zbkj.front.service;
 
+import com.zbkj.common.model.system.SystemConfig;
 import com.zbkj.common.page.CommonPage;
+import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.response.IndexInfoResponse;
 import com.zbkj.common.response.IndexProductResponse;
+import com.zbkj.common.response.InformationResponse;
 import com.zbkj.common.vo.MyRecord;
-import com.zbkj.common.request.PageParamRequest;
-import com.zbkj.common.model.system.SystemConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ public interface IndexService{
      * @param pageParamRequest 分页参数
      * @return List
      */
-    CommonPage<IndexProductResponse> findIndexProductList(Integer type, PageParamRequest pageParamRequest);
+    CommonPage<IndexProductResponse> findIndexProductList(Integer type,Integer region, PageParamRequest pageParamRequest);
 
     /**
      * 获取颜色配置
@@ -66,4 +67,10 @@ public interface IndexService{
      * @return String
      */
     String getImageDomain();
+
+    /**
+     * 获取企业信息
+     * @return
+     */
+    InformationResponse getInformation();
 }

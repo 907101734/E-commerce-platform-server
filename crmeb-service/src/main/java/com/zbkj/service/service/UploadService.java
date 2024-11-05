@@ -36,4 +36,14 @@ public interface UploadService {
      * @return FileResultVo
      */
     FileResultVo fileUpload(MultipartFile multipartFile, String model, Integer pid) throws IOException;
+
+    /**
+     *
+     * @param multipartFile
+     * @param model
+     * @param pid
+     * @return
+     * @throws IOException
+     */
+     FileResultVo upload(MultipartFile multipartFile, String model, String extStr, Integer size) throws IOException;
 }

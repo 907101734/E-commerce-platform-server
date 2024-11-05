@@ -1,43 +1,25 @@
 package com.zbkj.service.service.impl;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.qcloud.cos.COSClient;
-import com.qcloud.cos.ClientConfig;
-import com.qcloud.cos.auth.BasicCOSCredentials;
-import com.qcloud.cos.auth.COSCredentials;
-import com.qiniu.storage.Configuration;
-import com.qiniu.storage.Region;
-import com.qiniu.storage.UploadManager;
-import com.qiniu.util.Auth;
 import com.zbkj.common.config.CrmebConfig;
 import com.zbkj.common.constants.Constants;
 import com.zbkj.common.exception.CrmebException;
-import com.zbkj.common.model.article.Article;
-import com.zbkj.common.model.system.SystemAttachment;
 import com.zbkj.common.model.video.Advertisement;
 import com.zbkj.common.page.CommonPage;
 import com.zbkj.common.request.AdvertisementSearchRequest;
 import com.zbkj.common.request.PageParamRequest;
-import com.zbkj.common.utils.CrmebUtil;
-import com.zbkj.common.utils.DateUtil;
-import com.zbkj.common.utils.UploadUtil;
 import com.zbkj.common.vo.AdvertisementVo;
-import com.zbkj.common.vo.CloudVo;
 import com.zbkj.common.vo.FileResultVo;
-import com.zbkj.common.vo.UploadCommonVo;
 import com.zbkj.service.dao.AdvertisementDao;
-import com.zbkj.service.dao.ArticleDao;
 import com.zbkj.service.service.AdvertisementService;
-import com.zbkj.service.service.ArticleService;
-import com.zbkj.service.service.OssService;
 import com.zbkj.service.service.SystemConfigService;
-import org.apache.commons.io.FilenameUtils;
+import com.zbkj.service.service.UploadService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,10 +48,10 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
     CrmebConfig crmebConfig;
 
     @Autowired
-    private SystemConfigService systemConfigService;
+    UploadService uploadService;
 
     @Autowired
-    private OssService ossService;
+    SystemConfigService systemConfigService;
 
     @Override
     public PageInfo<AdvertisementVo> getList(AdvertisementSearchRequest request, PageParamRequest pageParamRequest) {
@@ -92,7 +72,54 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
     }
 
     @Override
-    public void saveAdvertisement(MultipartFile multipartFile, String adName, String adDescription) throws IOException {
-        
+    public Boolean saveAdvertisement(MultipartFile multipartFile, String adName, String adDescription) {
+        Advertisement advertisement = new Advertisement();
+        try {
+            String extStr = systemConfigService.getValueByKey(Constants.UPLOAD_FILE_EXT_STR_CONFIG_KEY);
+            int size = Integer.parseInt(systemConfigService.getValueByKey(Constants.UPLOAD_FILE_MAX_SIZE_CONFIG_KEY));
+            FileResultVo resultFile = uploadService.upload(multipartFile, "video", extStr, size);
+            advertisement.setAdName(adName);
+            advertisement.setAdDescription(adDescription);
+            advertisement.setName(resultFile.getFileName());
+            advertisement.setAttDir(resultFile.getUrl());
+            advertisement.setAttSize(resultFile.getFileSize().toString());
+            advertisement.setAttType(resultFile.getType());
+            advertisement.setVideoType(resultFile.getUploadType());   //图片上传类型 1本地 2七牛云 3OSS 4COS, 默认本地，任务轮询数据库放入云服务
+        } catch (Exception e) {
+            logger.error("附件上传异常");
+        }
+        return this.save(advertisement);
+    }
+
+    @Override
+    public Boolean updateAdvertisement(MultipartFile multipart, Integer id, String adName, String adDescription) {
+        Advertisement advertisement = getById(id);
+        if (ObjectUtil.isNull(advertisement)) {
+            throw new CrmebException("广告不存在");
+        }
+        try {
+            String extStr = systemConfigService.getValueByKey(Constants.UPLOAD_FILE_EXT_STR_CONFIG_KEY);
+            int size = Integer.parseInt(systemConfigService.getValueByKey(Constants.UPLOAD_FILE_MAX_SIZE_CONFIG_KEY));
+            FileResultVo resultFile = uploadService.upload(multipart, "video", extStr, size);
+            advertisement.setAdName(adName);
+            advertisement.setAdDescription(adDescription);
+            advertisement.setName(resultFile.getFileName());
+            advertisement.setAttDir(resultFile.getUrl());
+            advertisement.setAttSize(resultFile.getFileSize().toString());
+            advertisement.setAttType(resultFile.getType());
+            advertisement.setVideoType(resultFile.getUploadType());   //图片上传类型 1本地 2七牛云 3OSS 4COS, 默认本地，任务轮询数据库放入云服务
+        } catch (Exception e) {
+            logger.error("附件上传异常");
+        }
+        return this.updateById(advertisement);
+    }
+
+    @Override
+    public Boolean deleteById(Integer id) {
+        Advertisement advertisement = getById(id);
+        if (ObjectUtil.isNull(advertisement)) {
+            throw new CrmebException("广告已删除");
+        }
+        return removeById(id);
     }
 }
