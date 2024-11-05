@@ -58,8 +58,10 @@ public class IndexController {
      */
     @ApiOperation(value = "首页商品列表")
     @RequestMapping(value = "/index/product", method = RequestMethod.GET)
-    @ApiImplicitParams({@ApiImplicitParam(name = "type", value = "类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】", dataType = "int", required = false), @ApiImplicitParam(name = "region", value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区", dataType = "int", required = false)})
-    public CommonResult<CommonPage<IndexProductResponse>> getProductList(@RequestParam(value = "type") Integer type, @RequestParam(value = "region") Integer region, PageParamRequest pageParamRequest) {
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", value = "类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】", dataType = "int", required = false),
+        @ApiImplicitParam(name = "region", value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区", dataType = "int", required = false)})
+    public CommonResult<CommonPage<IndexProductResponse>> getProductList(@RequestParam(value = "type") Integer type,
+        @RequestParam(value = "region") Integer region, PageParamRequest pageParamRequest) {
         return CommonResult.success(indexService.findIndexProductList(type, region, pageParamRequest));
     }
 
