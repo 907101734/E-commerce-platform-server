@@ -35,7 +35,7 @@ public class UserRedEnvelopeRecordController {
      * @param request          ArticleSearchRequest 搜索条件
      * @param pageParamRequest 分页参数
      */
-    @PreAuthorize("hasAuthority('admin:ad:list')")
+    @PreAuthorize("hasAuthority('admin:red:list')")
     @ApiOperation(value = "分页列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public CommonResult<CommonPage<UserRedEnvelopeRecordVo>> getList(@Validated UserRedEnvelopeRecordRequest request, @Validated PageParamRequest pageParamRequest) {

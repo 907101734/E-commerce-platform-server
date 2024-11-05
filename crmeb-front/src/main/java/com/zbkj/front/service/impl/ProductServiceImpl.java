@@ -3,11 +3,9 @@ package com.zbkj.front.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageInfo;
 import com.zbkj.common.constants.CategoryConstants;
 import com.zbkj.common.constants.Constants;
-import com.zbkj.common.constants.RedisConstatns;
 import com.zbkj.common.constants.SysConfigConstants;
 import com.zbkj.common.model.product.StoreProduct;
 import com.zbkj.common.model.product.StoreProductAttr;
@@ -19,14 +17,30 @@ import com.zbkj.common.page.CommonPage;
 import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.request.ProductListRequest;
 import com.zbkj.common.request.ProductRequest;
-import com.zbkj.common.response.*;
+import com.zbkj.common.response.IndexProductResponse;
+import com.zbkj.common.response.ProductActivityItemResponse;
+import com.zbkj.common.response.ProductDetailReplyResponse;
+import com.zbkj.common.response.ProductDetailResponse;
+import com.zbkj.common.response.ProductReplyResponse;
+import com.zbkj.common.response.StoreProductAttrValueResponse;
+import com.zbkj.common.response.StoreProductReplayCountResponse;
 import com.zbkj.common.utils.CrmebUtil;
 import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.common.vo.CategoryTreeVo;
 import com.zbkj.common.vo.MyRecord;
 import com.zbkj.front.service.ProductService;
 import com.zbkj.service.delete.ProductUtils;
-import com.zbkj.service.service.*;
+import com.zbkj.service.service.CategoryService;
+import com.zbkj.service.service.StoreCartService;
+import com.zbkj.service.service.StoreProductAttrService;
+import com.zbkj.service.service.StoreProductAttrValueService;
+import com.zbkj.service.service.StoreProductRelationService;
+import com.zbkj.service.service.StoreProductReplyService;
+import com.zbkj.service.service.StoreProductService;
+import com.zbkj.service.service.SystemConfigService;
+import com.zbkj.service.service.SystemUserLevelService;
+import com.zbkj.service.service.UserService;
+import com.zbkj.service.service.UserVisitRecordService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,17 +52,17 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
-* IndexServiceImpl 接口实现
-*  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
-*/
+ * IndexServiceImpl 接口实现
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
+ */
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -98,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<CategoryTreeVo> getCategory() {
         List<CategoryTreeVo> listTree = categoryService.getListTree(CategoryConstants.CATEGORY_TYPE_PRODUCT, 1, "");
-        for (int i = 0; i < listTree.size();) {
+        for (int i = 0; i < listTree.size(); ) {
             CategoryTreeVo categoryTreeVo = listTree.get(i);
             if (!categoryTreeVo.getPid().equals(0)) {
                 listTree.remove(i);
@@ -133,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
             }
             // 根据参与活动添加对应商品活动标示
             HashMap<Integer, ProductActivityItemResponse> activityByProduct =
-                    productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
+                productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
             if (CollUtil.isNotEmpty(activityByProduct)) {
                 for (Integer activity : activityList) {
                     if (activity.equals(Constants.PRODUCT_TYPE_NORMAL)) {
@@ -172,7 +186,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 获取商品详情
-     * @param id 商品编号
+     * @param id   商品编号
      * @param type normal-正常，video-视频
      * @return 商品详情信息
      */
@@ -216,7 +230,8 @@ public class ProductServiceImpl implements ProductService {
         if (ObjectUtil.isNotNull(user)) {
             // 查询用户是否收藏收藏
             user = userService.getInfo();
-            productDetailResponse.setUserCollect(storeProductRelationService.getLikeOrCollectByUser(user.getUid(), id,false).size() > 0);
+            productDetailResponse.setUserCollect(storeProductRelationService.getLikeOrCollectByUser(user.getUid(), id, false)
+                .size() > 0);
             // 判断是否开启分销
             String brokerageFuncStatus = systemConfigService.getValueByKey(SysConfigConstants.CONFIG_KEY_BROKERAGE_FUNC_STATUS);
             if (brokerageFuncStatus.equals(Constants.COMMON_SWITCH_OPEN)) {// 分销开启
@@ -282,7 +297,9 @@ public class ProductServiceImpl implements ProductService {
             BeanUtils.copyProperties(storeProductAttrValue, atr);
             // 设置会员价
             if (ObjectUtil.isNotNull(userLevel)) {
-                BigDecimal vipPrice = atr.getPrice().multiply(new BigDecimal(userLevel.getDiscount())).divide(new BigDecimal(100), 2 ,BigDecimal.ROUND_HALF_UP);
+                BigDecimal vipPrice = atr.getPrice()
+                    .multiply(new BigDecimal(userLevel.getDiscount()))
+                    .divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
                 atr.setVipPrice(vipPrice);
             }
             skuMap.put(atr.getSuk(), atr);
@@ -294,8 +311,8 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 商品评论列表
-     * @param proId 商品编号
-     * @param type 评价等级|0=全部,1=好评,2=中评,3=差评
+     * @param proId            商品编号
+     * @param type             评价等级|0=全部,1=好评,2=中评,3=差评
      * @param pageParamRequest 分页参数
      * @return PageInfo<ProductReplyResponse>
      */
@@ -322,14 +339,16 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 获取商品佣金区间
-     * @param isSub 是否单独计算分佣
+     * @param isSub         是否单独计算分佣
      * @param attrValueList 商品属性列表
-     * @param isPromoter 是否推荐人
+     * @param isPromoter    是否推荐人
      * @return String 金额区间
      */
     private String getPacketPriceRange(Boolean isSub, List<StoreProductAttrValue> attrValueList, Boolean isPromoter) {
         String priceName = "0";
-        if (!isPromoter) return priceName;
+        if (!isPromoter) {
+            return priceName;
+        }
         // 获取一级返佣比例
         String brokerageRatioString = systemConfigService.getValueByKey(SysConfigConstants.CONFIG_KEY_STORE_BROKERAGE_RATIO);
         BigDecimal BrokerRatio = new BigDecimal(brokerageRatioString).divide(new BigDecimal("100"), 2, RoundingMode.DOWN);
@@ -337,11 +356,19 @@ public class ProductServiceImpl implements ProductService {
         BigDecimal minPrice;
         // 获取佣金比例区间
         if (isSub) { // 是否单独分拥
-            maxPrice = attrValueList.stream().map(StoreProductAttrValue::getBrokerage).reduce(BigDecimal.ZERO,BigDecimal::max);
-            minPrice = attrValueList.stream().map(StoreProductAttrValue::getBrokerage).reduce(BigDecimal.ZERO,BigDecimal::min);
+            maxPrice = attrValueList.stream()
+                .map(StoreProductAttrValue::getBrokerage)
+                .reduce(BigDecimal.ZERO, BigDecimal::max);
+            minPrice = attrValueList.stream()
+                .map(StoreProductAttrValue::getBrokerage)
+                .reduce(BigDecimal.ZERO, BigDecimal::min);
         } else {
-            BigDecimal _maxPrice = attrValueList.stream().map(StoreProductAttrValue::getPrice).reduce(BigDecimal.ZERO,BigDecimal::max);
-            BigDecimal _minPrice = attrValueList.stream().map(StoreProductAttrValue::getPrice).reduce(BigDecimal.ZERO,BigDecimal::min);
+            BigDecimal _maxPrice = attrValueList.stream()
+                .map(StoreProductAttrValue::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::max);
+            BigDecimal _minPrice = attrValueList.stream()
+                .map(StoreProductAttrValue::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::min);
             maxPrice = BrokerRatio.multiply(_maxPrice).setScale(2, RoundingMode.HALF_UP);
             minPrice = BrokerRatio.multiply(_minPrice).setScale(2, RoundingMode.HALF_UP);
         }
@@ -366,7 +393,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public CommonPage<IndexProductResponse> getHotProductList(PageParamRequest pageRequest) {
-        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_HOT_BANNER, pageRequest);
+        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_HOT_BANNER, null, pageRequest);
         if (CollUtil.isEmpty(storeProductList)) {
             return CommonPage.restPage(new ArrayList<>());
         }
@@ -384,7 +411,7 @@ public class ProductServiceImpl implements ProductService {
             }
             // 根据参与活动添加对应商品活动标示
             HashMap<Integer, ProductActivityItemResponse> activityByProduct =
-                    productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
+                productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
             if (CollUtil.isNotEmpty(activityByProduct)) {
                 for (Integer activity : activityList) {
                     if (activity.equals(Constants.PRODUCT_TYPE_NORMAL)) {
@@ -442,7 +469,7 @@ public class ProductServiceImpl implements ProductService {
     public CommonPage<IndexProductResponse> getGoodProductList() {
         PageParamRequest pageRequest = new PageParamRequest();
         pageRequest.setLimit(9);
-        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_RECOMMEND_BANNER, pageRequest);
+        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_RECOMMEND_BANNER, null, pageRequest);
         if (CollUtil.isEmpty(storeProductList)) {
             return CommonPage.restPage(new ArrayList<>());
         }
@@ -460,7 +487,7 @@ public class ProductServiceImpl implements ProductService {
             }
             // 根据参与活动添加对应商品活动标示
             HashMap<Integer, ProductActivityItemResponse> activityByProduct =
-                    productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
+                productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
             if (CollUtil.isNotEmpty(activityByProduct)) {
                 for (Integer activity : activityList) {
                     if (activity.equals(Constants.PRODUCT_TYPE_NORMAL)) {
@@ -499,7 +526,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 商品列表(个别分类模型使用)
-     * @param request 列表请求参数
+     * @param request          列表请求参数
      * @param pageParamRequest 分页参数
      * @return CommonPage
      */
