@@ -20,7 +20,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("eb_article")
+@TableName("eb_advertisement")
 @ApiModel(value = "Advertisement对象", description = "广告管理表")
 public class Advertisement implements Serializable {
 

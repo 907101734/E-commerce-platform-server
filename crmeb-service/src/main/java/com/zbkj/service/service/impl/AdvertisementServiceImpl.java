@@ -84,9 +84,11 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
             advertisement.setAttDir(resultFile.getUrl());
             advertisement.setAttSize(resultFile.getFileSize().toString());
             advertisement.setAttType(resultFile.getType());
+            advertisement.setStatus(1);
             advertisement.setVideoType(resultFile.getUploadType());   //图片上传类型 1本地 2七牛云 3OSS 4COS, 默认本地，任务轮询数据库放入云服务
         } catch (Exception e) {
-            logger.error("附件上传异常");
+            e.printStackTrace();
+            throw new CrmebException("附件上传异常:" + e.getMessage());
         }
         return this.save(advertisement);
     }
@@ -109,7 +111,7 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
             advertisement.setAttType(resultFile.getType());
             advertisement.setVideoType(resultFile.getUploadType());   //图片上传类型 1本地 2七牛云 3OSS 4COS, 默认本地，任务轮询数据库放入云服务
         } catch (Exception e) {
-            logger.error("附件上传异常");
+            throw new CrmebException("附件上传异常:" + e.getMessage());
         }
         return this.updateById(advertisement);
     }
