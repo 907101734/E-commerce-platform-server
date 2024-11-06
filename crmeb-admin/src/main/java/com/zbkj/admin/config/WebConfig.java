@@ -37,7 +37,9 @@ public class WebConfig implements WebMvcConfigurer {
     CrmebConfig crmebConfig;
 
     @Bean
-    public ResponseFilter responseFilter(){ return new ResponseFilter(); }
+    public ResponseFilter responseFilter() {
+        return new ResponseFilter();
+    }
 
     @Value("${swagger.basic.username}")
     private String username;
@@ -46,7 +48,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${swagger.basic.check}")
     private Boolean check;
 
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //添加token拦截器
@@ -54,44 +55,46 @@ public class WebConfig implements WebMvcConfigurer {
         //excludePathPatterns添加排除拦截命名空间
 
         // registry.excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
-//        //后台token拦截
-//        registry.addInterceptor(adminTokenInterceptor()).
-//                addPathPatterns("/api/admin/**").
-//                excludePathPatterns("/api/admin/validate/**").
-//                excludePathPatterns("/api/admin/login").
-//                excludePathPatterns("/api/admin/logout").
-//                excludePathPatterns("/api/admin/getLoginPic").
-//                excludePathPatterns("/api/admin/wechat/config").
-//                excludePathPatterns("/api/admin/authorize/login").
-//                excludePathPatterns("/api/admin/payment/callback/**").
-////                excludePathPatterns("/api/admin/system/role/menu").
-//                excludePathPatterns("/api/admin/system/role/info").
-//                excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
-//
-//        //后台权限规则
-//        registry.addInterceptor(adminAuthInterceptor()).
-//                addPathPatterns("/api/admin/**").
-//                excludePathPatterns("/api/admin/validate/**").
-//                excludePathPatterns("/api/admin/login").
-//                excludePathPatterns("/api/admin/logout").
-//                excludePathPatterns("/api/admin/getLoginPic").
-//                excludePathPatterns("/api/admin/payment/callback/**").
-//                excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
+        //        //后台token拦截
+        //        registry.addInterceptor(adminTokenInterceptor()).
+        //                addPathPatterns("/api/admin/**").
+        //                excludePathPatterns("/api/admin/validate/**").
+        //                excludePathPatterns("/api/admin/login").
+        //                excludePathPatterns("/api/admin/logout").
+        //                excludePathPatterns("/api/admin/getLoginPic").
+        //                excludePathPatterns("/api/admin/wechat/config").
+        //                excludePathPatterns("/api/admin/authorize/login").
+        //                excludePathPatterns("/api/admin/payment/callback/**").
+        ////                excludePathPatterns("/api/admin/system/role/menu").
+        //                excludePathPatterns("/api/admin/system/role/info").
+        //                excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
+        //
+        //        //后台权限规则
+        //        registry.addInterceptor(adminAuthInterceptor()).
+        //                addPathPatterns("/api/admin/**").
+        //                excludePathPatterns("/api/admin/validate/**").
+        //                excludePathPatterns("/api/admin/login").
+        //                excludePathPatterns("/api/admin/logout").
+        //                excludePathPatterns("/api/admin/getLoginPic").
+        //                excludePathPatterns("/api/admin/payment/callback/**").
+        //                excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
 
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/");
+            .addResourceLocations("classpath:/static/");
         registry.addResourceHandler("doc.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
+            .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+            .addResourceLocations("classpath:/META-INF/resources/webjars/");
 
         /** 本地文件上传路径 */
         registry.addResourceHandler(Constants.UPLOAD_TYPE_IMAGE + "/**")
-                .addResourceLocations("file:" + crmebConfig.getImagePath() + "/" + Constants.UPLOAD_TYPE_IMAGE + "/");
+            .addResourceLocations("file:" + crmebConfig.getImagePath() + "/" + Constants.UPLOAD_TYPE_IMAGE + "/");
+        registry.addResourceHandler(Constants.UPLOAD_TYPE_FILE + "/**")
+            .addResourceLocations("file:" + crmebConfig.getImagePath() + "/" + Constants.UPLOAD_TYPE_FILE + "/");
     }
 
     @Bean

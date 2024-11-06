@@ -75,7 +75,8 @@ public class UploadServiceImpl implements UploadService {
         }
         String extStr = systemConfigService.getValueByKey(Constants.UPLOAD_IMAGE_EXT_STR_CONFIG_KEY);
         int size = Integer.parseInt(systemConfigService.getValueByKey(Constants.UPLOAD_IMAGE_MAX_SIZE_CONFIG_KEY));
-        return this.saveSystemAttachment(multipartFile, model, pid, extStr, size);
+        String type = Constants.UPLOAD_TYPE_IMAGE + "/";
+        return this.saveSystemAttachment(multipartFile, model, pid, extStr, type, size);
     }
 
     /**
@@ -90,11 +91,12 @@ public class UploadServiceImpl implements UploadService {
     public FileResultVo fileUpload(MultipartFile multipartFile, String model, Integer pid) throws IOException {
         String extStr = systemConfigService.getValueByKey(Constants.UPLOAD_FILE_EXT_STR_CONFIG_KEY);
         int size = Integer.parseInt(systemConfigService.getValueByKey(Constants.UPLOAD_FILE_MAX_SIZE_CONFIG_KEY));
-        return this.saveSystemAttachment(multipartFile, model, pid, extStr, size);
+        String type = Constants.UPLOAD_TYPE_FILE + "/";
+        return this.saveSystemAttachment(multipartFile, model, pid, type, extStr, size);
     }
 
-    public FileResultVo saveSystemAttachment(MultipartFile multipartFile, String model, Integer pid, String extStr, Integer size) throws IOException {
-        FileResultVo resultFile = this.upload(multipartFile, model, extStr, size);
+    public FileResultVo saveSystemAttachment(MultipartFile multipartFile, String model, Integer pid, String type, String extStr, Integer size) throws IOException {
+        FileResultVo resultFile = this.upload(multipartFile, model, type, extStr, size);
         SystemAttachment systemAttachment = new SystemAttachment();
         systemAttachment.setName(resultFile.getFileName());
         systemAttachment.setSattDir(resultFile.getUrl());
@@ -106,12 +108,10 @@ public class UploadServiceImpl implements UploadService {
         return resultFile;
     }
 
-    public FileResultVo upload(MultipartFile multipartFile, String model, String extStr, Integer size) throws IOException {
+    public FileResultVo upload(MultipartFile multipartFile, String model, String type, String extStr, Integer size) throws IOException {
         String rootPath = (crmebConfig.getImagePath() + "/").replace(" ", "").replace("//", "/");
         UploadUtil.setModelPath(model);
         String modelPath = "public/" + model + "/";
-        String type = Constants.UPLOAD_TYPE_FILE + "/";
-
         UploadCommonVo uploadCommonVo = new UploadCommonVo();
         uploadCommonVo.setRootPath(rootPath);
         uploadCommonVo.setModelPath(modelPath);

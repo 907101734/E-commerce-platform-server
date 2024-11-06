@@ -18,6 +18,7 @@ import com.zbkj.common.vo.AdvertisementVo;
 import com.zbkj.common.vo.FileResultVo;
 import com.zbkj.service.dao.AdvertisementDao;
 import com.zbkj.service.service.AdvertisementService;
+import com.zbkj.service.service.SystemAttachmentService;
 import com.zbkj.service.service.SystemConfigService;
 import com.zbkj.service.service.UploadService;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +54,9 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
     @Autowired
     SystemConfigService systemConfigService;
 
+    @Autowired
+    private SystemAttachmentService systemAttachmentService;
+
     @Override
     public PageInfo<AdvertisementVo> getList(AdvertisementSearchRequest request, PageParamRequest pageParamRequest) {
         Page<Advertisement> adPage = PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
@@ -77,7 +81,8 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
         try {
             String extStr = systemConfigService.getValueByKey(Constants.UPLOAD_FILE_EXT_STR_CONFIG_KEY);
             int size = Integer.parseInt(systemConfigService.getValueByKey(Constants.UPLOAD_FILE_MAX_SIZE_CONFIG_KEY));
-            FileResultVo resultFile = uploadService.upload(multipartFile, "video", extStr, size);
+            String type = Constants.UPLOAD_TYPE_FILE + "/";
+            FileResultVo resultFile = uploadService.upload(multipartFile, Constants.UPLOAD_TYPE_MODEL_VIDEO, type, extStr, size);
             advertisement.setAdName(adName);
             advertisement.setAdDescription(adDescription);
             advertisement.setName(resultFile.getFileName());
@@ -102,7 +107,8 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
         try {
             String extStr = systemConfigService.getValueByKey(Constants.UPLOAD_FILE_EXT_STR_CONFIG_KEY);
             int size = Integer.parseInt(systemConfigService.getValueByKey(Constants.UPLOAD_FILE_MAX_SIZE_CONFIG_KEY));
-            FileResultVo resultFile = uploadService.upload(multipart, "video", extStr, size);
+            String type = Constants.UPLOAD_TYPE_FILE + "/";
+            FileResultVo resultFile = uploadService.upload(multipart, Constants.UPLOAD_TYPE_MODEL_VIDEO, type, extStr, size);
             advertisement.setAdName(adName);
             advertisement.setAdDescription(adDescription);
             advertisement.setName(resultFile.getFileName());

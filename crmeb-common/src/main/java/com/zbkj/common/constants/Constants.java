@@ -1,16 +1,16 @@
 package com.zbkj.common.constants;
 
 /**
- *  配置类
- *  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
+ * 配置类
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
  */
 public class Constants {
     public static final long TOKEN_EXPRESS_MINUTES = (60 * 24); //3小时
@@ -30,7 +30,6 @@ public class Constants {
 
     //验证码redis key前缀
     public static final String VALIDATE_REDIS_KEY_PREFIX = "validate_code_";
-
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String DATE_FORMAT_UTC = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -57,13 +56,11 @@ public class Constants {
     public static final String USER_LEVEL_OPERATE_LOG_MARK = "尊敬的用户 【{$userName}】, 在{$date}赠送会员等级成为{$levelName}会员";
     public static final String USER_LEVEL_UP_LOG_MARK = "尊敬的用户 【{$userName}】, 在{$date}您升级为为{$levelName}会员";
 
-
     //用户登录密码加密混淆字符串
     public static final String USER_LOGIN_PASSWORD_MD5_KEYWORDS = "crmeb";
 
     //用户登token redis存储前缀
     public static final String USER_TOKEN_REDIS_KEY_PREFIX = "TOKEN_USER:";
-
 
     //用户登录方式 h5
     public static final String USER_LOGIN_TYPE_H5 = "h5";
@@ -80,7 +77,6 @@ public class Constants {
 
     // 用户登录方式 App
     public static final String USER_LOGIN_TYPE_IOS = "ios";
-
 
     //用户默认头像
     public static final String USER_DEFAULT_AVATAR_CONFIG_KEY = "h5_avatar";
@@ -111,6 +107,11 @@ public class Constants {
 
     //上传类型
     public static final String UPLOAD_TYPE_FILE = "file";
+
+    /**
+     * 上传类型
+     */
+    public static final String UPLOAD_TYPE_MODEL_VIDEO = "video";
     public static final String UPLOAD_MODEL_PATH_EXCEL = "excel";// excel
 
     //图片上传
@@ -143,7 +144,6 @@ public class Constants {
     //商品库存redis key
     public static final String PRODUCT_STOCK_LIST = "product_stock_list";
 
-
     //消息模板队列key
     public static final String WE_CHAT_MESSAGE_KEY_PUBLIC = "we_chat_public_message_list";
     public static final String WE_CHAT_MESSAGE_KEY_PROGRAM = "we_chat_program_message_list";
@@ -151,7 +151,6 @@ public class Constants {
 
     //config表数据redis
     public static final String CONFIG_LIST = "config_list"; //配置列表
-
 
     //快递信息缓存
     public static final String LOGISTICS_KEY = "logistics_";
@@ -183,8 +182,8 @@ public class Constants {
     public static final String CONFIG_KEY_PAY_WE_CHAT_APP_APP_KEY = "pay_weixin_app_key"; //公众号支付key
 
     public static final String CONFIG_KEY_RECHARGE_MIN_AMOUNT = "store_user_min_recharge"; //最小充值金额
-//    public static final String CONFIG_KEY_PROGRAM_LOGO = "routine_logo"; //小程序logo
-//    public static final String CONFIG_KEY_PUBLIC_LOGO = "wechat_avatar"; //公众号logo
+    //    public static final String CONFIG_KEY_PROGRAM_LOGO = "routine_logo"; //小程序logo
+    //    public static final String CONFIG_KEY_PUBLIC_LOGO = "wechat_avatar"; //公众号logo
 
     public static final String CONFIG_KEY_LOGISTICS_APP_CODE = "system_express_app_code"; //快递查询密钥
 
@@ -206,8 +205,6 @@ public class Constants {
     public static final String CONFIG_APP_IOS_ADDRESS = "ios_address";
     // 开放式升级
     public static final String CONFIG_APP_OPEN_UPGRADE = "open_upgrade";
-
-
 
     //分销
     public static final String CONFIG_KEY_STORE_BROKERAGE_LEVEL = "store_brokerage_rate_num"; //返佣比例前缀
@@ -232,21 +229,18 @@ public class Constants {
     //验证码过期时间
     public static final String CONFIG_KEY_SMS_CODE_EXPIRE = "sms_code_expire";
 
-
     //config配置的formId
     public static final int CONFIG_FORM_ID_INDEX = 133; //首页配置
     public static final int CONFIG_FORM_ID_PUBLIC = 65; //公众号配置
 
-
     //第三方登录token类型
-    public static final int THIRD_LOGIN_TOKEN_TYPE_PUBLIC  = 1; //公众号
-    public static final int THIRD_LOGIN_TOKEN_TYPE_PROGRAM  = 2; //小程序
-    public static final int THIRD_LOGIN_TOKEN_TYPE_UNION_ID  = 3; //unionid
-    public static final int THIRD_ADMIN_LOGIN_TOKEN_TYPE_PUBLIC  = 4; //后台登录公众号
-    public static final int THIRD_LOGIN_TOKEN_TYPE_IOS_WX  = 5; //ios 微信
+    public static final int THIRD_LOGIN_TOKEN_TYPE_PUBLIC = 1; //公众号
+    public static final int THIRD_LOGIN_TOKEN_TYPE_PROGRAM = 2; //小程序
+    public static final int THIRD_LOGIN_TOKEN_TYPE_UNION_ID = 3; //unionid
+    public static final int THIRD_ADMIN_LOGIN_TOKEN_TYPE_PUBLIC = 4; //后台登录公众号
+    public static final int THIRD_LOGIN_TOKEN_TYPE_IOS_WX = 5; //ios 微信
     public static final int THIRD_LOGIN_TOKEN_TYPE_ANDROID_WX = 6; //android微信
-    public static final int THIRD_LOGIN_TOKEN_TYPE_IOS  = 7; //ios
-
+    public static final int THIRD_LOGIN_TOKEN_TYPE_IOS = 7; //ios
 
     // 商品类型 活动类型 0=商品，1=秒杀，2=砍价，3=拼团 attrResult表用到
     public static final Integer PRODUCT_TYPE_NORMAL = 0;
@@ -255,14 +249,11 @@ public class Constants {
     public static final String PRODUCT_TYPE_SECKILL_STR = "秒杀";
     public static final Integer PRODUCT_TYPE_BARGAIN = 2;
     public static final String PRODUCT_TYPE_BARGAIN_STR = "砍价";
-    public static final Integer PRODUCT_TYPE_PINGTUAN= 3;
-    public static final String PRODUCT_TYPE_PINGTUAN_STR= "拼团";
-    public static final Integer PRODUCT_TYPE_COMPONENT= 4;
-    public static final String PRODUCT_TYPE_COMPONENT_STR= "组件";
+    public static final Integer PRODUCT_TYPE_PINGTUAN = 3;
+    public static final String PRODUCT_TYPE_PINGTUAN_STR = "拼团";
+    public static final Integer PRODUCT_TYPE_COMPONENT = 4;
+    public static final String PRODUCT_TYPE_COMPONENT_STR = "组件";
     public static final Integer PRODUCT_TYPE_GROUP = 0;
-
-
-
 
     //group gid
     public static final Integer GROUP_DATA_ID_INDEX_BEST_BANNER = 37; //中部推荐banner图
@@ -286,14 +277,11 @@ public class Constants {
     public static final Integer GROUP_DATA_ID_ADMIN_LOGIN_BANNER_IMAGE_LIST = 72; //后台登录页面轮播图
     public static final Integer GROUP_DATA_ID_COMBINATION_LIST_BANNNER = 73; //拼团列表banner
 
-
-
     //签到
     public static final Integer SIGN_TYPE_INTEGRAL = 1; //积分
     public static final Integer SIGN_TYPE_EXPERIENCE = 2; //经验
     public static final String SIGN_TYPE_INTEGRAL_TITLE = "签到积分奖励"; //积分
     public static final String SIGN_TYPE_EXPERIENCE_TITLE = "签到经验奖励"; //经验
-
 
     //会员搜索日期类型
     public static final String SEARCH_DATE_DAY = "today"; //今天
@@ -328,7 +316,6 @@ public class Constants {
     public static final String INDEX_FIRST_LIMIT = "firstNumber"; //首发新品个数
     public static final String INDEX_SALES_LIMIT = "promotionNumber"; //促销单品个数
     public static final String INDEX_HOT_LIMIT = "hotNumber"; //热门推荐个数
-
 
     //用户资金
     public static final String USER_BILL_CATEGORY_MONEY = "now_money"; //用户余额
@@ -400,7 +387,6 @@ public class Constants {
     public static final int ORDER_STATUS_INT_BARGAIN = 2; //已收货，待评价
     public static final int ORDER_STATUS_INT_COMPLETE = 3; //已完成
 
-
     //订单操作redis队列
     public static final String ORDER_TASK_REDIS_KEY_AFTER_DELETE_BY_USER = "alterOrderDeleteByUser"; // 用户删除订单后续操作
     public static final String ORDER_TASK_REDIS_KEY_AFTER_COMPLETE_BY_USER = "alterOrderCompleteByUser"; // 用户完成订单后续操作
@@ -423,8 +409,6 @@ public class Constants {
     //后台微信登录类型
     public static final String ADMIN_LOGIN_TYPE_WE_CHAT_FROM_PUBLIC = "admin_public"; //公众号
 
-
-
     //支付方式
     public static final String PAY_TYPE_STR_WE_CHAT = "微信支付"; //微信支付
     public static final String PAY_TYPE_STR_YUE = "余额支付"; //余额支付
@@ -435,8 +419,6 @@ public class Constants {
     //需要支付的业务类型
     public static final String SERVICE_PAY_TYPE_ORDER = "order"; //订单
     public static final String SERVICE_PAY_TYPE_RECHARGE = "recharge"; //充值
-
-
 
     //订单操作类型
     public static final String ORDER_STATUS_STR_SPIKE_KEY = "send"; //待收货 KEY
@@ -450,7 +432,6 @@ public class Constants {
     public static final String ORDER_LOG_DELIVERY_VI = "delivery_fictitious"; //虚拟发货
     public static final String ORDER_LOG_EDIT = "order_edit"; //编辑订单
     public static final String ORDER_LOG_PAY_OFFLINE = "offline"; //线下付款订单
-
 
     // 订单缓存
     public static final long ORDER_CASH_CONFIRM = (60);
@@ -497,8 +478,6 @@ public class Constants {
     public static final String WE_CHAT_PROGRAM_TEMP_KEY_ORDER_RECEIVING = "9283";// 订单收货通知
     public static final String WE_CHAT_PROGRAM_TEMP_KEY_RECHARGE = "OPENTM200565260";
 
-
-
     //CND  URL测试用
     public static String CND_URL = "https://wuht-1300909283.cos.ap-chengdu.myqcloud.com";
 
@@ -521,7 +500,6 @@ public class Constants {
     public static String RESULT_VERIFICATION_ORDER_VED = "核销码 ${vCode} 的订单已核销";
     public static String RESULT_VERIFICATION_NOTAUTH = "没有核销权限";
     public static String RESULT_VERIFICATION_USER_EXIST = "当前用户已经是核销员";
-
 
     // QRcode Response text info
     public static String RESULT_QRCODE_PRAMERROR = "生成二维码参数不合法";
@@ -549,18 +527,24 @@ public class Constants {
     // 商品记录Key（pv、uv）用
     public static String PRODUCT_LOG_KEY = "visit_log_key";
 
-    public static final String FAIL     = "FAIL";
-    public static final String SUCCESS  = "SUCCESS";
+    public static final String FAIL = "FAIL";
+    public static final String SUCCESS = "SUCCESS";
 
     // 订单取消Key
     public static final String ORDER_AUTO_CANCEL_KEY = "order_auto_cancel_key";
 
-    /** 公共开关：0关闭 */
+    /**
+     * 公共开关：0关闭
+     */
     public static final String COMMON_SWITCH_CLOSE = "0";
-    /** 公共开关：1开启 */
+    /**
+     * 公共开关：1开启
+     */
     public static final String COMMON_SWITCH_OPEN = "1";
 
-    /** 公共JS配置 */
+    /**
+     * 公共JS配置
+     */
     // CRMEB chat 统计
-    public  static final String JS_CONFIG_CRMEB_CHAT_TONGJI="crmeb_tongji_js";
+    public static final String JS_CONFIG_CRMEB_CHAT_TONGJI = "crmeb_tongji_js";
 }
