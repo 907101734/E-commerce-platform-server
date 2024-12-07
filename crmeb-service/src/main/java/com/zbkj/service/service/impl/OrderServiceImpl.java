@@ -1056,10 +1056,9 @@ public class OrderServiceImpl implements OrderService {
             } else {
                 soInfo.setVipPrice(detailVo.getPrice());
             }
-            //设置订单属性
-            StoreProduct storeProduct = storeProductService.getById(detailVo.getProductId());
-            soInfo.setIsGift(storeProduct.getIsGift());
-            soInfo.setGiftProperty(storeProduct.getGiftProperty());
+
+            soInfo.setIsGift(detailVo.getIsGift());
+            soInfo.setGiftProperty(detailVo.getGiftProperty());
             storeOrderInfos.add(soInfo);
         }
 
@@ -1456,6 +1455,11 @@ public class OrderServiceImpl implements OrderService {
                 //是否支持返佣
                 detailVo.setIsSupportBrokerage(storeProduct.getIsSupportBrokerage());
                 detailVo.setIsSub(storeProduct.getIsSub());
+
+                //设置礼包属性
+                detailVo.setIsGift(storeProduct.getIsGift());
+                detailVo.setGiftProperty(storeProduct.getGiftProperty());
+
                 detailVo.setProductType(Constants.PRODUCT_TYPE_NORMAL);
                 detailVo.setVipPrice(detailVo.getPrice());
                 detailVo.setGiveIntegral(storeProduct.getGiveIntegral());
@@ -1536,6 +1540,8 @@ public class OrderServiceImpl implements OrderService {
             //是否支持返佣
             detailVo.setIsSupportBrokerage(storeProduct.getIsSupportBrokerage());
             detailVo.setIsSub(storeProduct.getIsSub());
+            detailVo.setIsGift(storeProduct.getIsGift());
+            detailVo.setGiftProperty(storeProduct.getGiftProperty());
             detailVo.setProductType(Constants.PRODUCT_TYPE_NORMAL);
             detailVo.setVipPrice(detailVo.getPrice());
             if (ObjectUtil.isNotNull(finalUserLevel)) {

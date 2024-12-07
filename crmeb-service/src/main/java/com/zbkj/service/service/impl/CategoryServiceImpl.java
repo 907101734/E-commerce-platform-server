@@ -356,7 +356,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, Category> impl
         //查看是否有子类
         QueryWrapper<Category> objectQueryWrapper = new QueryWrapper<>();
         objectQueryWrapper.eq("status", CategoryConstants.CATEGORY_STATUS_NORMAL);
-        objectQueryWrapper.like("path", "/" + pid + "/");
+        objectQueryWrapper.eq("pid", pid);
         objectQueryWrapper.eq("type", type);
         return dao.selectList(objectQueryWrapper);
     }

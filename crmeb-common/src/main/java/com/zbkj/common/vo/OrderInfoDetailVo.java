@@ -66,4 +66,10 @@ public class OrderInfoDetailVo {
 
     /** 商品类型:0-普通，1-秒杀，2-砍价，3-拼团，4-视频号 */
     private Integer productType;
+
+    /** 是否礼包 */
+    private Boolean isGift;
+
+    /** 礼包属性 */
+    private Integer giftProperty;
 }
