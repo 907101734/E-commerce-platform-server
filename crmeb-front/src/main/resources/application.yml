@@ -57,8 +57,8 @@ logging:
     com.zbjk.crmeb: debug
     org.springframework.boot.autoconfigure: ERROR
   config: classpath:logback-spring.xml
-  file:
-    path: ./crmeb_log
+#  file:
+#    path: ./crmeb_log
 
 # mybatis 配置
 mybatis-plus:
@@ -78,5 +78,5 @@ swagger:
   basic:
     enable: true #是否开启
     check: false #是否打开验证
-    username: #访问swagger的账号
-    password: #访问swagger的密码
+    username: admin #访问swagger的账号
+    password: 123456 #访问swagger的密码

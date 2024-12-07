@@ -43,7 +43,7 @@ public class Category implements Serializable {
     @ApiModelProperty(value = "分类名称")
     private String name;
 
-    @ApiModelProperty(value = "类型ID | 类型，1 产品分类，2 附件分类，3 文章分类， 4 设置分类， 5 菜单分类， 6 配置分类， 7 秒杀配置 ")
+    @ApiModelProperty(value = "类型ID | 类型，1 产品分类，2 附件分类，3 文章分类， 4 设置分类， 5 菜单分类， 6 配置分类， 7 秒杀配置,8 报单区分类 9 生活区分类 10 门店区分类 ")
     private Integer type;
 
     @ApiModelProperty(value = "地址")

@@ -1,6 +1,7 @@
 package com.zbkj.service.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -13,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zbkj.common.constants.Constants;
+import com.zbkj.common.enums.GiftPropertyEnum;
 import com.zbkj.common.exception.CrmebException;
 import com.zbkj.common.model.category.Category;
 import com.zbkj.common.model.coupon.StoreCoupon;
@@ -23,6 +25,7 @@ import com.zbkj.common.response.*;
 import com.zbkj.common.utils.CrmebUtil;
 import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.utils.RedisUtil;
+import com.zbkj.common.vo.GiftTypeVo;
 import com.zbkj.common.vo.MyRecord;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -251,6 +254,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         StoreProduct storeProduct = new StoreProduct();
         BeanUtils.copyProperties(request, storeProduct);
         storeProduct.setId(null);
+        storeProduct.setIsSub(false);
         storeProduct.setAddTime(DateUtil.getNowTime());
         storeProduct.setIsShow(false);
 
@@ -443,6 +447,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
         StoreProduct storeProduct = new StoreProduct();
         BeanUtils.copyProperties(storeProductRequest, storeProduct);
+
+        storeProduct.setIsSub(false);
 
         // 设置Activity活动
         storeProduct.setActivity(getProductActivityStr(storeProductRequest.getActivity()));
@@ -1135,31 +1141,42 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
      * @return CommonPage
      */
     @Override
-    public List<StoreProduct> getIndexProduct(Integer type, Integer region, PageParamRequest pageParamRequest) {
+    public List<StoreProduct> getIndexProduct(Integer type, Integer region, Integer categoryId, Integer giftProperty, PageParamRequest pageParamRequest) {
         PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
         LambdaQueryWrapper<StoreProduct> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.select(StoreProduct::getId, StoreProduct::getImage, StoreProduct::getStoreName,
             StoreProduct::getPrice, StoreProduct::getOtPrice, StoreProduct::getActivity);
-        switch (type) {
-            case Constants.INDEX_RECOMMEND_BANNER: //精品推荐
-                lambdaQueryWrapper.eq(StoreProduct::getIsBest, true);
-                break;
-            case Constants.INDEX_HOT_BANNER: //热门榜单
-                lambdaQueryWrapper.eq(StoreProduct::getIsHot, true);
-                break;
-            case Constants.INDEX_NEW_BANNER: //首发新品
-                lambdaQueryWrapper.eq(StoreProduct::getIsNew, true);
-                break;
-            case Constants.INDEX_BENEFIT_BANNER: //促销单品
-                lambdaQueryWrapper.eq(StoreProduct::getIsBenefit, true);
-                break;
-            case Constants.INDEX_GOOD_BANNER: // 优选推荐
-                lambdaQueryWrapper.eq(StoreProduct::getIsGood, true);
-                break;
+        if (type != null) {
+            switch (type) {
+                case Constants.INDEX_RECOMMEND_BANNER: //精品推荐
+                    lambdaQueryWrapper.eq(StoreProduct::getIsBest, true);
+                    break;
+                case Constants.INDEX_HOT_BANNER: //热门榜单
+                    lambdaQueryWrapper.eq(StoreProduct::getIsHot, true);
+                    break;
+                case Constants.INDEX_NEW_BANNER: //首发新品
+                    lambdaQueryWrapper.eq(StoreProduct::getIsNew, true);
+                    break;
+                case Constants.INDEX_BENEFIT_BANNER: //促销单品
+                    lambdaQueryWrapper.eq(StoreProduct::getIsBenefit, true);
+                    break;
+                case Constants.INDEX_GOOD_BANNER: // 优选推荐
+                    lambdaQueryWrapper.eq(StoreProduct::getIsGood, true);
+                    break;
+            }
         }
-        //所属区域
         if (region != null) {
             lambdaQueryWrapper.eq(StoreProduct::getRegion, region);
+        }
+        if (ObjectUtil.isNotNull(categoryId) && categoryId > 0) {
+            //查找当前类下的所有子类
+            List<Category> childVoListByPid = categoryService.getChildVoListByPid(categoryId);
+            List<Integer> categoryIdList = childVoListByPid.stream().map(Category::getId).collect(Collectors.toList());
+            categoryIdList.add(categoryId);
+            lambdaQueryWrapper.apply(CrmebUtil.getFindInSetSql("cate_id", (ArrayList<Integer>)categoryIdList));
+        }
+        if (giftProperty != null) {
+            lambdaQueryWrapper.eq(StoreProduct::getGiftProperty, giftProperty);
         }
         lambdaQueryWrapper.eq(StoreProduct::getIsDel, false);
         lambdaQueryWrapper.eq(StoreProduct::getIsRecycle, false);
@@ -1242,7 +1259,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         LambdaQueryWrapper<StoreProduct> lqw = Wrappers.lambdaQuery();
         lqw.select(StoreProduct::getId, StoreProduct::getImage, StoreProduct::getStoreName, StoreProduct::getSliderImage,
             StoreProduct::getOtPrice, StoreProduct::getStock, StoreProduct::getSales, StoreProduct::getPrice, StoreProduct::getActivity,
-            StoreProduct::getFicti, StoreProduct::getIsSub, StoreProduct::getStoreInfo, StoreProduct::getBrowse, StoreProduct::getUnitName);
+            StoreProduct::getFicti, StoreProduct::getIsSupportBrokerage, StoreProduct::getIsSub, StoreProduct::getStoreInfo, StoreProduct::getBrowse, StoreProduct::getUnitName, StoreProduct::getIsGift);
         lqw.eq(StoreProduct::getId, id);
         lqw.eq(StoreProduct::getIsRecycle, false);
         lqw.eq(StoreProduct::getIsDel, false);
@@ -1375,6 +1392,21 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         queryWrapper.select("id", "store_name", "image", "price", "ot_price", "(sales + ficti) as sales");
         queryWrapper.orderByDesc("sales");
         return dao.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<GiftTypeVo> getGiftTypes() {
+        LinkedHashMap<String, GiftPropertyEnum> enumMap = EnumUtil.getEnumMap(GiftPropertyEnum.class);
+        List<GiftTypeVo> hashMapList = new ArrayList<>();
+        for (GiftPropertyEnum value : enumMap.values()) {
+            GiftTypeVo hashMap = new GiftTypeVo();
+            hashMap.setType(value.getType());
+            hashMap.setName(value.getName());
+            hashMap.setValue(value.getValue());
+            hashMap.setEnable(value.getEnable());
+            hashMapList.add(hashMap);
+        }
+        return hashMapList;
     }
 
 }

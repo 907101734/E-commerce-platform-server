@@ -15,7 +15,7 @@ import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.common.utils.SecurityUtil;
 import com.zbkj.common.vo.LoginUserVo;
-import com.zbkj.common.vo.dateLimitUtilVo;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.service.dao.StoreOrderDao;
 import com.zbkj.service.delete.OrderUtils;
 import com.zbkj.service.service.StoreOrderInfoService;
@@ -155,7 +155,7 @@ public class StoreOrderVerificationImpl implements StoreOrderVerification {
     @Override
     public List<StoreStaffDetail> getOrderVerificationDetail(StoreOrderStaticsticsRequest request) {
         request.setPage((request.getPage() - 1) * request.getLimit());
-        dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+        DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
         request.setStartTime(dateLimit.getStartTime());
         request.setEndTime(dateLimit.getEndTime());
         return dao.getOrderVerificationDetail(request);

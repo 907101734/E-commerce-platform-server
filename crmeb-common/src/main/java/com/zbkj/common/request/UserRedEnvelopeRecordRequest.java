@@ -19,7 +19,16 @@ public class UserRedEnvelopeRecordRequest {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "状态：1-待领取，2-已领取，3-已转入，4-失效")
+    @ApiModelProperty(value = "添加时间")
+    private String dateLimit;
+
+    @ApiModelProperty(value = "领取时间")
+    private String receiveDateLimit;
+
+    @ApiModelProperty(value = "用户昵称搜索")
+    private String nikeName;
+
+    @ApiModelProperty(value = "状态：0-待领取，1-已领取")
     private Integer status;
 
 }

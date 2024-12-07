@@ -1,13 +1,18 @@
 package com.zbkj.front.service;
 
+import com.github.pagehelper.PageInfo;
 import com.zbkj.common.model.product.StoreProduct;
 import com.zbkj.common.page.CommonPage;
 import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.request.ProductListRequest;
 import com.zbkj.common.request.ProductRequest;
-import com.github.pagehelper.PageInfo;
-import com.zbkj.common.response.*;
+import com.zbkj.common.response.IndexProductResponse;
+import com.zbkj.common.response.ProductDetailReplyResponse;
+import com.zbkj.common.response.ProductDetailResponse;
+import com.zbkj.common.response.ProductReplyResponse;
+import com.zbkj.common.response.StoreProductReplayCountResponse;
 import com.zbkj.common.vo.CategoryTreeVo;
+import com.zbkj.common.vo.CategoryVo;
 
 import java.util.List;
 
@@ -30,6 +35,12 @@ public interface ProductService {
      * @return List
      */
     List<CategoryTreeVo> getCategory();
+
+    /**
+     * 获取区域分类
+     * @return
+     */
+    List<CategoryVo> getReginCategory(Integer regin,Integer parentId);
 
     /**
      * 商品列表

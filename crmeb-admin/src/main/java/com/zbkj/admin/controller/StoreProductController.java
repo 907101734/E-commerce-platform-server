@@ -10,6 +10,7 @@ import com.zbkj.common.request.StoreProductSearchRequest;
 import com.zbkj.common.response.StoreProductInfoResponse;
 import com.zbkj.common.response.StoreProductResponse;
 import com.zbkj.common.response.StoreProductTabsHeader;
+import com.zbkj.common.vo.GiftTypeVo;
 import com.zbkj.service.service.StoreCartService;
 import com.zbkj.service.service.StoreProductService;
 import io.swagger.annotations.Api;
@@ -27,7 +28,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * 商品表 前端控制器
@@ -55,14 +55,14 @@ public class StoreProductController {
 
     /**
      * 分页显示商品表
-     * @param request 搜索条件
+     * @param request          搜索条件
      * @param pageParamRequest 分页参数
      */
     @PreAuthorize("hasAuthority('admin:product:list')")
     @ApiOperation(value = "分页列表") //配合swagger使用
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public CommonResult<CommonPage<StoreProductResponse>> getList(@Validated StoreProductSearchRequest request,
-                                                                  @Validated PageParamRequest pageParamRequest) {
+        @Validated PageParamRequest pageParamRequest) {
         return CommonResult.success(CommonPage.restPage(storeProductService.getAdminList(request, pageParamRequest)));
     }
 
@@ -88,7 +88,7 @@ public class StoreProductController {
     @PreAuthorize("hasAuthority('admin:product:delete')")
     @ApiOperation(value = "删除")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public CommonResult<String> delete(@RequestBody @PathVariable Integer id, @RequestParam(value = "type", required = false, defaultValue = "recycle")String type) {
+    public CommonResult<String> delete(@RequestBody @PathVariable Integer id, @RequestParam(value = "type", required = false, defaultValue = "recycle") String type) {
         if (storeProductService.deleteProduct(id, type)) {
             if ("recycle".equals(type)) {
                 storeCartService.productStatusNotEnable(id);
@@ -140,18 +140,17 @@ public class StoreProductController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     public CommonResult<StoreProductInfoResponse> info(@PathVariable Integer id) {
         return CommonResult.success(storeProductService.getInfo(id));
-   }
+    }
 
     /**
      * 商品tabs表头数据
      */
     @PreAuthorize("hasAuthority('admin:product:tabs:headers')")
-   @ApiOperation(value = "商品表头数量")
-   @RequestMapping(value = "/tabs/headers", method = RequestMethod.GET)
-   public CommonResult<List<StoreProductTabsHeader>> getTabsHeader() {
+    @ApiOperation(value = "商品表头数量")
+    @RequestMapping(value = "/tabs/headers", method = RequestMethod.GET)
+    public CommonResult<List<StoreProductTabsHeader>> getTabsHeader() {
         return CommonResult.success(storeProductService.getTabsHeader());
-   }
-
+    }
 
     /**
      * 上架
@@ -185,12 +184,12 @@ public class StoreProductController {
     @ApiOperation(value = "导入99Api商品")
     @RequestMapping(value = "/importProduct", method = RequestMethod.POST)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "form", value = "导入平台1=淘宝，2=京东，3=苏宁，4=拼多多, 5=天猫", dataType = "int",  required = true),
-            @ApiImplicitParam(name = "url", value = "URL", dataType = "String", required = true),
+        @ApiImplicitParam(name = "form", value = "导入平台1=淘宝，2=京东，3=苏宁，4=拼多多, 5=天猫", dataType = "int", required = true),
+        @ApiImplicitParam(name = "url", value = "URL", dataType = "String", required = true),
     })
     public CommonResult<StoreProductRequest> importProduct(
-            @RequestParam @Valid int form,
-            @RequestParam @Valid String url) throws IOException, JSONException {
+        @RequestParam @Valid int form,
+        @RequestParam @Valid String url) throws IOException, JSONException {
         StoreProductRequest productRequest = storeProductService.importProductFromUrl(url, form);
         return CommonResult.success(productRequest);
     }
@@ -211,7 +210,10 @@ public class StoreProductController {
     public CommonResult<Map<String, Object>> copyProduct(@RequestBody @Valid StoreCopyProductRequest request) {
         return CommonResult.success(storeProductService.copyProduct(request.getUrl()));
     }
+
+    @ApiOperation(value = "商品礼包属性列表")
+    @RequestMapping(value = "/giftType", method = RequestMethod.GET)
+    public CommonResult<List<GiftTypeVo>> getGiftTypes() {
+        return CommonResult.success(storeProductService.getGiftTypes());
+    }
 }
-
-
-

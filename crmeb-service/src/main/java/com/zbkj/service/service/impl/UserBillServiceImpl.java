@@ -7,22 +7,22 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zbkj.common.page.CommonPage;
-import com.zbkj.common.request.PageParamRequest;
-import com.zbkj.common.constants.Constants;
-import com.zbkj.common.exception.CrmebException;
-import com.zbkj.common.response.UserBillResponse;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zbkj.common.utils.DateUtil;
-import com.zbkj.common.vo.dateLimitUtilVo;
-import com.zbkj.common.request.FundsMonitorRequest;
-import com.zbkj.common.request.FundsMonitorSearchRequest;
-import com.zbkj.common.response.MonitorResponse;
-import com.zbkj.common.request.StoreOrderRefundRequest;
+import com.zbkj.common.constants.Constants;
+import com.zbkj.common.exception.CrmebException;
 import com.zbkj.common.model.user.User;
 import com.zbkj.common.model.user.UserBill;
+import com.zbkj.common.page.CommonPage;
+import com.zbkj.common.request.FundsMonitorRequest;
+import com.zbkj.common.request.FundsMonitorSearchRequest;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.request.StoreOrderRefundRequest;
+import com.zbkj.common.response.MonitorResponse;
+import com.zbkj.common.response.UserBillResponse;
+import com.zbkj.common.utils.DateUtil;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.service.dao.UserBillDao;
 import com.zbkj.service.service.UserBillService;
 import org.apache.commons.lang3.StringUtils;
@@ -101,7 +101,7 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
 
         //时间范围
         if (StringUtils.isNotBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
             //判断时间
             int compareDateResult = DateUtil.compareDate(dateLimit.getEndTime(), dateLimit.getStartTime(), Constants.DATE_FORMAT);
             if (compareDateResult == -1) {
@@ -169,7 +169,7 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
             queryWrapper.eq("type", type);
         }
         if (null != date) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
             queryWrapper.between("create_time", dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         List<UserBill> userBills = dao.selectList(queryWrapper);
@@ -195,6 +195,7 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         userBill.setType(Constants.USER_BILL_TYPE_PAY_PRODUCT_REFUND);
         userBill.setNumber(request.getAmount());
         userBill.setLinkId(request.getOrderId().toString());
+        userBill.setLinkType(Constants.USER_BILL_LINK_TYPE_ORDER);
         userBill.setBalance(user.getNowMoney().add(request.getAmount()));
         userBill.setMark("订单退款到余额" + request.getAmount() + "元");
         userBill.setPm(2);
@@ -216,7 +217,7 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         }
         //时间范围
         if (StrUtil.isNotBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
             map.put("startTime", dateLimit.getStartTime());
             map.put("endTime", dateLimit.getEndTime());
         }
@@ -279,5 +280,13 @@ public class UserBillServiceImpl extends ServiceImpl<UserBillDao, UserBill> impl
         return CommonPage.copyPageInfo(billPage, billList);
     }
 
+    @Override
+    public UserBill getByLinkIdAndLinkType(String linkId, String linkType) {
+        LambdaQueryWrapper<UserBill> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(UserBill::getLinkId, linkId);
+        lqw.eq(UserBill::getLinkType, linkType);
+        lqw.last(" limit 1");
+        return dao.selectOne(lqw);
+    }
 }
 

@@ -6,22 +6,25 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zbkj.common.page.CommonPage;
-import com.zbkj.common.request.PageParamRequest;
-import com.zbkj.common.constants.BrokerageRecordConstants;
-import com.zbkj.common.constants.Constants;
-import com.zbkj.common.response.SpreadCommissionDetailResponse;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zbkj.common.constants.BrokerageRecordConstants;
+import com.zbkj.common.constants.Constants;
+import com.zbkj.common.model.order.StoreOrder;
+import com.zbkj.common.model.user.User;
+import com.zbkj.common.model.user.UserBill;
+import com.zbkj.common.model.user.UserBrokerageRecord;
+import com.zbkj.common.page.CommonPage;
+import com.zbkj.common.request.BrokerageRecordRequest;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.request.RetailShopStairUserRequest;
+import com.zbkj.common.response.SpreadCommissionDetailResponse;
 import com.zbkj.common.utils.ArrayUtil;
 import com.zbkj.common.utils.DateUtil;
-import com.zbkj.common.vo.dateLimitUtilVo;
-import com.zbkj.common.request.BrokerageRecordRequest;
-import com.zbkj.common.request.RetailShopStairUserRequest;
-import com.zbkj.common.model.user.User;
-import com.zbkj.common.model.user.UserBrokerageRecord;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.service.dao.UserBrokerageRecordDao;
+import com.zbkj.service.service.UserBillService;
 import com.zbkj.service.service.UserBrokerageRecordService;
 import com.zbkj.service.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +36,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +66,12 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
     @Autowired
     private TransactionTemplate transactionTemplate;
 
+    @Autowired
+    private UserBillService userBillService;
+
     /**
      * 根据订单编号获取记录列表
-     * @param linkId 关联id
+     * @param linkId   关联id
      * @param linkType 关联类型
      * @return 记录列表
      */
@@ -78,7 +85,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
 
     /**
      * 获取记录(订单不可用此方法)
-     * @param linkId 关联id
+     * @param linkId   关联id
      * @param linkType 关联类型
      * @return 记录列表
      */
@@ -97,32 +104,32 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
     @Override
     public void brokerageThaw() {
         // 查询需要解冻的佣金
-        List<UserBrokerageRecord> thawList = findThawList();
-        if (CollUtil.isEmpty(thawList)) {
-            return;
-        }
-        for (UserBrokerageRecord record : thawList) {
-            // 查询对应的用户
-            User user = userService.getById(record.getUid());
-            if (ObjectUtil.isNull(user)) {
-                continue ;
-            }
-            record.setStatus(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE);
-            // 计算佣金余额
-            BigDecimal balance = user.getBrokeragePrice().add(record.getPrice());
-            record.setBalance(balance);
-            record.setUpdateTime(cn.hutool.core.date.DateUtil.date());
-
-            // 分佣
-            Boolean execute = transactionTemplate.execute(e -> {
-                updateById(record);
-                userService.operationBrokerage(record.getUid(), record.getPrice(), user.getBrokeragePrice(), "add");
-                return Boolean.TRUE;
-            });
-            if (!execute) {
-                logger.error(StrUtil.format("佣金解冻处理—分佣出错，记录id = {}", record.getId()));
-            }
-        }
+        // List<UserBrokerageRecord> thawList = findThawList();
+        // if (CollUtil.isEmpty(thawList)) {
+        //     return;
+        // }
+        // for (UserBrokerageRecord record : thawList) {
+        //     // 查询对应的用户
+        //     User user = userService.getById(record.getUid());
+        //     if (ObjectUtil.isNull(user)) {
+        //         continue ;
+        //     }
+        //     record.setStatus(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE);
+        //     // 计算佣金余额
+        //     BigDecimal balance = user.getBrokeragePrice().add(record.getPrice());
+        //     record.setBalance(balance);
+        //     record.setUpdateTime(cn.hutool.core.date.DateUtil.date());
+        //
+        //     // 分佣
+        //     Boolean execute = transactionTemplate.execute(e -> {
+        //         updateById(record);
+        //         userService.operationBrokerage(record.getUid(), record.getPrice(), user.getBrokeragePrice(), "add");
+        //         return Boolean.TRUE;
+        //     });
+        //     if (!execute) {
+        //         logger.error(StrUtil.format("佣金解冻处理—分佣出错，记录id = {}", record.getId()));
+        //     }
+        // }
 
     }
 
@@ -136,8 +143,40 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
         LambdaQueryWrapper<UserBrokerageRecord> lqw = new LambdaQueryWrapper<>();
         lqw.select(UserBrokerageRecord::getPrice);
         lqw.eq(UserBrokerageRecord::getUid, uid);
-        dateLimitUtilVo dateLimit = DateUtil.getDateLimit(Constants.SEARCH_DATE_YESTERDAY);
+        DateLimitUtilVo dateLimit = DateUtil.getDateLimit(Constants.SEARCH_DATE_YESTERDAY);
         lqw.between(UserBrokerageRecord::getUpdateTime, dateLimit.getStartTime(), dateLimit.getEndTime());
+        lqw.eq(UserBrokerageRecord::getType, 1);
+        lqw.eq(UserBrokerageRecord::getLinkType, "order");
+        lqw.eq(UserBrokerageRecord::getStatus, 3);
+        List<UserBrokerageRecord> recordList = dao.selectList(lqw);
+        if (CollUtil.isEmpty(recordList)) {
+            return BigDecimal.ZERO;
+        }
+        return recordList.stream().map(UserBrokerageRecord::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public BigDecimal getTodayIncomes(Integer uid) {
+        LambdaQueryWrapper<UserBrokerageRecord> lqw = new LambdaQueryWrapper<>();
+        lqw.select(UserBrokerageRecord::getPrice);
+        lqw.eq(UserBrokerageRecord::getUid, uid);
+        DateLimitUtilVo dateLimit = DateUtil.getDateLimit(Constants.SEARCH_DATE_DAY);
+        lqw.gt(UserBrokerageRecord::getUpdateTime, dateLimit.getStartTime());
+        lqw.eq(UserBrokerageRecord::getType, 1);
+        lqw.eq(UserBrokerageRecord::getLinkType, "order");
+        lqw.eq(UserBrokerageRecord::getStatus, 3);
+        List<UserBrokerageRecord> recordList = dao.selectList(lqw);
+        if (CollUtil.isEmpty(recordList)) {
+            return BigDecimal.ZERO;
+        }
+        return recordList.stream().map(UserBrokerageRecord::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public BigDecimal getTotolIncomes(Integer uid) {
+        LambdaQueryWrapper<UserBrokerageRecord> lqw = new LambdaQueryWrapper<>();
+        lqw.select(UserBrokerageRecord::getPrice);
+        lqw.eq(UserBrokerageRecord::getUid, uid);
         lqw.eq(UserBrokerageRecord::getType, 1);
         lqw.eq(UserBrokerageRecord::getLinkType, "order");
         lqw.eq(UserBrokerageRecord::getStatus, 3);
@@ -150,7 +189,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
 
     /**
      * 获取佣金明细列表根据uid
-     * @param uid uid
+     * @param uid              uid
      * @param pageParamRequest 分页参数
      */
     @Override
@@ -158,8 +197,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
         Page<UserBrokerageRecord> recordPage = PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
         QueryWrapper<UserBrokerageRecord> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uid", uid);
-        queryWrapper.in("status", BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE
-                , BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_WITHDRAW);
+        queryWrapper.in("status", BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE);
         queryWrapper.groupBy("left(update_time, 7)");
         queryWrapper.orderByDesc("left(update_time, 7)");
         List<UserBrokerageRecord> list = dao.selectList(queryWrapper);
@@ -192,7 +230,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
 
     /**
      * 获取推广记录列表
-     * @param uid 用户uid
+     * @param uid              用户uid
      * @param pageParamRequest 分页参数
      * @return List
      */
@@ -209,7 +247,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
 
     /**
      * 获取推广记录列表
-     * @param request 用户uid
+     * @param request          用户uid
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -230,7 +268,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
             lqw.like(UserBrokerageRecord::getLinkId, request.getNickName());
         }
         if (StrUtil.isNotBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
             lqw.between(UserBrokerageRecord::getUpdateTime, dateLimit.getStartTime(), dateLimit.getEndTime());
         }
 
@@ -240,7 +278,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
 
     /**
      * 获取月份对应的推广订单数
-     * @param uid 用户uid
+     * @param uid       用户uid
      * @param monthList 月份列表
      * @return Map
      */
@@ -275,8 +313,8 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
         queryWrapper.select("uid", "sum(price) AS price");
         queryWrapper.eq("link_type", BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_ORDER);
         queryWrapper.eq("status", BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE);
-        dateLimitUtilVo dateLimit = DateUtil.getDateLimit(type);
-        if(!StringUtils.isBlank(dateLimit.getStartTime())){
+        DateLimitUtilVo dateLimit = DateUtil.getDateLimit(type);
+        if (!StringUtils.isBlank(dateLimit.getStartTime())) {
             queryWrapper.between("update_time", dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         queryWrapper.groupBy("uid");
@@ -312,7 +350,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
         lqw.eq(UserBrokerageRecord::getType, BrokerageRecordConstants.BROKERAGE_RECORD_TYPE_ADD);
         lqw.eq(UserBrokerageRecord::getStatus, BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE);
         if (StrUtil.isNotBlank(dateLimit)) {
-            dateLimitUtilVo dateLimitVo = DateUtil.getDateLimit(dateLimit);
+            DateLimitUtilVo dateLimitVo = DateUtil.getDateLimit(dateLimit);
             lqw.between(UserBrokerageRecord::getUpdateTime, dateLimitVo.getStartTime(), dateLimitVo.getEndTime());
         }
         List<UserBrokerageRecord> list = dao.selectList(lqw);
@@ -334,7 +372,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
         lqw.eq(UserBrokerageRecord::getType, BrokerageRecordConstants.BROKERAGE_RECORD_TYPE_SUB);
         lqw.eq(UserBrokerageRecord::getStatus, BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE);
         if (StrUtil.isNotBlank(dateLimit)) {
-            dateLimitUtilVo dateLimitVo = DateUtil.getDateLimit(dateLimit);
+            DateLimitUtilVo dateLimitVo = DateUtil.getDateLimit(dateLimit);
             lqw.between(UserBrokerageRecord::getUpdateTime, dateLimitVo.getStartTime(), dateLimitVo.getEndTime());
         }
         List<UserBrokerageRecord> list = dao.selectList(lqw);
@@ -365,7 +403,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
 
     /**
      * 佣金记录列表
-     * @param request 筛选条件
+     * @param request          筛选条件
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -441,7 +479,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
 
     /**
      * 根据月份获取佣金明细
-     * @param uid uid
+     * @param uid   uid
      * @param month 月份
      * @return
      */
@@ -450,7 +488,7 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
         queryWrapper.select("id", "title", "price", "update_time", "type", "status");
         queryWrapper.eq("uid", uid);
         queryWrapper.in("status", BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE
-                , BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_WITHDRAW);
+            , BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_WITHDRAW);
         queryWrapper.eq("left(update_time, 7)", month);
         queryWrapper.orderByDesc("update_time");
         return dao.selectList(queryWrapper);
@@ -467,6 +505,81 @@ public class UserBrokerageRecordServiceImpl extends ServiceImpl<UserBrokerageRec
         lqw.eq(UserBrokerageRecord::getType, BrokerageRecordConstants.BROKERAGE_RECORD_TYPE_ADD);
         lqw.eq(UserBrokerageRecord::getStatus, BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_FROZEN);
         return dao.selectList(lqw);
+    }
+
+    /**
+     * 佣金转入余额
+     * @return Boolean
+     */
+    @Override
+    public Boolean transferIn(StoreOrder storeOrder) {
+        //当前可提现佣金
+        LambdaQueryWrapper<UserBrokerageRecord> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(UserBrokerageRecord::getLinkId, storeOrder.getOrderId());
+        lqw.eq(UserBrokerageRecord::getLinkType, "order");
+        List<UserBrokerageRecord> list = this.list(lqw);
+        if (CollUtil.isEmpty(list)) {
+            return true;
+        }
+
+        //用户现金记录
+        List<UserBill> userBills = new ArrayList<>();
+
+        //用户佣金金额
+        List<UserBrokerageRecord> userBrokerageRecords = new ArrayList<>();
+
+        //查询订单产生的佣金
+        list.forEach(t -> {
+            BigDecimal price = t.getPrice();
+            User user = userService.getInfoByUid(t.getUid());
+            // userBill现金增加记录
+            UserBill userBill = new UserBill();
+            userBill.setUid(t.getUid());
+            userBill.setLinkId(t.getLinkId());
+            userBill.setLinkType(Constants.USER_BILL_LINK_TYPE_RECHARGE);
+            userBill.setPm(1);
+            userBill.setTitle("佣金转余额");
+            userBill.setCategory(Constants.USER_BILL_CATEGORY_MONEY);
+            userBill.setType(Constants.USER_BILL_TYPE_TRANSFER_IN);
+            userBill.setNumber(price);
+            userBill.setBalance(user.getNowMoney().add(price));
+            userBill.setMark(StrUtil.format("佣金转余额,增加{}", price));
+            userBill.setStatus(1);
+            userBill.setCreateTime(DateUtil.nowDateTime());
+            userBills.add(userBill);
+
+            // userBrokerage转出记录
+            UserBrokerageRecord brokerageRecord = new UserBrokerageRecord();
+            brokerageRecord.setUid(user.getUid());
+            brokerageRecord.setLinkId("0");
+            brokerageRecord.setLinkType(BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_YUE);
+            brokerageRecord.setType(BrokerageRecordConstants.BROKERAGE_RECORD_TYPE_SUB);
+            brokerageRecord.setTitle(BrokerageRecordConstants.BROKERAGE_RECORD_TITLE_BROKERAGE_YUE);
+            brokerageRecord.setPrice(price);
+            brokerageRecord.setBalance(user.getNowMoney().add(price));
+            brokerageRecord.setMark(StrUtil.format("佣金转余额，减少{}", price));
+            brokerageRecord.setStatus(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_WITHDRAW);
+            brokerageRecord.setCreateTime(DateUtil.nowDateTime());
+
+            userBrokerageRecords.add(brokerageRecord);
+        });
+
+        Boolean execute = transactionTemplate.execute(e -> {
+            // 扣佣金
+            for (UserBrokerageRecord userBrokerageRecord : userBrokerageRecords) {
+                User user = userService.getInfoByUid(userBrokerageRecord.getUid());
+                userService.operationBrokerage(user.getUid(), userBrokerageRecord.getPrice(), user.getBrokeragePrice(), "sub");
+            }
+            // 加余额
+            for (UserBill userBill : userBills) {
+                User user = userService.getInfoByUid(userBill.getUid());
+                userService.operationNowMoney(user.getUid(), userBill.getNumber(), user.getNowMoney(), "add");
+            }
+            userBillService.saveBatch(userBills);
+            this.saveBatch(userBrokerageRecords);
+            return Boolean.TRUE;
+        });
+        return execute;
     }
 }
 

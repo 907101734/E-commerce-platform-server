@@ -70,6 +70,7 @@ public class AdvertisementServiceImpl extends ServiceImpl<AdvertisementDao, Adve
         for (Advertisement advertisement : advertisements) {
             AdvertisementVo advertisementVo = new AdvertisementVo();
             BeanUtils.copyProperties(advertisement, advertisementVo);
+            advertisementVo.setAttDir(systemAttachmentService.clearPrefix(advertisement.getAttDir()));
             advertisementVos.add(advertisementVo);
         }
         return CommonPage.copyPageInfo(adPage, advertisementVos);

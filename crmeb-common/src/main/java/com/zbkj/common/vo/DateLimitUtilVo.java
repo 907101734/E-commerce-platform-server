@@ -15,9 +15,9 @@ import lombok.Data;
  * +----------------------------------------------------------------------
  */
 @Data
-public class dateLimitUtilVo {
-    public dateLimitUtilVo() {}
-    public dateLimitUtilVo(String startTime, String endTime) {
+public class DateLimitUtilVo {
+    public DateLimitUtilVo() {}
+    public DateLimitUtilVo(String startTime, String endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
     }

@@ -19,7 +19,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zbkj.common.utils.DateUtil;
-import com.zbkj.common.vo.dateLimitUtilVo;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.common.model.combination.StoreCombination;
 import com.zbkj.common.model.combination.StorePink;
 import com.zbkj.common.request.StorePinkSearchRequest;
@@ -96,7 +96,7 @@ public class StorePinkServiceImpl extends ServiceImpl<StorePinkDao, StorePink> i
             lqw.eq(StorePink::getStatus, request.getStatus());
         }
         if (StrUtil.isNotBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
             lqw.between(StorePink::getAddTime, DateUtil.dateStr2Timestamp(dateLimit.getStartTime(), Constants.DATE_TIME_TYPE_BEGIN), DateUtil.dateStr2Timestamp(dateLimit.getEndTime(), Constants.DATE_TIME_TYPE_END));
         }
         lqw.eq(StorePink::getKId, 0);

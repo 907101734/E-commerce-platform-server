@@ -29,10 +29,10 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("eb_store_product")
-@ApiModel(value="StoreProduct对象", description="商品表")
+@ApiModel(value = "StoreProduct对象", description = "商品表")
 public class StoreProduct implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     public StoreProduct() {
     }
@@ -134,6 +134,9 @@ public class StoreProduct implements Serializable {
     @ApiModelProperty(value = "是否优品推荐")
     private Boolean isGood;
 
+    @ApiModelProperty(value = "是否支持佣金")
+    private Boolean isSupportBrokerage;
+
     @ApiModelProperty(value = "是否单独分佣")
     private Boolean isSub;
 
@@ -168,16 +171,16 @@ public class StoreProduct implements Serializable {
     @TableField(exist = false)
     private String content;
 
-    @ApiModelProperty(value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区")
+    @ApiModelProperty(value = "所属区域，8-保单区 9-生活区 10-门店区")
     private Integer region;
 
     @ApiModelProperty(value = "是否是礼包")
     @TableField("is_gift")
     private Boolean isGift;
 
-    @ApiModelProperty(value = "礼包属性 1-699，2-999")
+    @ApiModelProperty(value = "礼包属性 1-699，2-999，3-1999")
     private Integer giftProperty;
 
-    @ApiModelProperty(value = "礼包分类属性 1-美业大礼包 2-大健康礼包 3-门店礼包 4-生活礼包")
-    private Integer giftTypeProperty;
+    // @ApiModelProperty(value = "礼包分类属性 1-美业大礼包 2-大健康礼包 3-门店礼包 4-生活礼包")
+    // private Integer giftTypeProperty;
 }

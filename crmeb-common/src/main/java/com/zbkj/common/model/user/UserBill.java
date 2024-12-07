@@ -1,20 +1,18 @@
 package com.zbkj.common.model.user;
 
-import java.math.BigDecimal;
-
-import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import java.util.Date;
-
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 用户账单表
@@ -32,10 +30,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("eb_user_bill")
-@ApiModel(value="UserBill对象", description="用户账单表")
+@ApiModel(value = "UserBill对象", description = "用户账单表")
 public class UserBill implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "用户账单id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -44,8 +42,12 @@ public class UserBill implements Serializable {
     @ApiModelProperty(value = "用户uid")
     private Integer uid;
 
-    @ApiModelProperty(value = "关联id")
+    @ApiModelProperty(value = "关联id,0标识后台操作")
     private String linkId;
+
+    // order关联订单,extract 关联余额,red关联红包,recharge关联佣金
+    @ApiModelProperty(value = "关联类型（order,extract,red,recharge）")
+    private String linkType;
 
     @ApiModelProperty(value = "0 = 支出 1 = 获得 2= 退款")
     private int pm;
@@ -68,7 +70,7 @@ public class UserBill implements Serializable {
     @ApiModelProperty(value = "备注")
     private String mark;
 
-    @ApiModelProperty(value = "0 = 带确定 1 = 有效 -1 = 无效")
+    @ApiModelProperty(value = "0 = 待确定 1 = 有效 -1 = 无效")
     private Integer status;
 
     @ApiModelProperty(value = "创建时间")

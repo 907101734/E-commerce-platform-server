@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -25,13 +26,19 @@ public class UserRedEnvRecordListResponse {
     @ApiModelProperty(value = "状态：1-待领取，2-已领取，3-已转入，4-失效")
     private Integer status;
 
+    @ApiModelProperty(value = "金额")
+    private BigDecimal price;
+
     @ApiModelProperty(value = "添加时间")
     private Date createTime;
 
+    @ApiModelProperty(value = "领取时间")
+    private Date receiveTime;
+
     @ApiModelProperty(value = "关联视频id")
-    private String link_ad_id;
+    private String linkAdId;
 
     @ApiModelProperty(value = "关联视频地址")
-    private String link_ad_addr;
+    private String linkAdAddr;
 
 }

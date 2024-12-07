@@ -30,10 +30,7 @@ public class UserRedEnvelopeRecordVo {
     private Integer uid;
 
     @ApiModelProperty(value = "关联id（orderNo）")
-    private String linkId;
-
-    @ApiModelProperty(value = "关联类型（order）")
-    private String linkType;
+    private Integer redEnvelopeId;
 
     @ApiModelProperty(value = "类型：1-增加，2-扣减（提现）")
     private Integer type;
@@ -44,7 +41,7 @@ public class UserRedEnvelopeRecordVo {
     @ApiModelProperty(value = "备注")
     private String mark;
 
-    @ApiModelProperty(value = "状态：1-待领取，2-已领取，3-已转入，4-失效")
+    @ApiModelProperty(value = "状态：0-待领取，1-已领取，2-已转入，3-失效")
     private Integer status;
 
     @ApiModelProperty(value = "添加时间")
@@ -53,11 +50,14 @@ public class UserRedEnvelopeRecordVo {
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 
+    @ApiModelProperty(value = "领取时间")
+    private Date receiveTime;
+
     @ApiModelProperty(value = "关联视频id")
-    private String link_ad_id;
+    private String linkAdId;
 
     @ApiModelProperty(value = "关联视频地址")
-    private String link_ad_addr;
+    private String linkAdAddr;
 
     @ApiModelProperty(value = "用户昵称")
     private String userName;

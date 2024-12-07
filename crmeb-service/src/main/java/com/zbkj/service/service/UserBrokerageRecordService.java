@@ -1,6 +1,7 @@
 package com.zbkj.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zbkj.common.model.order.StoreOrder;
 import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.response.SpreadCommissionDetailResponse;
 import com.github.pagehelper.PageInfo;
@@ -28,7 +29,7 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
 
     /**
      * 获取记录列表
-     * @param linkId 关联id
+     * @param linkId   关联id
      * @param linkType 关联类型
      * @return 记录列表
      */
@@ -36,7 +37,7 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
 
     /**
      * 获取记录(订单不可用此方法)
-     * @param linkId 关联id
+     * @param linkId   关联id
      * @param linkType 关联类型
      * @return 记录列表
      */
@@ -54,8 +55,22 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
     BigDecimal getYesterdayIncomes(Integer uid);
 
     /**
+     * 今日得佣金
+     * @param uid
+     * @return
+     */
+    BigDecimal getTodayIncomes(Integer uid);
+
+    /**
+     * 累计获得佣金
+     * @param uid
+     * @return
+     */
+    BigDecimal getTotolIncomes(Integer uid);
+
+    /**
      * 获取佣金明细列表根据uid
-     * @param uid uid
+     * @param uid              uid
      * @param pageParamRequest 分页参数
      */
     PageInfo<SpreadCommissionDetailResponse> findDetailListByUid(Integer uid, PageParamRequest pageParamRequest);
@@ -69,7 +84,7 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
 
     /**
      * 获取推广记录列表
-     * @param uid 用户uid
+     * @param uid              用户uid
      * @param pageParamRequest 分页参数
      * @return List
      */
@@ -77,7 +92,7 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
 
     /**
      * 获取推广记录列表
-     * @param request 用户uid
+     * @param request          用户uid
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -85,7 +100,7 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
 
     /**
      * 获取月份对应的推广订单数
-     * @param uid 用户uid
+     * @param uid       用户uid
      * @param monthList 月份列表
      * @return Map
      */
@@ -128,7 +143,7 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
 
     /**
      * 佣金记录列表
-     * @param request 筛选条件
+     * @param request          筛选条件
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -146,4 +161,11 @@ public interface UserBrokerageRecordService extends IService<UserBrokerageRecord
      * @return BigDecimal
      */
     BigDecimal getTotalYuePrice();
+
+    /*
+     * 佣金转入余额
+     * @param StoreOrder 订单
+     * @return Boolean
+     */
+    Boolean transferIn(StoreOrder storeOrder);
 }

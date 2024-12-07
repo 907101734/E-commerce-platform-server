@@ -76,7 +76,7 @@ public class UploadServiceImpl implements UploadService {
         String extStr = systemConfigService.getValueByKey(Constants.UPLOAD_IMAGE_EXT_STR_CONFIG_KEY);
         int size = Integer.parseInt(systemConfigService.getValueByKey(Constants.UPLOAD_IMAGE_MAX_SIZE_CONFIG_KEY));
         String type = Constants.UPLOAD_TYPE_IMAGE + "/";
-        return this.saveSystemAttachment(multipartFile, model, pid, extStr, type, size);
+        return this.saveSystemAttachment(multipartFile, model, pid, type, extStr, size);
     }
 
     /**
@@ -101,7 +101,7 @@ public class UploadServiceImpl implements UploadService {
         systemAttachment.setName(resultFile.getFileName());
         systemAttachment.setSattDir(resultFile.getUrl());
         systemAttachment.setAttSize(resultFile.getFileSize().toString());
-        systemAttachment.setAttType(resultFile.getType());
+        systemAttachment.setAttType(resultFile.getExtName());
         systemAttachment.setImageType(resultFile.getUploadType());   //图片上传类型 1本地 2七牛云 3OSS 4COS, 默认本地，任务轮询数据库放入云服务
         systemAttachment.setPid(pid);
         systemAttachmentService.save(systemAttachment);
@@ -190,10 +190,14 @@ public class UploadServiceImpl implements UploadService {
 
         resultFile.setUploadType(uploadTypeInt);
 
+        // 判断是否保存本地
+        String fileIsSave = systemConfigService.getValueByKeyException("file_is_save");
+        multipartFile.transferTo(file);
+
         switch (uploadTypeInt) {
             case 1:
                 // 保存文件
-                multipartFile.transferTo(file);
+                // multipartFile.transferTo(file);
                 break;
             case 2:
                 pre = "qn";
@@ -272,6 +276,10 @@ public class UploadServiceImpl implements UploadService {
                     cosClient.shutdown();
                 }
                 break;
+        }
+        if (!"1".equals(fileIsSave)) {
+            // 删除本地文件
+            file.delete();
         }
         return resultFile;
     }

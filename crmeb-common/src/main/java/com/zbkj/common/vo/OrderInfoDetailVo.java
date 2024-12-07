@@ -1,6 +1,5 @@
 package com.zbkj.common.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -55,6 +54,9 @@ public class OrderInfoDetailVo {
 
     /** 是否评价 */
     private Integer isReply;
+
+    /**是否支持佣金**/
+    private Boolean isSupportBrokerage;
 
     /** 是否单独分佣 */
     private Boolean isSub;

@@ -33,12 +33,14 @@ public class WebConfig implements WebMvcConfigurer {
     // 但是觉得这样更优雅
 
     @Bean
-    public HandlerInterceptor frontTokenInterceptor(){
+    public HandlerInterceptor frontTokenInterceptor() {
         return new FrontTokenInterceptor();
     }
 
     @Bean
-    public ResponseFilter responseFilter(){ return new ResponseFilter(); }
+    public ResponseFilter responseFilter() {
+        return new ResponseFilter();
+    }
 
     @Value("${swagger.basic.username}")
     private String username;
@@ -46,7 +48,6 @@ public class WebConfig implements WebMvcConfigurer {
     private String password;
     @Value("${swagger.basic.check}")
     private Boolean check;
-
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -56,55 +57,57 @@ public class WebConfig implements WebMvcConfigurer {
 
         //前端用户登录token
         registry.addInterceptor(frontTokenInterceptor()).
-                addPathPatterns("/api/front/**").
-                excludePathPatterns("/api/front/index").
-                excludePathPatterns("/api/front/qrcode/**").
-                excludePathPatterns("/api/front/login/mobile").
-                excludePathPatterns("/api/front/login").
-                excludePathPatterns("/api/front/sendCode").
-                excludePathPatterns("/api/front/wechat/**").
-                excludePathPatterns("/api/front/search/keyword").
-                excludePathPatterns("/api/front/share").
-                excludePathPatterns("/api/front/article/**").
-                excludePathPatterns("/api/front/city/**").
-                excludePathPatterns("/api/front/product/hot").
-                excludePathPatterns("/api/front/product/good").
-                excludePathPatterns("/api/front/products/**").
-                excludePathPatterns("/api/front/reply/**").
-                excludePathPatterns("/api/front/user/service/**").
-                excludePathPatterns("/api/front/logistics").
-                excludePathPatterns("/api/front/groom/list/**").
-                excludePathPatterns("/api/front/config").
-                excludePathPatterns("/api/front/category").
-                excludePathPatterns("/api/front/seckill/*").
-                excludePathPatterns("/api/front/seckill/list/*").
-                excludePathPatterns("/api/front/seckill/detail/*").
-                excludePathPatterns("/api/front/ios/*").
-                excludePathPatterns("/api/front/ios/register/binding/phone").
-                excludePathPatterns("api/front/combination/index").
-                excludePathPatterns("api/front/seckill/index").
-                excludePathPatterns("api/front/bargain/index").
-                excludePathPatterns("api/front/combination/index").
-                excludePathPatterns("api/front/index/product/*").
-                excludePathPatterns("api/front/index/color/config").
-                excludePathPatterns("api/front/image/domain").
-                excludePathPatterns("api/front/product/leaderboard").
-                excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
+            addPathPatterns("/api/front/**").
+            excludePathPatterns("/api/front/index").
+            excludePathPatterns("/api/front/qrcode/**").
+            excludePathPatterns("/api/front/login/mobile").
+            excludePathPatterns("/api/front/login").
+            excludePathPatterns("/api/front/sendCode").
+            excludePathPatterns("/api/front/wechat/**").
+            excludePathPatterns("/api/front/search/keyword").
+            excludePathPatterns("/api/front/share").
+            excludePathPatterns("/api/front/article/**").
+            excludePathPatterns("/api/front/city/**").
+            excludePathPatterns("/api/front/product/hot").
+            excludePathPatterns("/api/front/product/good").
+            excludePathPatterns("/api/front/products/**").
+            excludePathPatterns("/api/front/reply/**").
+            excludePathPatterns("/api/front/user/service/**").
+            excludePathPatterns("/api/front/logistics").
+            excludePathPatterns("/api/front/groom/list/**").
+            excludePathPatterns("/api/front/config").
+            excludePathPatterns("/api/front/category").
+            excludePathPatterns("/api/front/seckill/*").
+            excludePathPatterns("/api/front/seckill/list/*").
+            excludePathPatterns("/api/front/seckill/detail/*").
+            excludePathPatterns("/api/front/ios/*").
+            excludePathPatterns("/api/front/ios/register/binding/phone").
+            excludePathPatterns("api/front/combination/index").
+            excludePathPatterns("api/front/seckill/index").
+            excludePathPatterns("api/front/bargain/index").
+            excludePathPatterns("api/front/combination/index").
+            excludePathPatterns("api/front/index/product/*").
+            excludePathPatterns("api/front/index/bdq/product").
+            excludePathPatterns("api/front/index/shq/product").
+            excludePathPatterns("api/front/index/mdq/product").
+            excludePathPatterns("api/front/index/color/config").
+            excludePathPatterns("api/front/image/domain").
+            excludePathPatterns("api/front/product/leaderboard").
+            excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/");
+            .addResourceLocations("classpath:/static/");
         registry.addResourceHandler("doc.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
+            .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+            .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
     @Bean
-    public FilterRegistrationBean filterRegister()
-    {
+    public FilterRegistrationBean filterRegister() {
         //注册过滤器
         FilterRegistrationBean registration = new FilterRegistrationBean(responseFilter());
         registration.addUrlPatterns("/*");

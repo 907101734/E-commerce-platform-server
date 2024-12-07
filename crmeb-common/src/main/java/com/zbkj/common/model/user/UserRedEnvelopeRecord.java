@@ -34,20 +34,20 @@ public class UserRedEnvelopeRecord {
     @ApiModelProperty(value = "用户uid")
     private Integer uid;
 
-    @ApiModelProperty(value = "关联id（orderNo,提现id）")
-    private String linkId;
+    @ApiModelProperty(value = "红包id")
+    private Integer redEnvelopeId;
 
-    @ApiModelProperty(value = "关联类型（order,extract，yue）")
-    private String linkType;
-
-    @ApiModelProperty(value = "剩余")
-    private BigDecimal balance;
+    @ApiModelProperty(value = "金额")
+    private BigDecimal price;
 
     @ApiModelProperty(value = "备注")
     private String mark;
 
-    @ApiModelProperty(value = "状态：1-待领取，2-已领取，3-已转入，4-失效")
+    @ApiModelProperty(value = "状态：0-待领取 1-已领取 2-失效")
     private Integer status;
+
+    @ApiModelProperty(value = "礼包属性 1-699，2-999")
+    private Integer giftProperty;
 
     @ApiModelProperty(value = "添加时间")
     private Date createTime;
@@ -55,11 +55,14 @@ public class UserRedEnvelopeRecord {
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 
+    @ApiModelProperty(value = "领取时间")
+    private Date receiveTime;
+
     @ApiModelProperty(value = "关联视频id")
-    private String link_ad_id;
+    private Integer linkAdId;
 
     @ApiModelProperty(value = "关联视频地址")
-    private String link_ad_addr;
+    private String linkAdAddr;
 
     @ApiModelProperty(value = "用户昵称")
     @TableField(exist = false)

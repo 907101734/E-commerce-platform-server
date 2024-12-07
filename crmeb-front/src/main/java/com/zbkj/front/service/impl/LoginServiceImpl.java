@@ -54,7 +54,6 @@ public class LoginServiceImpl implements LoginService {
 
     /**
      * 账号密码登录
-     *
      * @return LoginResponse
      */
     @Override
@@ -94,14 +93,13 @@ public class LoginServiceImpl implements LoginService {
 
     /**
      * 手机号验证码登录
-     *
      * @param loginRequest 登录请求信息
      * @return LoginResponse
      */
     @Override
     public LoginResponse phoneLogin(LoginMobileRequest loginRequest) {
         //检测验证码
-        checkValidateCode(loginRequest.getPhone(), loginRequest.getCaptcha());
+        // checkValidateCode(loginRequest.getPhone(), loginRequest.getCaptcha());
         Integer spreadPid = Optional.ofNullable(loginRequest.getSpreadPid()).orElse(0);
         //查询手机号信息
         User user = userService.getByPhone(loginRequest.getPhone());
@@ -135,7 +133,6 @@ public class LoginServiceImpl implements LoginService {
 
     /**
      * 检测手机验证码
-     *
      * @param phone 手机号
      * @param code  验证码
      */
@@ -153,7 +150,6 @@ public class LoginServiceImpl implements LoginService {
 
     /**
      * 绑定分销关系
-     *
      * @param user      User 用户user类
      * @param spreadUid Integer 推广人id
      * @return Boolean
@@ -167,7 +163,9 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public Boolean bindSpread(User user, Integer spreadUid) {
         Boolean checkBingSpread = userService.checkBingSpread(user, spreadUid, "old");
-        if (!checkBingSpread) return false;
+        if (!checkBingSpread) {
+            return false;
+        }
 
         user.setSpreadUid(spreadUid);
         user.setSpreadTime(DateUtil.nowDateTime());

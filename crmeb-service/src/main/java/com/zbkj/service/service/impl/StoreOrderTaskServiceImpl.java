@@ -302,17 +302,17 @@ public class StoreOrderTaskServiceImpl implements StoreOrderTaskService {
         tempOrder.setRefundStatus(2);
         // 佣金处理：只处理冻结期佣金
         // 查询佣金记录
-        List<UserBrokerageRecord> brokerageRecordList = CollUtil.newArrayList();
-        List<UserBrokerageRecord> recordList = userBrokerageRecordService.findListByLinkIdAndLinkType(storeOrder.getOrderId(), BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_ORDER);
-        if (CollUtil.isNotEmpty(recordList)) {
-            recordList.forEach(r -> {
-                //创建、冻结期佣金置为失效状态
-                if (r.getStatus() < BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE) {
-                    r.setStatus(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_INVALIDATION);
-                    brokerageRecordList.add(r);
-                }
-            });
-        }
+        // List<UserBrokerageRecord> brokerageRecordList = CollUtil.newArrayList();
+        // List<UserBrokerageRecord> recordList = userBrokerageRecordService.findListByLinkIdAndLinkType(storeOrder.getOrderId(), BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_ORDER);
+        // if (CollUtil.isNotEmpty(recordList)) {
+        //     recordList.forEach(r -> {
+        //         //创建、冻结期佣金置为失效状态
+        //         if (r.getStatus() < BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_COMPLETE) {
+        //             r.setStatus(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_INVALIDATION);
+        //             brokerageRecordList.add(r);
+        //         }
+        //     });
+        // }
 
         Boolean execute = transactionTemplate.execute(e -> {
             //写订单日志
@@ -330,9 +330,9 @@ public class StoreOrderTaskServiceImpl implements StoreOrderTaskService {
             }
 
             // 佣金处理
-            if (CollUtil.isNotEmpty(brokerageRecordList)) {
-                userBrokerageRecordService.updateBatchById(brokerageRecordList);
-            }
+            // if (CollUtil.isNotEmpty(brokerageRecordList)) {
+            //     userBrokerageRecordService.updateBatchById(brokerageRecordList);
+            // }
 
             // 经验处理
             userExperienceRecordService.save(experienceRecord);
@@ -431,22 +431,22 @@ public class StoreOrderTaskServiceImpl implements StoreOrderTaskService {
         User user = userService.getById(storeOrder.getUid());
 
         // 获取佣金记录
-        List<UserBrokerageRecord> recordList = userBrokerageRecordService.findListByLinkIdAndLinkType(storeOrder.getOrderId(), BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_ORDER);
-        logger.info("收货处理佣金条数：" + recordList.size());
-        for (UserBrokerageRecord record : recordList) {
-            if (!record.getStatus().equals(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_CREATE)) {
-                throw new CrmebException(StrUtil.format("订单收货task处理，订单佣金记录不是创建状态，id={}", orderId));
-            }
-            // 佣金进入冻结期
-            record.setStatus(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_FROZEN);
-            // 计算解冻时间
-            Long thawTime = cn.hutool.core.date.DateUtil.current(false);
-            if (record.getFrozenTime() > 0) {
-                DateTime dateTime = cn.hutool.core.date.DateUtil.offsetDay(new Date(), record.getFrozenTime());
-                thawTime = dateTime.getTime();
-            }
-            record.setThawTime(thawTime);
-        }
+        // List<UserBrokerageRecord> recordList = userBrokerageRecordService.findListByLinkIdAndLinkType(storeOrder.getOrderId(), BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_ORDER);
+        // logger.info("收货处理佣金条数：" + recordList.size());
+        // for (UserBrokerageRecord record : recordList) {
+        //     if (!record.getStatus().equals(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_CREATE)) {
+        //         throw new CrmebException(StrUtil.format("订单收货task处理，订单佣金记录不是创建状态，id={}", orderId));
+        //     }
+        //     // 佣金进入冻结期
+        //     record.setStatus(BrokerageRecordConstants.BROKERAGE_RECORD_STATUS_FROZEN);
+        //     // 计算解冻时间
+        //     Long thawTime = cn.hutool.core.date.DateUtil.current(false);
+        //     if (record.getFrozenTime() > 0) {
+        //         DateTime dateTime = cn.hutool.core.date.DateUtil.offsetDay(new Date(), record.getFrozenTime());
+        //         thawTime = dateTime.getTime();
+        //     }
+        //     record.setThawTime(thawTime);
+        // }
 
         // 获取积分记录
         List<UserIntegralRecord> integralRecordList = userIntegralRecordService.findListByOrderIdAndUid(storeOrder.getOrderId(), storeOrder.getUid());
@@ -471,9 +471,9 @@ public class StoreOrderTaskServiceImpl implements StoreOrderTaskService {
             // 日志
             storeOrderStatusService.createLog(storeOrder.getId(), "user_take_delivery", Constants.ORDER_STATUS_STR_TAKE);
             // 分佣-佣金进入冻结期
-            if (CollUtil.isNotEmpty(recordList)) {
-                userBrokerageRecordService.updateBatchById(recordList);
-            }
+            // if (CollUtil.isNotEmpty(recordList)) {
+            //     userBrokerageRecordService.updateBatchById(recordList);
+            // }
             // 积分进入冻结期
             if (CollUtil.isNotEmpty(userIntegralRecordList)) {
                 userIntegralRecordService.updateBatchById(userIntegralRecordList);

@@ -5,7 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zbkj.common.constants.Constants;
 import com.zbkj.common.exception.CrmebException;
-import com.zbkj.common.vo.dateLimitUtilVo;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -447,7 +447,7 @@ public final class DateUtil {
      * @since 2020-05-06
      * @return dateLimitUtilVo
      */
-    public static dateLimitUtilVo getDateLimit(String data){
+    public static DateLimitUtilVo getDateLimit(String data){
         //时间计算
         String startTime = null;
         String endTime = DateUtil.nowDateTime(Constants.DATE_FORMAT);
@@ -514,7 +514,7 @@ public final class DateUtil {
                     break;
             }
         }
-        return new dateLimitUtilVo(startTime, endTime);
+        return new DateLimitUtilVo(startTime, endTime);
     }
 
     /**
@@ -527,7 +527,7 @@ public final class DateUtil {
     public static List<String> getListDate(String data) {
 
         //获取30天的开始结束日期
-        dateLimitUtilVo dateLimit = DateUtil.getDateLimit(data);
+        DateLimitUtilVo dateLimit = DateUtil.getDateLimit(data);
 
         //定义日期集合
         List<String> date = new ArrayList<>();
@@ -627,7 +627,7 @@ public final class DateUtil {
     }
 
     public static void main(String[] args) {
-        dateLimitUtilVo dateLimit = getDateLimit(Constants.SEARCH_DATE_LATELY_7);
+        DateLimitUtilVo dateLimit = getDateLimit(Constants.SEARCH_DATE_LATELY_7);
         System.out.println(dateLimit.getStartTime());
         System.out.println(dateLimit.getEndTime());
     }

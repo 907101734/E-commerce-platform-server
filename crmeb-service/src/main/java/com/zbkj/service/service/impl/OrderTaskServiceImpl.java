@@ -1,9 +1,9 @@
 package com.zbkj.service.service.impl;
 
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.zbkj.common.constants.BrokerageRecordConstants;
 import com.zbkj.common.constants.Constants;
 import com.zbkj.common.constants.TaskConstants;
 import com.zbkj.common.exception.CrmebException;
@@ -14,7 +14,15 @@ import com.zbkj.common.model.user.User;
 import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.common.vo.StoreOrderInfoOldVo;
-import com.zbkj.service.service.*;
+import com.zbkj.service.service.OrderPayService;
+import com.zbkj.service.service.OrderTaskService;
+import com.zbkj.service.service.StoreOrderInfoService;
+import com.zbkj.service.service.StoreOrderService;
+import com.zbkj.service.service.StoreOrderStatusService;
+import com.zbkj.service.service.StoreOrderTaskService;
+import com.zbkj.service.service.StoreProductReplyService;
+import com.zbkj.service.service.UserBrokerageRecordService;
+import com.zbkj.service.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +75,9 @@ public class OrderTaskServiceImpl implements OrderTaskService {
     @Autowired
     private OrderPayService orderPayService;
 
+    @Autowired
+    private UserBrokerageRecordService userBrokerageRecordService;
+
     /**
      * 用户取消订单
      * @author Mr.Zhang
@@ -87,7 +98,7 @@ public class OrderTaskServiceImpl implements OrderTaskService {
                 continue;
             }
             try {
-//                StoreOrder storeOrder = getJavaBeanStoreOrder(data);
+                //                StoreOrder storeOrder = getJavaBeanStoreOrder(data);
                 StoreOrder storeOrder = storeOrderService.getById(Integer.valueOf(data.toString()));
                 boolean result = storeOrderTaskService.cancelByUser(storeOrder);
                 if (!result) {
@@ -127,7 +138,7 @@ public class OrderTaskServiceImpl implements OrderTaskService {
                 if (ObjectUtil.isNull(storeOrder)) {
                     throw new CrmebException("订单不存在,orderNo = " + orderId);
                 }
-//                boolean result = storeOrderTaskService.refundApply(storeOrder);
+                //                boolean result = storeOrderTaskService.refundApply(storeOrder);
                 boolean result = storeOrderTaskService.refundOrder(storeOrder);
                 if (!result) {
                     logger.error("订单退款错误：result = " + result);
@@ -275,7 +286,7 @@ public class OrderTaskServiceImpl implements OrderTaskService {
         // 查找所有收获状态订单
         List<StoreOrder> orderList = storeOrderService.findIdAndUidListByReceipt();
         if (CollUtil.isEmpty(orderList)) {
-            return ;
+            return;
         }
         logger.info("OrderTaskServiceImpl.autoComplete | size:0");
 
@@ -284,13 +295,13 @@ public class OrderTaskServiceImpl implements OrderTaskService {
             StoreOrderStatus orderStatus = storeOrderStatusService.getLastByOrderId(order.getId());
             if (!"user_take_delivery".equals(orderStatus.getChangeType())) {
                 logger.error("订单自动完成：订单记录最后一条不是收货状态，orderId = " + order.getId());
-                continue ;
+                continue;
             }
             // 判断是否到自动完成时间（收货时间向后偏移7天）
             String comTime = DateUtil.addDay(orderStatus.getCreateTime(), 7, Constants.DATE_FORMAT);
             int compareDate = DateUtil.compareDate(comTime, DateUtil.nowDateTime(Constants.DATE_FORMAT), Constants.DATE_FORMAT);
             if (compareDate < 0) {
-                continue ;
+                continue;
             }
 
             /**
@@ -313,15 +324,15 @@ public class OrderTaskServiceImpl implements OrderTaskService {
                     continue;
                 }
                 String replyType = Constants.STORE_REPLY_TYPE_PRODUCT;
-//                if (ObjectUtil.isNotNull(orderInfo.getInfo().getSeckillId()) && orderInfo.getInfo().getSeckillId() > 0) {
-//                    replyType = Constants.STORE_REPLY_TYPE_SECKILL;
-//                }
-//                if (ObjectUtil.isNotNull(orderInfo.getInfo().getBargainId()) && orderInfo.getInfo().getBargainId() > 0) {
-//                    replyType = Constants.STORE_REPLY_TYPE_BARGAIN;
-//                }
-//                if (ObjectUtil.isNotNull(orderInfo.getInfo().getCombinationId()) && orderInfo.getInfo().getCombinationId() > 0) {
-//                    replyType = Constants.STORE_REPLY_TYPE_PINTUAN;
-//                }
+                //                if (ObjectUtil.isNotNull(orderInfo.getInfo().getSeckillId()) && orderInfo.getInfo().getSeckillId() > 0) {
+                //                    replyType = Constants.STORE_REPLY_TYPE_SECKILL;
+                //                }
+                //                if (ObjectUtil.isNotNull(orderInfo.getInfo().getBargainId()) && orderInfo.getInfo().getBargainId() > 0) {
+                //                    replyType = Constants.STORE_REPLY_TYPE_BARGAIN;
+                //                }
+                //                if (ObjectUtil.isNotNull(orderInfo.getInfo().getCombinationId()) && orderInfo.getInfo().getCombinationId() > 0) {
+                //                    replyType = Constants.STORE_REPLY_TYPE_PINTUAN;
+                //                }
                 StoreProductReply reply = new StoreProductReply();
                 reply.setUid(order.getUid());
                 reply.setOid(order.getId());
@@ -348,6 +359,38 @@ public class OrderTaskServiceImpl implements OrderTaskService {
                 redisUtil.lPush(Constants.ORDER_TASK_REDIS_KEY_AFTER_COMPLETE_BY_USER, order.getId());
             } else {
                 logger.error("订单自动完成：更新数据库失败，orderId = " + order.getId());
+            }
+        }
+    }
+
+    @Override
+    public void autoTransferIn() {
+        //查询已经完成的佣金
+        String redisKey = BrokerageRecordConstants.BROKERAGE_RECORD_SUCCESS;
+        Long size = redisUtil.getListSize(redisKey);
+        logger.info("OrderTaskServiceImpl.autoTransferIn | size:" + size);
+        if (size < 1) {
+            return;
+        }
+        for (int i = 0; i < size; i++) {
+            //如果10秒钟拿不到一个数据，那么退出循环
+            Object data = redisUtil.getRightPop(redisKey, 10L);
+            if (ObjectUtil.isNull(data)) {
+                continue;
+            }
+            try {
+                StoreOrder storeOrder = storeOrderService.getByOderId(String.valueOf(data));
+                if (ObjectUtil.isNull(storeOrder)) {
+                    logger.error("OrderTaskServiceImpl.autoTransferIn | 订单不存在，orderNo: " + data);
+                    throw new CrmebException("订单不存在，orderNo: " + data);
+                }
+                boolean result = userBrokerageRecordService.transferIn(storeOrder);
+                if (!result) {
+                    redisUtil.lPush(redisKey, data);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                redisUtil.lPush(redisKey, data);
             }
         }
     }

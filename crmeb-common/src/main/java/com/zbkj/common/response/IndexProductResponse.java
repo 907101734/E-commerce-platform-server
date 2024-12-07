@@ -1,5 +1,6 @@
 package com.zbkj.common.response;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,22 +11,21 @@ import java.math.BigDecimal;
 
 /**
  * 首页商品对象
- *  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="IndexProductResponse对象", description="首页商品对象")
+@ApiModel(value = "IndexProductResponse对象", description = "首页商品对象")
 public class IndexProductResponse {
-
 
     @ApiModelProperty(value = "商品id")
     private Integer id;
@@ -65,4 +65,17 @@ public class IndexProductResponse {
 
     @ApiModelProperty(value = "展示图")
     private String flatPattern;
+
+    @ApiModelProperty(value = "所属区域，所属区域，8-保单区 9-生活区 10-门店区")
+    private Integer region;
+
+    @ApiModelProperty(value = "是否是礼包")
+    @TableField("is_gift")
+    private Boolean isGift;
+
+    @ApiModelProperty(value = "礼包属性 1-699，2-999")
+    private Integer giftProperty;
+
+    // @ApiModelProperty(value = "礼包分类属性 1-美业大礼包 2-大健康礼包 3-门店礼包 4-生活礼包")
+    // private Integer giftTypeProperty;
 }

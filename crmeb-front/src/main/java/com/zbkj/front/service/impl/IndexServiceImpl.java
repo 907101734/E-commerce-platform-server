@@ -4,26 +4,30 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.zbkj.common.constants.Constants;
 import com.zbkj.common.constants.InformationConstants;
+import com.zbkj.common.constants.SysConfigConstants;
+import com.zbkj.common.constants.SysGroupDataConstants;
+import com.zbkj.common.exception.CrmebException;
+import com.zbkj.common.model.product.StoreProduct;
+import com.zbkj.common.model.record.UserVisitRecord;
+import com.zbkj.common.model.system.SystemConfig;
+import com.zbkj.common.model.user.User;
 import com.zbkj.common.page.CommonPage;
+import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.response.IndexInfoResponse;
 import com.zbkj.common.response.IndexProductResponse;
 import com.zbkj.common.response.InformationResponse;
 import com.zbkj.common.response.ProductActivityItemResponse;
-import com.zbkj.common.vo.MyRecord;
-import com.zbkj.common.request.PageParamRequest;
-import com.zbkj.common.constants.Constants;
-import com.zbkj.common.constants.SysConfigConstants;
-import com.zbkj.common.constants.SysGroupDataConstants;
-import com.zbkj.common.exception.CrmebException;
 import com.zbkj.common.utils.CrmebUtil;
-import com.zbkj.common.model.record.UserVisitRecord;
-import com.zbkj.common.model.product.StoreProduct;
-import com.zbkj.common.model.system.SystemConfig;
-import com.zbkj.common.model.user.User;
+import com.zbkj.common.vo.MyRecord;
 import com.zbkj.front.service.IndexService;
 import com.zbkj.service.delete.ProductUtils;
-import com.zbkj.service.service.*;
+import com.zbkj.service.service.StoreProductService;
+import com.zbkj.service.service.SystemConfigService;
+import com.zbkj.service.service.SystemGroupDataService;
+import com.zbkj.service.service.UserService;
+import com.zbkj.service.service.UserVisitRecordService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,6 +89,17 @@ public class IndexServiceImpl implements IndexService {
         indexInfoResponse.setExplosiveMoney(systemGroupDataService.getListMapByGid(Constants.GROUP_DATA_ID_INDEX_EX_BANNER));//首页超值爆款
         indexInfoResponse.setHomePageSaleListStyle(systemConfigService.getValueByKey(Constants.CONFIG_IS_PRODUCT_LIST_STYLE));// 首页商品列表模板配置
         indexInfoResponse.setSubscribe(false);
+
+        //门店区商品
+        indexInfoResponse.setMdqImage(systemConfigService.getValueByKey(Constants.CONFIG_KEY_MDQ_LOGO));
+        indexInfoResponse.setMdqBanner(systemGroupDataService.getListMapByGid(Constants.GROUP_DATA_ID_MDQ_LIST_BANNNER));
+
+        //生活区
+        indexInfoResponse.setShqBanner(systemGroupDataService.getListMapByGid(Constants.GROUP_DATA_ID_SHQ_LIST_BANNNER));
+
+        //设置报单区展示
+        indexInfoResponse.setBdqMenus(storeProductService.getGiftTypes());
+
         User user = userService.getInfo();
         if (ObjectUtil.isNotNull(user) && user.getSubscribe()) {
             indexInfoResponse.setSubscribe(user.getSubscribe());
@@ -97,6 +112,10 @@ public class IndexServiceImpl implements IndexService {
         visitRecord.setVisitType(1);
         userVisitRecordService.save(visitRecord);
         return indexInfoResponse;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(111);
     }
 
     /**
@@ -132,11 +151,11 @@ public class IndexServiceImpl implements IndexService {
      * @return List
      */
     @Override
-    public CommonPage<IndexProductResponse> findIndexProductList(Integer type, Integer region, PageParamRequest pageParamRequest) {
-        if (type < Constants.INDEX_RECOMMEND_BANNER || type > Constants.INDEX_BENEFIT_BANNER) {
-            return CommonPage.restPage(new ArrayList<>());
-        }
-        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(type, region, pageParamRequest);
+    public CommonPage<IndexProductResponse> findIndexProductList(Integer type, Integer region, Integer categoryId, Integer giftProperty, PageParamRequest pageParamRequest) {
+        // if (type < Constants.INDEX_RECOMMEND_BANNER || type > Constants.INDEX_BENEFIT_BANNER) {
+        //     return CommonPage.restPage(new ArrayList<>());
+        // }
+        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(type, region, categoryId, giftProperty, pageParamRequest);
         if (CollUtil.isEmpty(storeProductList)) {
             return CommonPage.restPage(new ArrayList<>());
         }
@@ -153,8 +172,7 @@ public class IndexServiceImpl implements IndexService {
                 continue;
             }
             // 根据参与活动添加对应商品活动标示
-            HashMap<Integer, ProductActivityItemResponse> activityByProduct =
-                productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
+            HashMap<Integer, ProductActivityItemResponse> activityByProduct = productUtils.getActivityByProduct(storeProduct.getId(), storeProduct.getActivity());
             if (CollUtil.isNotEmpty(activityByProduct)) {
                 for (Integer activity : activityList) {
                     if (activity.equals(Constants.PRODUCT_TYPE_NORMAL)) {

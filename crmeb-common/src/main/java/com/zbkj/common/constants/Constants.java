@@ -197,6 +197,8 @@ public class Constants {
     public static final String CONFIG_CATEGORY_CONFIG = "category_page_config"; //商品分类页配置
     public static final String CONFIG_IS_SHOW_CATEGORY = "is_show_category"; //是否隐藏一级分类
     public static final String CONFIG_IS_PRODUCT_LIST_STYLE = "homePageSaleListStyle"; //首页商品列表模板配置
+
+    public static final String CONFIG_KEY_MDQ_LOGO = "mdq_logo"; //门店区logo地址
     // app 版本号
     public static final String CONFIG_APP_VERSION = "app_version";
     // android版本地址
@@ -277,6 +279,9 @@ public class Constants {
     public static final Integer GROUP_DATA_ID_ADMIN_LOGIN_BANNER_IMAGE_LIST = 72; //后台登录页面轮播图
     public static final Integer GROUP_DATA_ID_COMBINATION_LIST_BANNNER = 73; //拼团列表banner
 
+    public static final Integer GROUP_DATA_ID_MDQ_LIST_BANNNER = 74; //门店区banner图片
+    public static final Integer GROUP_DATA_ID_SHQ_LIST_BANNNER = 75; //生活区banner图片
+
     //签到
     public static final Integer SIGN_TYPE_INTEGRAL = 1; //积分
     public static final Integer SIGN_TYPE_EXPERIENCE = 2; //经验
@@ -295,7 +300,7 @@ public class Constants {
     public static final String SEARCH_DATE_YEAR = "year"; //年
     public static final String SEARCH_DATE_PRE_YEAR = "preYear"; //上一年
 
-    //分类服务类型  类型，1 产品分类，2 附件分类，3 文章分类， 4 设置分类， 5 菜单分类， 6 配置分类， 7 秒杀配置
+    //分类服务类型  类型，1 产品分类，2 附件分类，3 文章分类， 4 设置分类， 5 菜单分类， 6 配置分类， 7 秒杀配置 ,8 报单区分类 9 生活区分类 10 门店区分类
     public static final int CATEGORY_TYPE_PRODUCT = 1; //产品
     public static final int CATEGORY_TYPE_ATTACHMENT = 2; //附件分类
     public static final int CATEGORY_TYPE_ARTICLE = 3; //文章分类
@@ -328,7 +333,9 @@ public class Constants {
     public static final String USER_BILL_TYPE_BROKERAGE = "brokerage"; //推广佣金
     public static final String USER_BILL_TYPE_DEDUCTION = "deduction"; //抵扣
     public static final String USER_BILL_TYPE_EXTRACT = "extract"; //提现
+    public static final String USER_BILL_TYPE_EXTRACT_FAIL = "extractFail"; //提现失败
     public static final String USER_BILL_TYPE_TRANSFER_IN = "transferIn"; //佣金转入余额
+    public static final String USER_BILL_TYPE_RED_IN = "redIn"; //红包转入余额
     public static final String USER_BILL_TYPE_GAIN = "gain"; //购买商品赠送
     public static final String USER_BILL_TYPE_PAY_MONEY = "pay_money"; //购买
     public static final String USER_BILL_TYPE_PAY_PRODUCT = "pay_product"; //购买商品
@@ -345,6 +352,12 @@ public class Constants {
     public static final String USER_BILL_TYPE_PAY_MEMBER = "pay_member";// 会员支付
     public static final String USER_BILL_TYPE_OFFLINE_SCAN = "offline_scan";// 线下支付
     public static final String USER_BILL_TYPE_USER_RECHARGE_REFUND = "user_recharge_refund";// 用户充值退款
+
+    public static final String USER_BILL_LINK_TYPE_ORDER = "order"; //关联订单
+    public static final String USER_BILL_LINK_TYPE_EXTRACT = "extract"; //关联余额
+    public static final String USER_BILL_LINK_TYPE_RED = "red"; //关联红包
+
+    public static final String USER_BILL_LINK_TYPE_RECHARGE = "recharge"; //关联佣金
 
     //订单状态
     public static final String ORDER_STATUS_ALL = "all"; //所有

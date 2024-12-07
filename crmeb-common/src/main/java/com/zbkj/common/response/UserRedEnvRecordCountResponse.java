@@ -22,11 +22,11 @@ public class UserRedEnvRecordCountResponse {
     private Integer waitCount;
 
     @ApiModelProperty(value = "昨日收益")
-    private Double yesterdayIncome;
+    private String yesterdayIncome;
 
-    @ApiModelProperty(value = "当前余额")
-    private Double currentIncome;
+    @ApiModelProperty(value = "我的今日收益")
+    private String todayIncome;
 
     @ApiModelProperty(value = "历史收益")
-    private Double hisIncome;
+    private String hisIncome;
 }

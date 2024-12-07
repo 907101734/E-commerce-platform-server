@@ -16,10 +16,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,11 +84,11 @@ public class UserRechargeController {
     /**
      * 佣金转入余额
      */
-    @ApiOperation(value = "佣金转入余额")
-    @RequestMapping(value = "/transferIn", method = RequestMethod.POST)
-    public CommonResult<Boolean> transferIn(@RequestParam(name = "price") BigDecimal price) {
-        return CommonResult.success(userCenterService.transferIn(price));
-    }
+    // @ApiOperation(value = "佣金转入余额")
+    // @RequestMapping(value = "/transferIn", method = RequestMethod.POST)
+    // public CommonResult<Boolean> transferIn(@RequestParam(name = "price") BigDecimal price) {
+    //     return CommonResult.success(userCenterService.transferIn(price));
+    // }
 
     /**
      * 用户账单记录

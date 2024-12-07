@@ -212,7 +212,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
         String where = " is_del = 0 and shipping_type = 2";
         //时间
         if (!StringUtils.isBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
             where += " and (create_time between '" + dateLimit.getStartTime() + "' and '" + dateLimit.getEndTime() + "' )";
         }
 
@@ -473,7 +473,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
             queryWrapper.eq("uid", userId);
         }
         if (null != date) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
             queryWrapper.between("create_time", dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         StoreOrder storeOrder = dao.selectOne(queryWrapper);
@@ -495,7 +495,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
         QueryWrapper<StoreOrder> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("sum(pay_price) as pay_price", "left(create_time, "+lefTime+") as orderId", "count(id) as id");
         if (StringUtils.isNotBlank(date)) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
             queryWrapper.between("create_time", dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         queryWrapper.groupBy("orderId").orderByAsc("orderId");
@@ -760,7 +760,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
     public StoreOrderStatisticsResponse orderStatisticsByTime(String dateLimit, Integer type) {
         StoreOrderStatisticsResponse response = new StoreOrderStatisticsResponse();
         // 根据开始时间和结束时间获取时间差 再根据时间差获取上一个时间段 查询当前和上一个时间段的数据 进行比较且返回
-        dateLimitUtilVo dateRange = DateUtil.getDateLimit(dateLimit);
+        DateLimitUtilVo dateRange = DateUtil.getDateLimit(dateLimit);
         String dateStartD = dateRange.getStartTime();
         String dateEndD = dateRange.getEndTime();
         int days = DateUtil.daysBetween(
@@ -1044,7 +1044,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
         lqw.eq(StoreOrder::getUid, uid);
         lqw.lt(StoreOrder::getRefundStatus, 2);
         if (StrUtil.isNotBlank(date)) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
             lqw.between(StoreOrder::getCreateTime, dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         return dao.selectCount(lqw);
@@ -1064,7 +1064,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
         lqw.eq(StoreOrder::getUid, userId);
         lqw.lt(StoreOrder::getRefundStatus, 2);
         if (StrUtil.isNotBlank(date)) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
             lqw.between(StoreOrder::getCreateTime, dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         List<StoreOrder> orderList = dao.selectList(lqw);
@@ -1766,7 +1766,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
         //总数只计算时间
         QueryWrapper<StoreOrder> queryWrapper = new QueryWrapper<>();
         if (StrUtil.isNotBlank(dateLimit)) {
-            dateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
+            DateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
             queryWrapper.between("create_time", dateLimitUtilVo.getStartTime(), dateLimitUtilVo.getEndTime());
         }
         getStatusWhereNew(queryWrapper, status);
@@ -1783,7 +1783,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
         //总数只计算时间
         QueryWrapper<StoreOrder> queryWrapper = new QueryWrapper<>();
         if (StrUtil.isNotBlank(dateLimit)) {
-            dateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
+            DateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
             queryWrapper.between("create_time", dateLimitUtilVo.getStartTime(), dateLimitUtilVo.getEndTime());
         }
         getStatusWhereNew(queryWrapper, status);
@@ -1808,7 +1808,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
         queryWrapper.isNotNull("pay_time");
         queryWrapper.eq("paid", 1);
         if (StringUtils.isNotBlank(dateLimit)) {
-            dateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
+            DateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
             queryWrapper.between("create_time", dateLimitUtilVo.getStartTime(), dateLimitUtilVo.getEndTime());
         }
         StoreOrder storeOrder = dao.selectOne(queryWrapper);
@@ -1825,7 +1825,7 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
      */
     private void getRequestTimeWhere(QueryWrapper<StoreOrder> queryWrapper, StoreOrderSearchRequest request) {
         if (StringUtils.isNotBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(request.getDateLimit());
             queryWrapper.between("create_time", dateLimitUtilVo.getStartTime(), dateLimitUtilVo.getEndTime());
         }
     }

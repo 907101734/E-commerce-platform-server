@@ -24,17 +24,17 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="UserCommissionResponse对象", description="推广佣金明细")
+@ApiModel(value = "UserCommissionResponse对象", description = "推广佣金明细")
 public class UserCommissionResponse implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "昨天的佣金")
     private BigDecimal lastDayCount = BigDecimal.ZERO;
 
-    @ApiModelProperty(value = "累计提现金额")
-    private BigDecimal extractCount = BigDecimal.ZERO;
+    @ApiModelProperty(value = "今日收益佣金")
+    private BigDecimal todayCount = BigDecimal.ZERO;
 
-    @ApiModelProperty(value = "当前佣金")
-    private BigDecimal commissionCount = BigDecimal.ZERO;
+    @ApiModelProperty(value = "累计收益金额")
+    private BigDecimal totalCount = BigDecimal.ZERO;
 }

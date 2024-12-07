@@ -29,7 +29,7 @@ import com.zbkj.common.utils.CommonUtil;
 import com.zbkj.common.utils.CrmebUtil;
 import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.utils.RedisUtil;
-import com.zbkj.common.vo.dateLimitUtilVo;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.service.dao.UserDao;
 import com.zbkj.service.service.*;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -125,7 +125,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 分页显示用户表
-     *
      * @param request          搜索条件
      * @param pageParamRequest 分页参数
      */
@@ -179,7 +178,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
             map.put("status", request.getStatus() ? 1 : 0);
         }
 
-        dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+        DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
 
         if (!StringUtils.isBlank(dateLimit.getStartTime())) {
             map.put("startTime", dateLimit.getStartTime());
@@ -323,7 +322,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 更新用户金额
-     *
      * @param user  用户
      * @param price 金额
      * @param type  增加add、扣减sub
@@ -346,20 +344,25 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 会员分组
-     *
      * @param id           String id
      * @param groupIdValue Integer 分组Id
      */
     @Override
     public Boolean group(String id, String groupIdValue) {
-        if (StrUtil.isBlank(id)) throw new CrmebException("会员编号不能为空");
-        if (StrUtil.isBlank(groupIdValue)) throw new CrmebException("分组id不能为空");
+        if (StrUtil.isBlank(id)) {
+            throw new CrmebException("会员编号不能为空");
+        }
+        if (StrUtil.isBlank(groupIdValue)) {
+            throw new CrmebException("分组id不能为空");
+        }
 
         //循环id处理
         List<Integer> idList = CrmebUtil.stringToArray(id);
         idList = idList.stream().distinct().collect(Collectors.toList());
         List<User> list = getListInUid(idList);
-        if (CollUtil.isEmpty(list)) throw new CrmebException("没有找到用户信息");
+        if (CollUtil.isEmpty(list)) {
+            throw new CrmebException("没有找到用户信息");
+        }
         if (list.size() < idList.size()) {
             throw new CrmebException("没有找到用户信息");
         }
@@ -371,7 +374,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 用户id in list
-     *
      * @param uidList List<Integer> id
      * @author Mr.Zhang
      * @since 2020-04-28
@@ -384,7 +386,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 修改密码
-     *
      * @param request PasswordRequest 密码
      * @return boolean
      */
@@ -404,7 +405,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 获取个人资料
-     *
      * @return User
      * @author Mr.Zhang
      * @since 2020-04-28
@@ -419,7 +419,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 获取个人资料
-     *
      * @return User
      * @author Mr.Zhang
      * @since 2020-04-28
@@ -439,7 +438,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 获取当前用户id
-     *
      * @return Integer
      */
     @Override
@@ -453,7 +451,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 获取当前用户id
-     *
      * @return Integer
      * @author Mr.Zhang
      * @since 2020-04-28
@@ -467,10 +464,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         return id;
     }
 
-
     /**
      * 按开始结束时间查询每日新增用户数量
-     *
      * @param date String 时间范围
      * @return HashMap<String, Object>
      */
@@ -480,7 +475,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("count(uid) as uid", "left(create_time, 10) as create_time");
         if (StringUtils.isNotBlank(date)) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
             queryWrapper.between("create_time", dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         queryWrapper.groupBy("left(create_time, 10)").orderByAsc("create_time");
@@ -588,7 +583,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 根据用户id获取用户列表 map模式
-     *
      * @return HashMap<Integer, User>
      */
     @Override
@@ -599,7 +593,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 根据用户id获取用户列表 map模式
-     *
      * @return HashMap<Integer, User>
      * @author Mr.Zhang
      * @since 2020-04-28
@@ -619,7 +612,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 重置连续签到天数
-     *
      * @param userId Integer 用户id
      * @author Mr.Zhang
      * @since 2020-04-28
@@ -634,20 +626,25 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 会员标签
-     *
      * @param id         String id
      * @param tagIdValue Integer 标签Id
      */
     @Override
     public Boolean tag(String id, String tagIdValue) {
-        if (StrUtil.isBlank(id)) throw new CrmebException("会员编号不能为空");
-        if (StrUtil.isBlank(tagIdValue)) throw new CrmebException("标签id不能为空");
+        if (StrUtil.isBlank(id)) {
+            throw new CrmebException("会员编号不能为空");
+        }
+        if (StrUtil.isBlank(tagIdValue)) {
+            throw new CrmebException("标签id不能为空");
+        }
 
         //循环id处理
         List<Integer> idList = CrmebUtil.stringToArray(id);
         idList = idList.stream().distinct().collect(Collectors.toList());
         List<User> list = getListInUid(idList);
-        if (CollUtil.isEmpty(list)) throw new CrmebException("没有找到用户信息");
+        if (CollUtil.isEmpty(list)) {
+            throw new CrmebException("没有找到用户信息");
+        }
         if (list.size() < 1) {
             throw new CrmebException("没有找到用户信息");
         }
@@ -659,7 +656,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 根据用户id获取自己本身的推广用户
-     *
      * @param userIdList List<Integer> 用户id集合
      * @return List<User>
      */
@@ -681,7 +677,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
      */
     @Override
     public List<UserSpreadPeopleItemResponse> getSpreadPeopleList(
-            List<Integer> userIdList, String keywords, String sortKey, String isAsc, PageParamRequest pageParamRequest) {
+        List<Integer> userIdList, String keywords, String sortKey, String isAsc, PageParamRequest pageParamRequest) {
 
         PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
 
@@ -718,7 +714,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 检测手机验证码key
-     *
      * @param phone String 手机号
      * @return String
      */
@@ -729,7 +724,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 手机号注册用户
-     *
      * @param phone     手机号
      * @param spreadUid 推广人编号
      * @return User
@@ -805,8 +799,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 更新推广员推广数
-     *
-     * @param uid uid
+     * @param uid  uid
      * @param type add or sub
      */
     public Boolean updateSpreadCountByUid(Integer uid, String type) {
@@ -822,7 +815,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 添加/扣减佣金
-     *
      * @param uid            用户id
      * @param price          金额
      * @param brokeragePrice 历史金额
@@ -845,7 +837,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 添加/扣减余额
-     *
      * @param uid      用户id
      * @param price    金额
      * @param nowMoney 历史金额
@@ -867,7 +858,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 添加/扣减积分
-     *
      * @param uid         用户id
      * @param integral    积分
      * @param nowIntegral 历史积分
@@ -890,10 +880,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * PC后台分销员列表
-     *
-     * @param keywords             搜索参数
-     * @param dateLimit            时间参数
-     * @param pageRequest          分页参数
+     * @param keywords    搜索参数
+     * @param dateLimit   时间参数
+     * @param pageRequest 分页参数
      * @return PageInfo
      */
     @Override
@@ -902,15 +891,15 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
         // id,头像，昵称，姓名，电话，推广用户数，推广订单数，推广订单额，佣金总金额，已提现金额，提现次数，未提现金额，上级推广人
         lqw.select(User::getUid, User::getNickname, User::getRealName, User::getPhone, User::getAvatar,
-                User::getSpreadCount, User::getBrokeragePrice, User::getSpreadUid, User::getPromoterTime);
+            User::getSpreadCount, User::getBrokeragePrice, User::getSpreadUid, User::getPromoterTime);
         lqw.eq(User::getIsPromoter, true);
         if (StrUtil.isNotBlank(keywords)) {
             lqw.and(i -> i.eq(User::getUid, keywords) //用户账号
-                    .or().like(User::getNickname, keywords) //昵称
-                    .or().like(User::getPhone, keywords)); //手机号码
+                .or().like(User::getNickname, keywords) //昵称
+                .or().like(User::getPhone, keywords)); //手机号码
         }
         if (StrUtil.isNotBlank(dateLimit)) {
-            dateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
+            DateLimitUtilVo dateLimitUtilVo = DateUtil.getDateLimit(dateLimit);
             lqw.between(User::getPromoterTime, dateLimitUtilVo.getStartTime(), dateLimitUtilVo.getEndTime());
         }
         lqw.orderByDesc(User::getUid);
@@ -920,7 +909,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 检测能否绑定关系
-     *
      * @param user      当前用户
      * @param spreadUid 推广员Uid
      * @param type      用户类型:new-新用户，old—老用户
@@ -975,7 +963,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 获取用户好友关系，spread_uid往下两级的用户信息
-     *
      * @return List<User>
      */
     private List<User> getUserRelation(Integer userId) {
@@ -998,9 +985,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 根据条件获取会员对应信息列表
-     *
-     * @param userId 用户id
-     * @param type  0=消费记录，1=积分明细，2=签到记录，3=持有优惠券，4=余额变动，5=好友关系
+     * @param userId           用户id
+     * @param type             0=消费记录，1=积分明细，2=签到记录，3=持有优惠券，4=余额变动，5=好友关系
      * @param pageParamRequest 分页参数
      * @return Object
      */
@@ -1035,7 +1021,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 会员详情顶部数据
-     *
      * @param userId Integer 用户id
      * @return Object
      */
@@ -1055,7 +1040,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 通过微信信息注册用户
-     *
      * @param thirdUserRequest RegisterThirdUser 三方用户登录注册信息
      * @return User
      */
@@ -1086,7 +1070,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 根据推广级别和其他参数当前用户下的推广列表
-     *
      * @param request 推广列表参数
      * @return 当前用户的推广人列表
      */
@@ -1108,8 +1091,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         queryWrapper.select(User::getUid, User::getAvatar, User::getNickname, User::getIsPromoter, User::getSpreadCount, User::getPayCount);
         queryWrapper.eq(User::getSpreadUid, request.getUid());
         if (StrUtil.isNotBlank(request.getNickName())) {
-            queryWrapper.and(e -> e.like(User::getNickname, request.getNickName()).or().eq(User::getUid, request.getNickName())
-                    .or().eq(User::getPhone, request.getNickName()));
+            queryWrapper.and(e -> e.like(User::getNickname, request.getNickName())
+                .or()
+                .eq(User::getUid, request.getNickName())
+                .or()
+                .eq(User::getPhone, request.getNickName()));
         }
         List<User> userList = userDao.selectList(queryWrapper);
         return CommonPage.copyPageInfo(userPage, userList);
@@ -1128,8 +1114,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         queryWrapper.select(User::getUid, User::getAvatar, User::getNickname, User::getIsPromoter, User::getSpreadCount, User::getPayCount);
         queryWrapper.in(User::getSpreadUid, userIds);
         if (StrUtil.isNotBlank(request.getNickName())) {
-            queryWrapper.and(e -> e.like(User::getNickname, request.getNickName()).or().eq(User::getUid, request.getNickName())
-                    .or().eq(User::getPhone, request.getNickName()));
+            queryWrapper.and(e -> e.like(User::getNickname, request.getNickName())
+                .or()
+                .eq(User::getUid, request.getNickName())
+                .or()
+                .eq(User::getPhone, request.getNickName()));
         }
         List<User> userList = userDao.selectList(queryWrapper);
         return CommonPage.copyPageInfo(userPage, userList);
@@ -1148,8 +1137,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         queryWrapper.select(User::getUid, User::getAvatar, User::getNickname, User::getIsPromoter, User::getSpreadCount, User::getPayCount);
         queryWrapper.in(User::getUid, userIds);
         if (StrUtil.isNotBlank(request.getNickName())) {
-            queryWrapper.and(e -> e.like(User::getNickname, request.getNickName()).or().eq(User::getUid, request.getNickName())
-                    .or().eq(User::getPhone, request.getNickName()));
+            queryWrapper.and(e -> e.like(User::getNickname, request.getNickName())
+                .or()
+                .eq(User::getUid, request.getNickName())
+                .or()
+                .eq(User::getPhone, request.getNickName()));
         }
         List<User> userList = userDao.selectList(queryWrapper);
         return CommonPage.copyPageInfo(userPage, userList);
@@ -1157,7 +1149,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 根据推广级别和其他参数获取推广列表
-     *
      * @param request 推广层级和推广时间参数
      * @return 推广订单列表
      */
@@ -1183,63 +1174,66 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         return CommonPage.copyPageInfo(recordPageInfo, responseList);
     }
 
-//    /**
-//     * 根据推广级别和其他参数获取推广列表
-//     *
-//     * @param request 推广层级和推广时间参数
-//     * @return 推广订单列表
-//     */
-//    @Override
-//    public PageInfo<SpreadOrderResponse> getOrderListBySpreadLevel(RetailShopStairUserRequest request, PageParamRequest pageParamRequest) {
-//        // 获取推广人列表
-//        if (ObjectUtil.isNull(request.getType())) {
-//            request.setType(0);
-//        }
-//        List<User> userList = getSpreadListBySpreadIdAndType(request.getUid(), request.getType());
-//        if (CollUtil.isEmpty(userList)) {
-//            return new PageInfo<>();
-//        }
-//
-//        List<Integer> userIds = userList.stream().map(User::getUid).distinct().collect(Collectors.toList());
-//        // 获取推广人订单号集合
-//        List<StoreOrder> orderList = storeOrderService.getOrderListStrByUids(userIds, request);
-//        if (CollUtil.isEmpty(orderList)) {
-//            return new PageInfo<>();
-//        }
-//        List<String> orderNoList = CollUtil.newArrayList();
-//        Map<String, StoreOrder> orderMap = CollUtil.newHashMap();
-//        orderList.forEach(e -> {
-//            orderNoList.add(e.getOrderId());
-//            orderMap.put(e.getOrderId(), e);
-//        });
-//        // 获取用户佣金记录
-//        PageInfo<UserBrokerageRecord> recordPageInfo = userBrokerageRecordService.findListByLinkIdsAndLinkTypeAndUid(orderNoList, BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_ORDER, request.getUid(), pageParamRequest);
-//        List<SpreadOrderResponse> responseList = recordPageInfo.getList().stream().map(e -> {
-//            SpreadOrderResponse response = new SpreadOrderResponse();
-//            StoreOrder storeOrder = orderMap.get(e.getLinkId());
-//            response.setId(storeOrder.getId());
-//            response.setOrderId(storeOrder.getOrderId());
-//            response.setRealName(storeOrder.getRealName());
-//            response.setUserPhone(storeOrder.getUserPhone());
-//            response.setPrice(e.getPrice());
-//            response.setUpdateTime(e.getUpdateTime());
-//            return response;
-//        }).collect(Collectors.toList());
-//
-//        return CommonPage.copyPageInfo(recordPageInfo, responseList);
-//    }
+    //    /**
+    //     * 根据推广级别和其他参数获取推广列表
+    //     *
+    //     * @param request 推广层级和推广时间参数
+    //     * @return 推广订单列表
+    //     */
+    //    @Override
+    //    public PageInfo<SpreadOrderResponse> getOrderListBySpreadLevel(RetailShopStairUserRequest request, PageParamRequest pageParamRequest) {
+    //        // 获取推广人列表
+    //        if (ObjectUtil.isNull(request.getType())) {
+    //            request.setType(0);
+    //        }
+    //        List<User> userList = getSpreadListBySpreadIdAndType(request.getUid(), request.getType());
+    //        if (CollUtil.isEmpty(userList)) {
+    //            return new PageInfo<>();
+    //        }
+    //
+    //        List<Integer> userIds = userList.stream().map(User::getUid).distinct().collect(Collectors.toList());
+    //        // 获取推广人订单号集合
+    //        List<StoreOrder> orderList = storeOrderService.getOrderListStrByUids(userIds, request);
+    //        if (CollUtil.isEmpty(orderList)) {
+    //            return new PageInfo<>();
+    //        }
+    //        List<String> orderNoList = CollUtil.newArrayList();
+    //        Map<String, StoreOrder> orderMap = CollUtil.newHashMap();
+    //        orderList.forEach(e -> {
+    //            orderNoList.add(e.getOrderId());
+    //            orderMap.put(e.getOrderId(), e);
+    //        });
+    //        // 获取用户佣金记录
+    //        PageInfo<UserBrokerageRecord> recordPageInfo = userBrokerageRecordService.findListByLinkIdsAndLinkTypeAndUid(orderNoList, BrokerageRecordConstants.BROKERAGE_RECORD_LINK_TYPE_ORDER, request.getUid(), pageParamRequest);
+    //        List<SpreadOrderResponse> responseList = recordPageInfo.getList().stream().map(e -> {
+    //            SpreadOrderResponse response = new SpreadOrderResponse();
+    //            StoreOrder storeOrder = orderMap.get(e.getLinkId());
+    //            response.setId(storeOrder.getId());
+    //            response.setOrderId(storeOrder.getOrderId());
+    //            response.setRealName(storeOrder.getRealName());
+    //            response.setUserPhone(storeOrder.getUserPhone());
+    //            response.setPrice(e.getPrice());
+    //            response.setUpdateTime(e.getUpdateTime());
+    //            return response;
+    //        }).collect(Collectors.toList());
+    //
+    //        return CommonPage.copyPageInfo(recordPageInfo, responseList);
+    //    }
 
     /**
      * 获取推广人列表
-     *
      * @param spreadUid 父Uid
      * @param type      类型 0 = 全部 1=一级推广人 2=二级推广人
      */
     private List<User> getSpreadListBySpreadIdAndType(Integer spreadUid, Integer type) {
         // 获取一级推广人
         List<User> userList = getSpreadListBySpreadId(spreadUid);
-        if (CollUtil.isEmpty(userList)) return userList;
-        if (type.equals(1)) return userList;
+        if (CollUtil.isEmpty(userList)) {
+            return userList;
+        }
+        if (type.equals(1)) {
+            return userList;
+        }
         // 获取二级推广人
         List<User> userSecondList = CollUtil.newArrayList();
         userList.forEach(user -> {
@@ -1257,7 +1251,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 获取推广人列表
-     *
      * @param spreadUid 父Uid
      */
     private List<User> getSpreadListBySpreadId(Integer spreadUid) {
@@ -1268,7 +1261,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 根据用户id清除用户当前推广人
-     *
      * @param userId 当前推广人id
      * @return 清除推广结果
      */
@@ -1292,7 +1284,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 推广人排行
-     *
      * @param type             String 类型
      * @param pageParamRequest PageParamRequest 分页
      * @return List<User>
@@ -1302,10 +1293,10 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("count(spread_count) as spread_count, spread_uid")
-                .gt("spread_uid", 0)
-                .eq("status", true);
+            .gt("spread_uid", 0)
+            .eq("status", true);
         if (StrUtil.isNotBlank(type)) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(type);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(type);
             queryWrapper.between("spread_time", dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         queryWrapper.groupBy("spread_uid").orderByDesc("spread_count");
@@ -1343,7 +1334,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 推广人排行
-     *
      * @param minPayCount int 最小消费次数
      * @param maxPayCount int 最大消费次数
      * @return Integer
@@ -1376,7 +1366,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     private Boolean bindSpread(User user, Integer spreadUid) {
 
         Boolean checkBingSpread = checkBingSpread(user, spreadUid, "old");
-        if (!checkBingSpread) return false;
+        if (!checkBingSpread) {
+            return false;
+        }
 
         user.setSpreadUid(spreadUid);
         user.setSpreadTime(DateUtil.nowDateTime());
@@ -1395,7 +1387,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 更新推广人
-     *
      * @param request 请求参数
      * @return Boolean
      */
@@ -1440,7 +1431,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 更新用户积分
-     *
      * @param user     用户
      * @param integral 积分
      * @param type     增加add、扣减sub
@@ -1463,7 +1453,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 清除User Group id
-     *
      * @param groupId 待清除的GroupId
      */
     @Override
@@ -1475,7 +1464,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 更新用户
-     *
      * @param userRequest 用户参数
      * @return Boolean
      */
@@ -1504,7 +1492,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 后台修改用户手机号
-     * @param id 用户uid
+     * @param id    用户uid
      * @param phone 手机号
      * @return Boolean
      */
@@ -1677,7 +1665,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     /**
      * 根据日期段获取注册用户数量
      * @param startDate 日期
-     * @param endDate 日期
+     * @param endDate   日期
      * @return UserOverviewResponse
      */
     @Override
@@ -1763,7 +1751,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     /**
      * 更新用户等级
-     * @param uid 用户id
+     * @param uid     用户id
      * @param levelId 会员等级id
      * @return Boolean
      */

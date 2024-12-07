@@ -134,6 +134,9 @@ public class StoreProductRequest implements Serializable {
     @ApiModelProperty(value = "是否优品推荐")
     private Boolean isGood;
 
+    @ApiModelProperty(value = "是否支持佣金")
+    private Boolean isSupportBrokerage;
+
     @ApiModelProperty(value = "是否单独分佣")
     private Boolean isSub;
 

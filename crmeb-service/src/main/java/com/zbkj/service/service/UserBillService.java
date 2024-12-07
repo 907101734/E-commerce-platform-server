@@ -29,7 +29,6 @@ public interface UserBillService extends IService<UserBill> {
 
     /**
      * 列表
-     *
      * @param request          请求参数
      * @param pageParamRequest 分页类参数
      * @return List<UserBill>
@@ -38,7 +37,6 @@ public interface UserBillService extends IService<UserBill> {
 
     /**
      * 新增/消耗  总金额
-     *
      * @param pm       Integer 0 = 支出 1 = 获得
      * @param userId   Integer 用户uid
      * @param category String 类型
@@ -50,14 +48,12 @@ public interface UserBillService extends IService<UserBill> {
 
     /**
      * 保存退款日志
-     *
      * @return boolean
      */
     Boolean saveRefundBill(StoreOrderRefundRequest request, User user);
 
     /**
      * 资金监控
-     *
      * @param request          查询参数
      * @param pageParamRequest 分页参数
      * @return PageInfo
@@ -66,10 +62,17 @@ public interface UserBillService extends IService<UserBill> {
 
     /**
      * 用户账单记录（现金）
-     *
      * @param uid  用户uid
      * @param type 记录类型：all-全部，expenditure-支出，income-收入
      * @return PageInfo
      */
     PageInfo<UserBill> nowMoneyBillRecord(Integer uid, String type, PageParamRequest pageRequest);
+
+    /**
+     * 获取现金记录
+     * @param linkId 关联id
+     * @param linkType 关联类型
+     * @return
+     */
+    UserBill getByLinkIdAndLinkType(String linkId, String linkType);
 }

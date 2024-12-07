@@ -45,9 +45,9 @@ public class UserRedEnvRecordHisListResponse {
     private Date createTime;
 
     @ApiModelProperty(value = "关联视频id")
-    private String link_ad_id;
+    private String linkAdId;
 
     @ApiModelProperty(value = "关联视频地址")
-    private String link_ad_addr;
+    private String linkAdAddr;
 
 }

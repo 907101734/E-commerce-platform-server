@@ -29,7 +29,7 @@ import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.common.vo.MyRecord;
 import com.zbkj.common.vo.StoreOrderInfoOldVo;
-import com.zbkj.common.vo.dateLimitUtilVo;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.service.dao.StoreProductReplyDao;
 import com.zbkj.service.service.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -112,7 +112,7 @@ public class StoreProductReplyServiceImpl extends ServiceImpl<StoreProductReplyD
             lambdaQueryWrapper.like(StoreProductReply::getNickname,request.getNickname());
         }
         if (StringUtils.isNotBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
             lambdaQueryWrapper.between(StoreProductReply::getCreateTime, dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         lambdaQueryWrapper.orderByDesc(StoreProductReply::getId);

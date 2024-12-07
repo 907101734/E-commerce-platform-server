@@ -15,24 +15,24 @@ import java.util.List;
 
 /**
  * 导出工具类
- *  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
  */
 public class ExportUtil {
 
     /**
      * 导出Excel文件
-     * @param fileName  文件名
-     * @param title     文件标题
-     * @param voList    数据列表
-     * @param aliasMap  别名Map（别名需要与数据列表的数据对应）
+     * @param fileName 文件名
+     * @param title    文件标题
+     * @param voList   数据列表
+     * @param aliasMap 别名Map（别名需要与数据列表的数据对应）
      * @return 返回给前端的文件名（路径+文件名）
      */
     public static String exportExecl(String fileName, String title, List<?> voList, LinkedHashMap<String, String> aliasMap) {
@@ -50,7 +50,7 @@ public class ExportUtil {
         }
 
         // 文件名部分
-        String newFileName = UploadUtil.getWebPath() +  fileName;
+        String newFileName = UploadUtil.getWebPath() + fileName;
         String filePath = UploadUtil.getServerPath();
 
         // 判断是否存在当前目录，不存在则创建
@@ -62,7 +62,7 @@ public class ExportUtil {
 
         // 通过工具类创建writer
         ExcelWriter writer = ExcelUtil.getWriter(fileName);
-//        ExcelWriter writer = ExcelUtil.getWriter("d:/writeMapTest.xlsx");
+        //        ExcelWriter writer = ExcelUtil.getWriter("d:/writeMapTest.xlsx");
         CellStyle headCellStyle = writer.getHeadCellStyle();
         Font font = writer.createFont();
         font.setBold(true);
@@ -91,9 +91,8 @@ public class ExportUtil {
             throw new CrmebException("请检查上传参数，上传参数不能为空");
         }
         UploadUtil.setRootPath(rootPath);
-        UploadUtil.setModelPath(Constants.UPLOAD_TYPE_IMAGE +"/"+Constants.UPLOAD_TYPE_FILE+"/"+modelPath);
-//        UploadUtil.setType(type);
+        UploadUtil.setModelPath(Constants.UPLOAD_TYPE_FILE + "/" + modelPath);
+        //        UploadUtil.setType(type);
     }
-
 
 }

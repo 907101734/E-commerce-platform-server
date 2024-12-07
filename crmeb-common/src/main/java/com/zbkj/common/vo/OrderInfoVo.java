@@ -98,4 +98,7 @@ public class OrderInfoVo {
 
     @ApiModelProperty(value = "是否视频号订单")
     private Boolean isVideo = false;
+
+    @ApiModelProperty(value = "是否是礼包")
+    private Boolean isGift;
 }

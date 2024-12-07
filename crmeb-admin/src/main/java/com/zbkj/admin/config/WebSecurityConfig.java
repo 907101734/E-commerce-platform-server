@@ -71,11 +71,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * 这里将Spring Security自带的authenticationManager声明成Bean，声明它的作用是用它帮我们进行认证操作，
      * 调用这个Bean的authenticate方法会由Spring Security自动帮我们做认证。
      */
-//    @Bean
-//    public AuthenticationManager authenticationManager() throws Exception {
-//        return new CusAuthenticationManager(customAuthenticationProvider);
-//    }
-
+    //    @Bean
+    //    public AuthenticationManager authenticationManager() throws Exception {
+    //        return new CusAuthenticationManager(customAuthenticationProvider);
+    //    }
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(new CustomAuthenticationProvider(new UserDetailServiceImpl()));
@@ -103,30 +102,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
             // 认证失败处理类
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler())
-                .accessDeniedHandler(accessDeniedHandler()).and()
+            .accessDeniedHandler(accessDeniedHandler()).and()
             // 基于token，所以不需要session
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             // 过滤请求
             .authorizeRequests()
             // 跨域预检请求
-//            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // 对于登录login 验证码captchaImage 和其他放行的目录 允许匿名访问"/citylife/front/**"
-                .antMatchers("/api/admin/login", "/api/admin/validate/code/get").permitAll()
-                .antMatchers("/api/admin/getLoginPic").permitAll()
-                // 放行资源路径
-                .antMatchers("/"+ Constants.UPLOAD_TYPE_IMAGE +"/**").anonymous()
-                // 放行图片、文件上传
-                .antMatchers("/api/admin/upload/image").permitAll()
-                .antMatchers("/api/admin/upload/file").permitAll()
-                // 代码生成器
-                .antMatchers("/api/codegen/code").permitAll()
-//            .antMatchers("/wx/user/*/login","/citylife/nocheck/**").anonymous()
+            //            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            // 对于登录login 验证码captchaImage 和其他放行的目录 允许匿名访问"/citylife/front/**"
+            .antMatchers("/api/admin/login", "/api/admin/validate/code/get").permitAll()
+            .antMatchers("/api/admin/getLoginPic").permitAll()
+            // 放行资源路径
+            .antMatchers("/" + Constants.UPLOAD_TYPE_IMAGE + "/**").anonymous()
+            .antMatchers("/" + Constants.UPLOAD_TYPE_FILE + "/**").anonymous()
+            // 放行图片、文件上传
+            .antMatchers("/api/admin/upload/image").permitAll()
+            .antMatchers("/api/admin/upload/file").permitAll()
+            // 代码生成器
+            .antMatchers("/api/codegen/code").permitAll()
+            //            .antMatchers("/wx/user/*/login","/citylife/nocheck/**").anonymous()
             .antMatchers(
-                    HttpMethod.GET,
-                    "/*.html",
-                    "/**/*.html",
-                    "/**/*.css",
-                    "/**/*.js"
+                HttpMethod.GET,
+                "/*.html",
+                "/**/*.html",
+                "/**/*.css",
+                "/**/*.js"
             ).permitAll()
             .antMatchers("/profile/**").anonymous()
             .antMatchers("/common/download**").anonymous()
@@ -145,7 +145,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
             .and()
             .headers().frameOptions().disable();// 防止iframe 造成跨域
-//        http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
+        //        http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
         // 添加JWT filter
         // 开启登录认证流程过滤器
         http.addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);

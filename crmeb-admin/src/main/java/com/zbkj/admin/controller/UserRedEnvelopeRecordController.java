@@ -42,4 +42,12 @@ public class UserRedEnvelopeRecordController {
         CommonPage<UserRedEnvelopeRecordVo> page = CommonPage.restPage(userRedEnvelopeRecordService.findPageLList(request, pageParamRequest));
         return CommonResult.success(page);
     }
+
+    // @PreAuthorize("hasAuthority('admin:red:list')")
+    @ApiOperation(value = "手动执行")
+    @RequestMapping(value = "/handle", method = RequestMethod.GET)
+    public CommonResult handle() {
+        userRedEnvelopeRecordService.autoCreateRedEnv();
+        return CommonResult.success();
+    }
 }

@@ -4,14 +4,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.math.BigDecimal;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 订单购物详情表
@@ -29,10 +29,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("eb_store_order_info")
-@ApiModel(value="StoreOrderInfo对象", description="订单购物详情表")
+@ApiModel(value = "StoreOrderInfo对象", description = "订单购物详情表")
 public class StoreOrderInfo implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -84,6 +84,9 @@ public class StoreOrderInfo implements Serializable {
     @ApiModelProperty(value = "是否评价")
     private Boolean isReply;
 
+    @ApiModelProperty(value = "是否支持佣金")
+    private Boolean isSupportBrokerage;
+
     @ApiModelProperty(value = "是否单独分佣")
     private Boolean isSub;
 
@@ -92,4 +95,11 @@ public class StoreOrderInfo implements Serializable {
 
     @ApiModelProperty(value = "商品类型:0-普通，1-秒杀，2-砍价，3-拼团，4-视频号")
     private Integer productType;
+
+    @ApiModelProperty(value = "是否是礼包")
+    @TableField("is_gift")
+    private Boolean isGift;
+
+    @ApiModelProperty(value = "礼包属性 1-699，2-999")
+    private Integer giftProperty;
 }

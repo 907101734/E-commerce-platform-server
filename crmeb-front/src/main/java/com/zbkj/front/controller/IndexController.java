@@ -1,5 +1,6 @@
 package com.zbkj.front.controller;
 
+import com.zbkj.common.enums.RegionEnum;
 import com.zbkj.common.model.system.SystemConfig;
 import com.zbkj.common.page.CommonPage;
 import com.zbkj.common.request.PageParamRequest;
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,13 +58,46 @@ public class IndexController {
     /**
      * 首页商品列表
      */
+    /**
+     * 首页商品列表
+     */
     @ApiOperation(value = "首页商品列表")
-    @RequestMapping(value = "/index/product", method = RequestMethod.GET)
-    @ApiImplicitParams({@ApiImplicitParam(name = "type", value = "类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】", dataType = "int", required = false),
-        @ApiImplicitParam(name = "region", value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区", dataType = "int", required = false)})
-    public CommonResult<CommonPage<IndexProductResponse>> getProductList(@RequestParam(value = "type") Integer type,
-        @RequestParam(value = "region") Integer region, PageParamRequest pageParamRequest) {
-        return CommonResult.success(indexService.findIndexProductList(type, region, pageParamRequest));
+    @RequestMapping(value = "/index/product/{type}", method = RequestMethod.GET)
+    @ApiImplicitParam(name = "type", value = "类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】", dataType = "int", required = true)
+    public CommonResult<CommonPage<IndexProductResponse>> getProductList(@PathVariable(value = "type") Integer type, PageParamRequest pageParamRequest) {
+        return CommonResult.success(indexService.findIndexProductList(type, RegionEnum.REGION_MDQ.getType(), null, null, pageParamRequest));
+    }
+
+    @ApiOperation(value = "首页报单区商品列表")
+    @RequestMapping(value = "/index/bdq/product", method = RequestMethod.GET)
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "categoryId", value = "分类id", dataType = "int", required = false),
+        @ApiImplicitParam(name = "giftProperty", value = "礼包属性 1-699 2-999 3-1999 4-2999", dataType = "int", required = false)})
+    public CommonResult<CommonPage<IndexProductResponse>> getT1ProductList(
+        @RequestParam(value = "categoryId", required = false) Integer categoryId,
+        @RequestParam(name = "giftProperty", required = false) Integer giftProperty,
+        PageParamRequest pageParamRequest) {
+        return CommonResult.success(indexService.findIndexProductList(null, RegionEnum.REGION_BDQ.getType(), categoryId, giftProperty, pageParamRequest));
+    }
+
+    @ApiOperation(value = "首页生活区商品列表")
+    @RequestMapping(value = "/index/shq/product", method = RequestMethod.GET)
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "categoryId", value = "分类id", dataType = "int", required = false)})
+    public CommonResult<CommonPage<IndexProductResponse>> getT2ProductList(
+        @RequestParam(value = "categoryId", required = false) Integer categoryId,
+        PageParamRequest pageParamRequest) {
+        return CommonResult.success(indexService.findIndexProductList(null, RegionEnum.REGION_SHQ.getType(), categoryId, null, pageParamRequest));
+    }
+
+    @ApiOperation(value = "首页门店区商品列表")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "categoryId", value = "分类id", dataType = "int", required = false)})
+    @RequestMapping(value = "/index/mdq/product", method = RequestMethod.GET)
+    public CommonResult<CommonPage<IndexProductResponse>> getT3ProductList(
+        @RequestParam(value = "categoryId", required = false) Integer categoryId,
+        PageParamRequest pageParamRequest) {
+        return CommonResult.success(indexService.findIndexProductList(null, RegionEnum.REGION_MDQ.getType(), categoryId, null, pageParamRequest));
     }
 
     /**

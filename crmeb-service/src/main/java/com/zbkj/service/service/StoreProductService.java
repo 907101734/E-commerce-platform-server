@@ -1,13 +1,19 @@
 package com.zbkj.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
 import com.zbkj.common.model.product.StoreProduct;
-import com.zbkj.common.request.*;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.request.ProductRequest;
+import com.zbkj.common.request.StoreProductAddRequest;
+import com.zbkj.common.request.StoreProductRequest;
+import com.zbkj.common.request.StoreProductSearchRequest;
+import com.zbkj.common.request.StoreProductStockRequest;
 import com.zbkj.common.response.StoreProductInfoResponse;
 import com.zbkj.common.response.StoreProductResponse;
 import com.zbkj.common.response.StoreProductTabsHeader;
+import com.zbkj.common.vo.GiftTypeVo;
 import com.zbkj.common.vo.MyRecord;
-import com.github.pagehelper.PageInfo;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -29,7 +35,7 @@ public interface StoreProductService extends IService<StoreProduct> {
 
     /**
      * 获取产品列表Admin
-     * @param request 筛选参数
+     * @param request          筛选参数
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -89,7 +95,7 @@ public interface StoreProductService extends IService<StoreProduct> {
     /**
      * 删除商品
      * @param productId 商品id
-     * @param type 类型：recycle——回收站 delete——彻底删除
+     * @param type      类型：recycle——回收站 delete——彻底删除
      * @return 删除结果
      */
     Boolean deleteProduct(Integer productId, String type);
@@ -127,8 +133,8 @@ public interface StoreProductService extends IService<StoreProduct> {
 
     /**
      * 添加/扣减库存
-     * @param id 商品id
-     * @param num 数量
+     * @param id   商品id
+     * @param num  数量
      * @param type 类型：add—添加，sub—扣减
      */
     Boolean operationStock(Integer id, Integer num, String type);
@@ -148,16 +154,18 @@ public interface StoreProductService extends IService<StoreProduct> {
 
     /**
      * 首页商品列表
-     * @param type 类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
-     * @param region 所属区域，1-保单区 2-生活区 3-门店区 4-团购区
+     * @param type             类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
+     * @param region           所属区域，8-保单区 9-生活区 10-门店区
+     * @param categoryId       分类属性
+     * @param giftProperty     礼包属性 1-699，2-999，3-1699
      * @param pageParamRequest 分页参数
      * @return CommonPage
      */
-    List<StoreProduct> getIndexProduct(Integer type,Integer region, PageParamRequest pageParamRequest);
+    List<StoreProduct> getIndexProduct(Integer type, Integer region, Integer categoryId, Integer giftProperty, PageParamRequest pageParamRequest);
 
     /**
      * 获取商品移动端列表
-     * @param request 筛选参数
+     * @param request     筛选参数
      * @param pageRequest 分页参数
      * @return List
      */
@@ -220,4 +228,10 @@ public interface StoreProductService extends IService<StoreProduct> {
      * @return List
      */
     List<StoreProduct> getLeaderboard();
+
+    /**
+     * 获取礼品属性
+     * @return
+     */
+    List<GiftTypeVo> getGiftTypes();
 }

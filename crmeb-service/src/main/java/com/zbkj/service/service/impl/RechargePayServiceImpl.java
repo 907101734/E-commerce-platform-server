@@ -62,6 +62,7 @@ public class RechargePayServiceImpl implements RechargePayService {
         UserBill userBill = new UserBill();
         userBill.setUid(userRecharge.getUid());
         userBill.setLinkId(userRecharge.getOrderId());
+        userBill.setLinkType(Constants.USER_BILL_LINK_TYPE_ORDER);
         userBill.setPm(1);
         userBill.setTitle("充值支付");
         userBill.setCategory(Constants.USER_BILL_CATEGORY_MONEY);

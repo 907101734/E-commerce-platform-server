@@ -18,7 +18,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zbkj.common.utils.DateUtil;
-import com.zbkj.common.vo.dateLimitUtilVo;
+import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.common.model.user.User;
 import com.zbkj.common.model.user.UserIntegralRecord;
 import com.zbkj.service.dao.UserIntegralRecordDao;
@@ -150,7 +150,7 @@ public class UserIntegralRecordServiceImpl extends ServiceImpl<UserIntegralRecor
         }
         //时间范围
         if (StrUtil.isNotBlank(request.getDateLimit())) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
             //判断时间
             int compareDateResult = DateUtil.compareDate(dateLimit.getEndTime(), dateLimit.getStartTime(), Constants.DATE_FORMAT);
             if (compareDateResult == -1) {
@@ -198,7 +198,7 @@ public class UserIntegralRecordServiceImpl extends ServiceImpl<UserIntegralRecor
         }
         queryWrapper.eq("status", IntegralRecordConstants.INTEGRAL_RECORD_STATUS_COMPLETE);
         if (StrUtil.isNotBlank(date)) {
-            dateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
+            DateLimitUtilVo dateLimit = DateUtil.getDateLimit(date);
             queryWrapper.between("update_time", dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         UserIntegralRecord integralRecord = dao.selectOne(queryWrapper);

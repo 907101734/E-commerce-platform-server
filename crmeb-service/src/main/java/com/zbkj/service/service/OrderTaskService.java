@@ -37,4 +37,9 @@ package com.zbkj.service.service;
      * 订单自动完成
      */
     void autoComplete();
+
+    /**
+     * 佣金自动转入余额
+     */
+    void autoTransferIn();
 }

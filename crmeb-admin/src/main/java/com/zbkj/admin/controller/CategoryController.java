@@ -142,7 +142,7 @@ public class CategoryController {
     @ApiOperation(value = "获取tree结构的列表")
     @RequestMapping(value = "/list/tree", method = RequestMethod.GET)
     @ApiImplicitParams({
-        @ApiImplicitParam(name="type", value="类型ID | 类型，1 产品分类，2 附件分类，3 文章分类， 4 设置分类， 5 菜单分类， 6 配置分类， 7 秒杀配置", example = "1"),
+        @ApiImplicitParam(name="type", value="类型ID | 类型，1 产品分类，2 附件分类，3 文章分类， 4 设置分类， 5 菜单分类， 6 配置分类， 7 秒杀配置.8 报单区分类 9 生活区分类 10 门店区分类", example = "1"),
         @ApiImplicitParam(name="status", value="-1=全部，0=未生效，1=已生效", example = "1"),
         @ApiImplicitParam(name="name", value="模糊搜索", example = "电视")
     })

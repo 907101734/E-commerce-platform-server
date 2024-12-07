@@ -7,6 +7,7 @@ import com.github.pagehelper.PageInfo;
 import com.zbkj.common.constants.CategoryConstants;
 import com.zbkj.common.constants.Constants;
 import com.zbkj.common.constants.SysConfigConstants;
+import com.zbkj.common.model.category.Category;
 import com.zbkj.common.model.product.StoreProduct;
 import com.zbkj.common.model.product.StoreProductAttr;
 import com.zbkj.common.model.product.StoreProductAttrValue;
@@ -27,6 +28,7 @@ import com.zbkj.common.response.StoreProductReplayCountResponse;
 import com.zbkj.common.utils.CrmebUtil;
 import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.common.vo.CategoryTreeVo;
+import com.zbkj.common.vo.CategoryVo;
 import com.zbkj.common.vo.MyRecord;
 import com.zbkj.front.service.ProductService;
 import com.zbkj.service.delete.ProductUtils;
@@ -121,6 +123,18 @@ public class ProductServiceImpl implements ProductService {
             i++;
         }
         return listTree;
+    }
+
+    @Override
+    public List<CategoryVo> getReginCategory(Integer regin, Integer parentId) {
+        List<Category> categories = categoryService.getChildVoListByPid(regin, parentId);
+        List<CategoryVo> categoryVos = new ArrayList<>();
+        for (Category category : categories) {
+            CategoryVo categoryVo = new CategoryVo();
+            BeanUtils.copyProperties(category, categoryVo);
+            categoryVos.add(categoryVo);
+        }
+        return categoryVos;
     }
 
     /**
@@ -238,7 +252,10 @@ public class ProductServiceImpl implements ProductService {
                 // 判断是否开启气泡
                 String isBubble = systemConfigService.getValueByKey(SysConfigConstants.CONFIG_KEY_STORE_BROKERAGE_IS_BUBBLE);
                 if (isBubble.equals(Constants.COMMON_SWITCH_OPEN)) {
-                    productDetailResponse.setPriceName(getPacketPriceRange(storeProduct.getIsSub(), storeProductAttrValues, user.getIsPromoter()));
+                    //是否支持返佣
+                    if (Boolean.TRUE.equals(storeProduct.getIsSupportBrokerage())) {
+                        productDetailResponse.setPriceName(getPacketPriceRange(storeProduct.getIsSub(), storeProductAttrValues, user.getIsPromoter()));
+                    }
                 }
             }
         } else {
@@ -393,7 +410,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public CommonPage<IndexProductResponse> getHotProductList(PageParamRequest pageRequest) {
-        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_HOT_BANNER, null, pageRequest);
+        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_HOT_BANNER, null, null, null, pageRequest);
         if (CollUtil.isEmpty(storeProductList)) {
             return CommonPage.restPage(new ArrayList<>());
         }
@@ -469,7 +486,7 @@ public class ProductServiceImpl implements ProductService {
     public CommonPage<IndexProductResponse> getGoodProductList() {
         PageParamRequest pageRequest = new PageParamRequest();
         pageRequest.setLimit(9);
-        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_RECOMMEND_BANNER, null, pageRequest);
+        List<StoreProduct> storeProductList = storeProductService.getIndexProduct(Constants.INDEX_RECOMMEND_BANNER, null, null, null, pageRequest);
         if (CollUtil.isEmpty(storeProductList)) {
             return CommonPage.restPage(new ArrayList<>());
         }

@@ -144,7 +144,7 @@ public interface UserCenterService extends IService<User> {
      * @param price 金额
      * @return Boolean
      */
-    Boolean transferIn(BigDecimal price);
+    // Boolean transferIn(BigDecimal price);
 
     /**
      * 提现记录

@@ -1,35 +1,45 @@
 package com.zbkj.front.controller;
 
-
 import com.zbkj.common.model.product.StoreProduct;
 import com.zbkj.common.page.CommonPage;
 import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.request.ProductListRequest;
 import com.zbkj.common.request.ProductRequest;
-import com.zbkj.common.response.*;
+import com.zbkj.common.response.CommonResult;
+import com.zbkj.common.response.IndexProductResponse;
+import com.zbkj.common.response.ProductDetailReplyResponse;
+import com.zbkj.common.response.ProductDetailResponse;
+import com.zbkj.common.response.ProductReplyResponse;
+import com.zbkj.common.response.StoreProductReplayCountResponse;
 import com.zbkj.common.vo.CategoryTreeVo;
+import com.zbkj.common.vo.CategoryVo;
 import com.zbkj.front.service.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 /**
  * 用户 -- 用户中心
- *  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
  */
 @Slf4j
 @RestController("ProductController")
@@ -67,6 +77,15 @@ public class ProductController {
         return CommonResult.success(productService.getCategory());
     }
 
+    @ApiOperation(value = "获取区域分类")
+    @RequestMapping(value = "/reginCategory", method = RequestMethod.GET)
+    @ApiImplicitParams({@ApiImplicitParam(name = "regin", value = "所属区域，8-保单区 9-生活区 10-门店区", dataType = "int", required = true),
+        @ApiImplicitParam(name = "parentId", value = "父级分类id", dataType = "int", required = false)})
+    public CommonResult<List<CategoryVo>> getReginCategory(@RequestParam(name = "regin", required = false) Integer regin,
+        @RequestParam(name = "parentId", required = false) Integer parentId) {
+        return CommonResult.success(productService.getReginCategory(regin, parentId));
+    }
+
     /**
      * 商品列表
      */
@@ -92,8 +111,7 @@ public class ProductController {
     @ApiOperation(value = "商品评论列表")
     @RequestMapping(value = "/reply/list/{id}", method = RequestMethod.GET)
     @ApiImplicitParam(name = "type", value = "评价等级|0=全部,1=好评,2=中评,3=差评", allowableValues = "range[0,1,2,3]")
-    public CommonResult<CommonPage<ProductReplyResponse>> getReplyList(@PathVariable Integer id,
-                                                                       @RequestParam(value = "type") Integer type, @Validated PageParamRequest pageParamRequest) {
+    public CommonResult<CommonPage<ProductReplyResponse>> getReplyList(@PathVariable Integer id, @RequestParam(value = "type") Integer type, @Validated PageParamRequest pageParamRequest) {
         return CommonResult.success(CommonPage.restPage(productService.getReplyList(id, type, pageParamRequest)));
     }
 

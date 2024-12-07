@@ -112,7 +112,7 @@ public class UserController {
     /**
      * 推广数据接口(昨天的佣金 累计提现金额 当前佣金)
      */
-    @ApiOperation(value = "推广数据接口(昨天的佣金 累计提现金额 当前佣金)")
+    @ApiOperation(value = "推广数据接口(昨天的佣金 累计收益金额 今日收益佣金)")
     @RequestMapping(value = "/commission", method = RequestMethod.GET)
     public CommonResult<UserCommissionResponse> getCommission() {
         return CommonResult.success(userCenterService.getCommission());

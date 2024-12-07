@@ -3,7 +3,6 @@ package com.zbkj.common.token;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zbkj.common.constants.Constants;
-import com.zbkj.common.exception.CrmebException;
 import com.zbkj.common.model.user.User;
 import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.common.utils.RequestUtil;
@@ -42,12 +41,11 @@ public class FrontTokenComponent {
     private static final Long MILLIS_MINUTE = 60 * 1000L;
 
     // 令牌有效期（默认30分钟） todo 调试期改为5小时
-//    private static final int expireTime = 30;
+    //    private static final int expireTime = 30;
     private static final int expireTime = 5 * 60;
 
     /**
      * 获取用户身份信息
-     *
      * @return 用户信息
      */
     public LoginUserVo getLoginUser(HttpServletRequest request) {
@@ -81,7 +79,6 @@ public class FrontTokenComponent {
 
     /**
      * 创建令牌
-     *
      * @param user 用户信息
      * @return 令牌
      */
@@ -93,21 +90,18 @@ public class FrontTokenComponent {
 
     /**
      * 验证令牌有效期，相差不足20分钟，自动刷新缓存
-     *
      * @param loginUser LoginUserVo
      */
     public void verifyToken(LoginUserVo loginUser) {
         long expireTime = loginUser.getExpireTime();
         long currentTime = System.currentTimeMillis();
-        if (expireTime - currentTime <= MILLIS_MINUTE_TEN)
-        {
+        if (expireTime - currentTime <= MILLIS_MINUTE_TEN) {
             refreshToken(loginUser);
         }
     }
 
     /**
      * 刷新令牌有效期
-     *
      * @param loginUser 登录信息
      */
     public void refreshToken(LoginUserVo loginUser) {
@@ -115,12 +109,11 @@ public class FrontTokenComponent {
         loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
         // 根据uuid将loginUser缓存
         String userKey = getTokenKey(loginUser.getToken());
-        redisUtil.set(userKey, loginUser, (long) expireTime, TimeUnit.MINUTES);
+        redisUtil.set(userKey, loginUser, (long)expireTime, TimeUnit.MINUTES);
     }
 
     /**
      * 获取请求token
-     *
      * @param request HttpServletRequest
      * @return token
      */
@@ -149,11 +142,11 @@ public class FrontTokenComponent {
      * 获取当前登录用户id
      */
     public Integer getUserId() {
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes)Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String token = getToken(request);
         if (StrUtil.isEmpty(token)) {
             return null;
-//            throw new CrmebException("登录信息已过期，请重新登录！");
+            //            throw new CrmebException("登录信息已过期，请重新登录！");
         }
         return redisUtil.get(getTokenKey(token));
     }
@@ -161,38 +154,41 @@ public class FrontTokenComponent {
     //路由在此处，则返回true，无论用户是否登录都可以访问
     public boolean checkRouter(String uri) {
         String[] routerList = {
-                "api/front/product/detail",
-                "api/front/coupons",
-                "api/front/index",
-                "api/front/bargain/list",
-                "api/front/combination/list",
-                "api/front/index/product",
-                "api/front/combination/index",
-                "api/front/bargain/index",
-                "api/front/index/color/config",
-                "api/front/product/list",
-                "api/front/product/sku/detail",
-                "api/front/index/get/version",
-                "api/front/image/domain",
-                "api/front/product/leaderboard"
+            "api/front/product/detail",
+            "api/front/coupons",
+            "api/front/index",
+            "api/front/bargain/list",
+            "api/front/combination/list",
+            "api/front/index/product",
+            "api/front/index/bdq/product",
+            "api/front/index/shq/product",
+            "api/front/index/mdq/product",
+            "api/front/combination/index",
+            "api/front/bargain/index",
+            "api/front/index/color/config",
+            "api/front/product/list",
+            "api/front/product/sku/detail",
+            "api/front/index/get/version",
+            "api/front/image/domain",
+            "api/front/product/leaderboard"
         };
 
         return ArrayUtils.contains(routerList, uri);
     }
 
-    public Boolean check(String token, HttpServletRequest request){
+    public Boolean check(String token, HttpServletRequest request) {
 
         try {
             boolean exists = redisUtil.exists(getTokenKey(token));
-            if(exists){
+            if (exists) {
                 Integer uid = redisUtil.get(getTokenKey(token));
                 redisUtil.set(getTokenKey(token), uid, Constants.TOKEN_EXPRESS_MINUTES, TimeUnit.MINUTES);
-            }else{
+            } else {
                 //判断路由，部分路由不管用户是否登录/token过期都可以访问
                 exists = checkRouter(RequestUtil.getUri(request));
             }
             return exists;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

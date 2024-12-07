@@ -78,6 +78,9 @@ public class StoreProductInfoResponse implements Serializable {
     @ApiModelProperty(value = "是否优品推荐")
     private Boolean isGood;
 
+    @ApiModelProperty(value = "是否支持佣金")
+    private Boolean isSupportBrokerage;
+
     @ApiModelProperty(value = "是否单独分佣")
     private Boolean isSub;
 
@@ -165,7 +168,7 @@ public class StoreProductInfoResponse implements Serializable {
     private String flatPattern;
 
     //礼包
-    @ApiModelProperty(value = "所属区域，1-保单区 2-生活区 3-门店区 4-团购区")
+    @ApiModelProperty(value = "所属区域，8-保单区 9-生活区 10-门店区")
     private Integer region;
 
     @ApiModelProperty(value = "是否是礼包")
@@ -174,6 +177,6 @@ public class StoreProductInfoResponse implements Serializable {
     @ApiModelProperty(value = "礼包属性 1-699，2-999")
     private Integer giftProperty;
 
-    @ApiModelProperty(value = "礼包分类属性 1-美业大礼包 2-大健康礼包 3-门店礼包 4-生活礼包")
-    private Integer giftTypeProperty;
+    // @ApiModelProperty(value = "礼包分类属性 1-美业大礼包 2-大健康礼包 3-门店礼包 4-生活礼包")
+    // private Integer giftTypeProperty;
 }

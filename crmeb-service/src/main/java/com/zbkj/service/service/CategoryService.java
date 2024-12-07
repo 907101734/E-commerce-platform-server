@@ -56,6 +56,14 @@ public interface CategoryService extends IService<Category> {
 
     List<Category> getChildVoListByPid(Integer pid);
 
+    /**
+     * 获取分类的子分类
+     * @param type
+     * @param pid
+     * @return
+     */
+    List<Category> getChildVoListByPid(Integer type,Integer pid);
+
     boolean checkUrl(String uri);
 
     boolean updateStatus(Integer id);

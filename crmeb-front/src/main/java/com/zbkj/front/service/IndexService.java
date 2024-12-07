@@ -12,18 +12,18 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
-* IndexService 接口
-*  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
-*/
-public interface IndexService{
+ * IndexService 接口
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
+ */
+public interface IndexService {
 
     /**
      * 首页信息
@@ -44,11 +44,14 @@ public interface IndexService{
 
     /**
      * 获取首页商品列表
-     * @param type 类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
+     * @param type             类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】
+     * @param region           所属区域，8-保单区 9-生活区 10-门店区
+     * @param categoryId       分类id
+     * @param giftProperty     礼包属性 1-699，2-999，3-1699
      * @param pageParamRequest 分页参数
      * @return List
      */
-    CommonPage<IndexProductResponse> findIndexProductList(Integer type,Integer region, PageParamRequest pageParamRequest);
+    CommonPage<IndexProductResponse> findIndexProductList(Integer type, Integer region, Integer categoryId, Integer giftProperty, PageParamRequest pageParamRequest);
 
     /**
      * 获取颜色配置
