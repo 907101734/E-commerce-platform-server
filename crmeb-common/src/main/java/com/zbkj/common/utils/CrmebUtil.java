@@ -56,10 +56,10 @@ public class CrmebUtil {
         byte[] result = new byte[8];
         byte[] keys = null;
         keys = key.getBytes(StandardCharsets.UTF_8);
-        for(int i = 0; i<8;i++){
-            if(i < keys.length){
+        for (int i = 0; i < 8; i++) {
+            if (i < keys.length) {
                 result[i] = keys[i];
-            }else{
+            } else {
                 result[i] = 0x01;
             }
         }
@@ -69,15 +69,15 @@ public class CrmebUtil {
     /**
      * 对象转map
      * @param object 对象
+     * @return Map
      * @author Mr.Zhang
      * @since 2020-04-14
-     * @return Map
      */
-    public static Map objectToMap(Object object){
+    public static Map objectToMap(Object object) {
         return JSONObject.parseObject(JSONObject.toJSONString(object), Map.class);
     }
 
-    public static Map StringToMap(String strValue){
+    public static Map StringToMap(String strValue) {
         return JSONObject.parseObject(strValue, HashMap.class);
     }
 
@@ -85,12 +85,14 @@ public class CrmebUtil {
      * map转对象
      * @param map map
      * @param clz 对象
+     * @return Map
      * @author Mr.Zhang
      * @since 2020-04-14
-     * @return Map
      */
-    public static <T> T mapToObj(HashMap<String,Object> map, Class<T> clz){
-        if (map == null) return null;
+    public static <T> T mapToObj(HashMap<String, Object> map, Class<T> clz) {
+        if (map == null) {
+            return null;
+        }
         return JSONObject.parseObject(JSONObject.toJSONString(map), clz);
     }
 
@@ -98,49 +100,25 @@ public class CrmebUtil {
      * map转对象
      * @param map map
      * @param clz 对象
+     * @return Map
      * @author Mr.Zhang
      * @since 2020-04-14
-     * @return Map
      */
-    public static <T> T mapStringToObj(HashMap<String,String> map, Class<T> clz){
-        if (map == null) return null;
+    public static <T> T mapStringToObj(HashMap<String, String> map, Class<T> clz) {
+        if (map == null) {
+            return null;
+        }
         return JSONObject.parseObject(JSONObject.toJSONString(map), clz);
-    }
-
-
-    /**
-     * 密码工具
-     * @param args String[] 字符串数组
-     */
-    public static void main(String[] args) throws Exception {
-//        System.out.println(encryptPassword("123456", "admin"));
-//		System.out.println(decryptPassowrd("", ""));
-
-        String key = "123456";
-        String data = "中国123ABCabc";
-        System.out.println("原始数据：" + data);
-        String encryptPassword = encryptPassword(data, key);
-        System.out.println("加密结果：" + encryptPassword);
-        String decryptPassowrd = decryptPassowrd(encryptPassword, key);
-        System.out.println("解密结果：" + decryptPassowrd);
-        // 执行结果如下：
-        // 原始数据：中国123ABCabc
-        // 加密结果：5JNGj04iE/XUuTZM75zMrA==
-        // 解密结果：中国123ABCabc
-
-        System.out.println(encryptPassword("crmeb@123456", "18292417675"));
-        // 执行结果：f6mcpGQ8NEmwbab2TlkpUg==
-        // 与 SQL 中的数据一致
     }
 
     /**
      * map合并
      * @param map 对象
+     * @return Object
      * @author Mr.Zhang
      * @since 2020-04-14
-     * @return Object
      */
-    public static Map<String, Object> mergeMap(Map<String, Object> map, Map<String, Object> map1){
+    public static Map<String, Object> mergeMap(Map<String, Object> map, Map<String, Object> map1) {
         HashMap<String, Object> map2 = new HashMap<>();
         map2.putAll(map);
         map2.putAll(map1);
@@ -150,48 +128,47 @@ public class CrmebUtil {
     /**
      * 字符串分割，转化为数组
      * @param str 字符串
+     * @return List<Integer>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<Integer>
      */
-    public static List<Integer> stringToArray(String str){
+    public static List<Integer> stringToArray(String str) {
         return stringToArrayByRegex(str, ",");
     }
 
     /**
      * 字符串分割，转化为数组
-     * @param str 字符串
+     * @param str   字符串
      * @param regex 分隔符有
+     * @return List<Integer>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<Integer>
      */
-    public static List<Integer> stringToArrayByRegex(String str, String regex ){
+    public static List<Integer> stringToArrayByRegex(String str, String regex) {
         List<Integer> list = new ArrayList<>();
-        if (str.contains(regex)){
+        if (str.contains(regex)) {
 
             String[] split = str.split(regex);
 
             for (String value : split) {
-                if(!StringUtils.isBlank(value)){
+                if (!StringUtils.isBlank(value)) {
                     list.add(Integer.parseInt(value.trim()));
                 }
             }
-        }else {
+        } else {
             list.add(Integer.parseInt(str));
         }
         return list;
     }
 
-
     /**
      * 字符串分割，转化为数组
      * @param str 字符串
+     * @return List<String>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<String>
      */
-    public static List<String> stringToArrayStr(String str){
+    public static List<String> stringToArrayStr(String str) {
         return stringToArrayStrRegex(str, ",");
     }
 
@@ -200,7 +177,7 @@ public class CrmebUtil {
      * @param str 待转换的数字字符串
      * @return int数组
      */
-    public static List<Integer> stringToArrayInt(String str){
+    public static List<Integer> stringToArrayInt(String str) {
         List<String> strings = stringToArrayStrRegex(str, ",");
         List<Integer> ids = new ArrayList<>();
         for (String string : strings) {
@@ -211,24 +188,24 @@ public class CrmebUtil {
 
     /**
      * 字符串分割，转化为数组
-     * @param str 字符串
+     * @param str   字符串
      * @param regex 分隔符有
+     * @return List<String>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<String>
      */
-    public static List<String> stringToArrayStrRegex(String str, String regex ){
+    public static List<String> stringToArrayStrRegex(String str, String regex) {
         List<String> list = new ArrayList<>();
-        if (str.contains(regex)){
+        if (str.contains(regex)) {
 
             String[] split = str.split(regex);
 
             for (String value : split) {
-                if(!StringUtils.isBlank(value)){
+                if (!StringUtils.isBlank(value)) {
                     list.add(value);
                 }
             }
-        }else {
+        } else {
             list.add(str);
         }
         return list;
@@ -237,34 +214,34 @@ public class CrmebUtil {
     /**
      * 字符串分割，转化为数组
      * @param str 字符串
+     * @return List<Object>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<Object>
      */
-    public static List<Object> stringToArrayObject(String str){
+    public static List<Object> stringToArrayObject(String str) {
         return stringToArrayObjectRegex(str, ",");
     }
 
     /**
      * 字符串分割，转化为数组
-     * @param str 字符串
+     * @param str   字符串
      * @param regex 分隔符有
+     * @return List<Object>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<Object>
      */
-    public static List<Object> stringToArrayObjectRegex(String str, String regex ){
+    public static List<Object> stringToArrayObjectRegex(String str, String regex) {
         List<Object> list = new ArrayList<>();
-        if (str.contains(regex)){
+        if (str.contains(regex)) {
 
             String[] split = str.split(regex);
 
             for (String value : split) {
-                if(!StringUtils.isBlank(value)){
+                if (!StringUtils.isBlank(value)) {
                     list.add(value);
                 }
             }
-        }else {
+        } else {
             list.add(str);
         }
         return list;
@@ -273,14 +250,14 @@ public class CrmebUtil {
     /**
      * json字符串转数组
      * @param str 字符串
+     * @return List<String>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<String>
      */
-    public static List<String> jsonToListString(String str){
-        try{
+    public static List<String> jsonToListString(String str) {
+        try {
             return JSONObject.parseArray(str).toJavaList(String.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             ArrayList<String> list = new ArrayList<>();
             list.add(str);
             return list;
@@ -290,14 +267,14 @@ public class CrmebUtil {
     /**
      * json字符串转数组
      * @param str 字符串
+     * @return List<Integer>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<Integer>
      */
-    public static List<Integer> jsonToListInteger(String str){
-        try{
+    public static List<Integer> jsonToListInteger(String str) {
+        try {
             return JSONObject.parseArray(str).toJavaList(Integer.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             ArrayList<Integer> list = new ArrayList<>();
             list.add(Integer.parseInt(str));
             return list;
@@ -307,14 +284,14 @@ public class CrmebUtil {
     /**
      * json字符串转数组
      * @param str 字符串
+     * @return List<Integer>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<Integer>
      */
-    public static List<Object> jsonToListObject(String str){
-        try{
+    public static List<Object> jsonToListObject(String str) {
+        try {
             return JSONObject.parseArray(str).toJavaList(Object.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             ArrayList<Object> list = new ArrayList<>();
             list.add(str);
             return list;
@@ -324,14 +301,14 @@ public class CrmebUtil {
     /**
      * json字符串转数组
      * @param str 字符串
+     * @return List<T>
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return List<T>
      */
-    public static <T> List<T> jsonToListClass(String str, Class<T> cls){
-        try{
+    public static <T> List<T> jsonToListClass(String str, Class<T> cls) {
+        try {
             return JSONObject.parseArray(str, cls);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ArrayList<>();
         }
     }
@@ -339,11 +316,11 @@ public class CrmebUtil {
     /**
      * 去掉域名 https / http / www 信息
      * @param domain 域名
+     * @return String
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return String
      */
-    public static String getCleanLowerDomain(String domain){
+    public static String getCleanLowerDomain(String domain) {
         domain = domain.toLowerCase();
         domain = domain.replaceAll("http://", "");
         domain = domain.replaceAll("https://", "");
@@ -355,18 +332,18 @@ public class CrmebUtil {
     /**
      * 获取根域名
      * @param domain 域名
+     * @return String
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return String
      */
-    public static String getBaseLowerDomain(String domain){
-        if(!domain.contains(".")){
-            domain  += ".com";
+    public static String getBaseLowerDomain(String domain) {
+        if (!domain.contains(".")) {
+            domain += ".com";
         }
         domain = getCleanLowerDomain(domain);
         String[] split = domain.split("\\.");
         int len = split.length;
-        if(len == 0){
+        if (len == 0) {
             return domain;
         }
         return split[len - 2] + "." + split[len - 1];
@@ -375,27 +352,27 @@ public class CrmebUtil {
     /**
      * 获取客户端ip
      * @param request 参数
+     * @return String
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return String
      */
-    public static String getClientIp(HttpServletRequest request){
+    public static String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
-        if(checkIsIp(ip)){
+        if (checkIsIp(ip)) {
             return ip;
         }
 
         ip = request.getHeader("X-Real-IP");
-        if(checkIsIp(ip)){
+        if (checkIsIp(ip)) {
             return ip;
         }
 
         ip = request.getRemoteAddr();
-        if("0:0:0:0:0:0:0:1".equals(ip)){
+        if ("0:0:0:0:0:0:0:1".equals(ip)) {
             //本地 localhost访问 ipv6
             ip = "127.0.0.1";
         }
-        if(checkIsIp(ip)){
+        if (checkIsIp(ip)) {
             return ip;
         }
 
@@ -405,20 +382,20 @@ public class CrmebUtil {
     /**
      * 检测是否为ip
      * @param ip 参数
+     * @return String
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return String
      */
-    public static boolean checkIsIp(String ip){
-        if(StringUtils.isBlank(ip)){
+    public static boolean checkIsIp(String ip) {
+        if (StringUtils.isBlank(ip)) {
             return false;
         }
 
-        if("unKnown".equals(ip)){
+        if ("unKnown".equals(ip)) {
             return false;
         }
 
-        if("unknown".equals(ip)){
+        if ("unknown".equals(ip)) {
             return false;
         }
 
@@ -429,25 +406,25 @@ public class CrmebUtil {
      * 获取fin_in_set拼装sql
      * @param field String 字段
      * @param value Integer 值
+     * @return String
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return String
      */
-    public static String getFindInSetSql(String field, Integer value ){
-        return "find_in_set(" + value +", " + field + ")";
+    public static String getFindInSetSql(String field, Integer value) {
+        return "find_in_set(" + value + ", " + field + ")";
     }
 
     /**
      * 获取fin_in_set拼装sql
      * @param field String 字段
-     * @param list ArrayList<Integer> 值
+     * @param list  ArrayList<Integer> 值
+     * @return String
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return String
      */
-    public static String getFindInSetSql(String field, ArrayList<Integer> list ){
+    public static String getFindInSetSql(String field, ArrayList<Integer> list) {
         ArrayList<String> sqlList = new ArrayList<>();
-        for (Integer value: list) {
+        for (Integer value : list) {
             sqlList.add(getFindInSetSql(field, value));
         }
         return "( " + StringUtils.join(sqlList, " or ") + ")";
@@ -457,14 +434,14 @@ public class CrmebUtil {
      * 获取fin_in_set拼装sql
      * @param field String 字段
      * @param idStr String 多个值，逗号分割
+     * @return String
      * @author Mr.Zhang
      * @since 2020-04-22
-     * @return String
      */
-    public static String getFindInSetSql(String field, String idStr ){
+    public static String getFindInSetSql(String field, String idStr) {
         List<Integer> list = stringToArray(idStr);
         ArrayList<String> sqlList = new ArrayList<>();
-        for (Integer value: list) {
+        for (Integer value : list) {
             sqlList.add(getFindInSetSql(field, value));
         }
         return "( " + StringUtils.join(sqlList, " or ") + ")";
@@ -472,14 +449,14 @@ public class CrmebUtil {
 
     /**
      * 通过id获取分类名称
-     * @param list 分类集合
+     * @param list          分类集合
      * @param categoryIdStr id字符串
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static String getValueByIndex(HashMap<Integer, String> list, String categoryIdStr){
-        if(list.size() < 1 || StringUtils.isBlank(categoryIdStr)){
+    public static String getValueByIndex(HashMap<Integer, String> list, String categoryIdStr) {
+        if (list.size() < 1 || StringUtils.isBlank(categoryIdStr)) {
             return "";
         }
         ArrayList<String> name = new ArrayList<>();
@@ -487,12 +464,12 @@ public class CrmebUtil {
 
         String str = "";
         for (Integer id : idList) {
-             str = getStrValueByIndex(list, id);
-            if(!StringUtils.isBlank(str)){
+            str = getStrValueByIndex(list, id);
+            if (!StringUtils.isBlank(str)) {
                 name.add(getStrValueByIndex(list, id));
             }
         }
-        if(name.size() < 1){
+        if (name.size() < 1) {
             return "";
         }
         return StringUtils.join(name, ",");
@@ -501,13 +478,13 @@ public class CrmebUtil {
     /**
      * 通过id获取分类名称
      * @param list 分类集合
-     * @param key id
+     * @param key  id
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static String getStrValueByIndex(HashMap<Integer, String> list, Integer key){
-        if(list.size() < 1){
+    public static String getStrValueByIndex(HashMap<Integer, String> list, Integer key) {
+        if (list.size() < 1) {
             return "";
         }
         return list.getOrDefault(key, "");
@@ -516,13 +493,13 @@ public class CrmebUtil {
     /**
      * 通过id获取分类名称
      * @param list 分类集合
-     * @param key id
+     * @param key  id
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static Integer getIntValueByIndex(HashMap<Integer, Integer> list, Integer key){
-        if(null == list ||list.size() < 1){
+    public static Integer getIntValueByIndex(HashMap<Integer, Integer> list, Integer key) {
+        if (null == list || list.size() < 1) {
             return 0;
         }
         return list.getOrDefault(key, 0);
@@ -531,10 +508,10 @@ public class CrmebUtil {
     /**
      * 获取uuid
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static String getUuid(){
+    public static String getUuid() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
@@ -543,10 +520,10 @@ public class CrmebUtil {
      * @param i1 当前周期
      * @param i2 上一个周期
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static int getRate(Integer i1, Integer i2){
+    public static int getRate(Integer i1, Integer i2) {
         BigDecimal b1 = new BigDecimal(i1);
         BigDecimal b2 = new BigDecimal(i2);
         return getRate(b1, b2);
@@ -557,31 +534,33 @@ public class CrmebUtil {
      * @param b1 当前周期
      * @param b2 上一个周期
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static int getRate(BigDecimal b1, BigDecimal b2){
+    public static int getRate(BigDecimal b1, BigDecimal b2) {
         //计算差值
 
-        if(b2.equals(b1)){
+        if (b2.equals(b1)) {
             //数值一样，说明没有增长
             return Constants.NUM_ZERO;
         }
 
-        if(b2.equals(BigDecimal.ZERO)){
+        if (b2.equals(BigDecimal.ZERO)) {
             //b2是0
             return Constants.NUM_ONE_HUNDRED;
         }
 
-        return (b1.subtract(b2)).divide(b2, 2, BigDecimal.ROUND_UP).multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).intValue();
+        return (b1.subtract(b2)).divide(b2, 2, BigDecimal.ROUND_UP)
+            .multiply(BigDecimal.TEN)
+            .multiply(BigDecimal.TEN)
+            .intValue();
 
-
-//        BigDecimal.setScale();//用于格式化小数点
-//        setScale(1);//表示保留以为小数，默认用四舍五入方式
-//        setScale(1,BigDecimal.ROUND_DOWN);//直接删除多余的小数位，如2.35会变成2.3
-//        setScale(1,BigDecimal.ROUND_UP);//进位处理，2.35变成2.4
-//        setScale(1,BigDecimal.ROUND_HALF_UP);//四舍五入，2.35变成2.4
-//        setScaler(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入，2.35变成2.3，如果是5则向下舍
+        //        BigDecimal.setScale();//用于格式化小数点
+        //        setScale(1);//表示保留以为小数，默认用四舍五入方式
+        //        setScale(1,BigDecimal.ROUND_DOWN);//直接删除多余的小数位，如2.35会变成2.3
+        //        setScale(1,BigDecimal.ROUND_UP);//进位处理，2.35变成2.4
+        //        setScale(1,BigDecimal.ROUND_HALF_UP);//四舍五入，2.35变成2.4
+        //        setScaler(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入，2.35变成2.3，如果是5则向下舍
     }
 
     /**
@@ -589,10 +568,10 @@ public class CrmebUtil {
      * @param i1 当前周期
      * @param i2 上一个周期
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static BigDecimal getRateBig(Integer i1, Integer i2){
+    public static BigDecimal getRateBig(Integer i1, Integer i2) {
         BigDecimal b1 = new BigDecimal(i1);
         BigDecimal b2 = new BigDecimal(i2);
         return getRateBig(b1, b2);
@@ -604,18 +583,18 @@ public class CrmebUtil {
      * @param b1 当前周期
      * @param b2 上一个周期
      * @author Mr.Zhang
-     * @since 2020-05-06
      * @
+     * @since 2020-05-06
      */
-    public static BigDecimal getRateBig(BigDecimal b1, BigDecimal b2){
+    public static BigDecimal getRateBig(BigDecimal b1, BigDecimal b2) {
         //计算差值
 
-        if(b2.compareTo(b1) == 0){
+        if (b2.compareTo(b1) == 0) {
             //数值一样，说明没有增长
             return BigDecimal.ZERO;
         }
 
-        if(b2.compareTo(BigDecimal.ZERO) == 0){
+        if (b2.compareTo(BigDecimal.ZERO) == 0) {
             //b2是0
             return b1.setScale(2, BigDecimal.ROUND_UP);
         }
@@ -626,9 +605,9 @@ public class CrmebUtil {
     /**
      * hash 转换
      * @param hash final byte[] hash参数
+     * @return String
      * @author Mr.Zhang
      * @since 2020-06-03
-     * @return String
      */
     public static String byteToHex(final byte[] hash) {
         Formatter formatter = new Formatter();
@@ -643,9 +622,9 @@ public class CrmebUtil {
     /**
      * hash 转换
      * @param base64 String 图片流
+     * @return String
      * @author Mr.Zhang
      * @since 2020-06-03
-     * @return String
      */
     public static String getBase64Image(String base64) {
         return "data:image/png;base64," + base64;
@@ -656,19 +635,18 @@ public class CrmebUtil {
      * @param param String 参数
      * @return String
      */
-    public static String trimSingeQua(String param){
-        return param.substring(1,param.length()-1);
+    public static String trimSingeQua(String param) {
+        return param.substring(1, param.length() - 1);
     }
-
 
     /**
      * 根据长度生成随机数字
      * @param start 起始数字
-     * @param end 结束数字
+     * @param end   结束数字
      * @return 生成的随机码
      */
-    public static Integer randomCount(Integer start, Integer end){
-        return (int)(Math.random()*(end - start +1) + start);
+    public static Integer randomCount(Integer start, Integer end) {
+        return (int)(Math.random() * (end - start + 1) + start);
     }
 
     /**
@@ -676,7 +654,7 @@ public class CrmebUtil {
      * @param payType String 支付类型
      * @return 生成的随机码
      */
-    public static String getOrderNo(String payType){
+    public static String getOrderNo(String payType) {
         return payType + randomCount(11111, 99999) + System.currentTimeMillis() + randomCount(11111, 99999);
     }
 
@@ -685,11 +663,11 @@ public class CrmebUtil {
      * @param payType String 支付类型
      * @return 生成的随机码
      */
-    public static String getOrderNoPrefix(String payType){
-        switch (payType){
+    public static String getOrderNoPrefix(String payType) {
+        switch (payType) {
             case Constants.PAY_TYPE_WE_CHAT:
                 return Constants.ORDER_NO_PREFIX_WE_CHAT;
-                //其他平台
+            //其他平台
             default:
                 return Constants.ORDER_NO_PREFIX_H5;
         }
@@ -709,7 +687,7 @@ public class CrmebUtil {
      * @param map Map<String, Object> 支付类型
      * @return 生成的随机码
      */
-    public static String mapToStringUrl(Map<String, Object> map){
+    public static String mapToStringUrl(Map<String, Object> map) {
         map = CrmebUtil.mapSort(map);
         StringBuilder sb = new StringBuilder();       // 多线程访问的情况下需要用StringBuffer
         Set es = map.keySet();                 // 所有参与传参的key按照accsii排序（升序）
@@ -739,7 +717,7 @@ public class CrmebUtil {
             //group
             String group = matcher.group(2);
             //ch:'李四'
-            ch = (char) Integer.parseInt(group, 16);
+            ch = (char)Integer.parseInt(group, 16);
             //group1
             String group1 = matcher.group(1);
             unicodeStr = unicodeStr.replace(group1, ch + "");
@@ -777,9 +755,9 @@ public class CrmebUtil {
         }
     }
 
-    public static String getSign(Map<String, Object> map, String signKey){
+    public static String getSign(Map<String, Object> map, String signKey) {
         String result = CrmebUtil.mapToStringUrl(map) + "&key=" + signKey;
-//        return DigestUtils.md5Hex(result).toUpperCase();
+        //        return DigestUtils.md5Hex(result).toUpperCase();
         String sign = SecureUtil.md5(result).toUpperCase();
         System.out.println("sign ========== " + sign);
         return sign;
@@ -790,14 +768,14 @@ public class CrmebUtil {
      * @param str
      * @return
      */
-    public static boolean isString2Num(String str){
+    public static boolean isString2Num(String str) {
         Pattern pattern = Pattern.compile("^[0-9]*$");
         Matcher matcher = pattern.matcher(str);
         return matcher.matches();
     }
 
     //数组去重
-    public static List<Integer> arrayUnique(Integer[] arr){
+    public static List<Integer> arrayUnique(Integer[] arr) {
         List<Integer> list = new ArrayList<>();
         for (Integer integer : arr) {
             if (!list.contains(integer)) {
@@ -808,17 +786,16 @@ public class CrmebUtil {
         return list;
     }
 
-
     /**
      * 百分比计算
-     * @param detailTotalNumber  销售量
-     * @param totalNumber  限量库存
-     * @return  百分比
+     * @param detailTotalNumber 销售量
+     * @param totalNumber       限量库存
+     * @return 百分比
      */
     public static String percentInstance(Integer detailTotalNumber, Integer totalNumber) {
         Double bfTotalNumber = Double.valueOf(detailTotalNumber);
         Double zcTotalNumber = Double.valueOf(totalNumber);
-        double percent = bfTotalNumber/zcTotalNumber;
+        double percent = bfTotalNumber / zcTotalNumber;
         //获取格式化对象
         NumberFormat nt = NumberFormat.getPercentInstance();
         //设置百分数精确度2即保留两位小数
@@ -828,9 +805,9 @@ public class CrmebUtil {
 
     /**
      * 百分比计算
-     * @param detailTotalNumber  销售量
-     * @param totalNumber  限量库存
-     * @return  百分比
+     * @param detailTotalNumber 销售量
+     * @param totalNumber       限量库存
+     * @return 百分比
      */
     public static int percentInstanceIntVal(Integer detailTotalNumber, Integer totalNumber) {
         BigDecimal sales = new BigDecimal(detailTotalNumber);
@@ -841,12 +818,14 @@ public class CrmebUtil {
 
     /**
      * 百分比计算
-     * @param detailTotalNumber  销售量
-     * @param totalNumber  限量库存
-     * @return  百分比
+     * @param detailTotalNumber 销售量
+     * @param totalNumber       限量库存
+     * @return 百分比
      */
     public static int percentInstanceIntVal(BigDecimal detailTotalNumber, BigDecimal totalNumber) {
-        int percentage = detailTotalNumber.divide(totalNumber, 2, BigDecimal.ROUND_UP).multiply(new BigDecimal(100)).intValue();
+        int percentage = detailTotalNumber.divide(totalNumber, 2, BigDecimal.ROUND_UP)
+            .multiply(new BigDecimal(100))
+            .intValue();
         return Math.min(percentage, 100);
     }
 
@@ -855,8 +834,8 @@ public class CrmebUtil {
      */
     public static <T> List<T> castList(Object obj, Class<T> clazz) {
         List<T> result = new ArrayList<>();
-        if(obj instanceof List<?>) {
-            for (Object o : (List<?>) obj) {
+        if (obj instanceof List<?>) {
+            for (Object o : (List<?>)obj) {
                 result.add(clazz.cast(o));
             }
             return result;

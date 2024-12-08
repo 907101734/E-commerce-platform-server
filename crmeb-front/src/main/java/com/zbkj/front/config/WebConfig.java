@@ -62,6 +62,7 @@ public class WebConfig implements WebMvcConfigurer {
             excludePathPatterns("/api/front/index/information").
             excludePathPatterns("/api/front/qrcode/**").
             excludePathPatterns("/api/front/login/mobile").
+            excludePathPatterns("/api/front/reginBanner").
             excludePathPatterns("/api/front/login").
             excludePathPatterns("/api/front/sendCode").
             excludePathPatterns("/api/front/wechat/**").
