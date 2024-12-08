@@ -290,32 +290,33 @@ public class OrderPayServiceImpl implements OrderPayService {
 
         //根据订单的商品详情，生成红包
         List<UserRedEnvelope> userRedEnvelopes = new ArrayList<>();
-
-        //广告
         LambdaQueryWrapper<Advertisement> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
         objectLambdaQueryWrapper.eq(Advertisement::getStatus, 1);
         List<Advertisement> advertisements = advertisementService.list(objectLambdaQueryWrapper);
 
-        for (StoreOrderInfo storeOrderInfo : orderInfoList) {
-            //如果是礼包就生成红包
-            if (Boolean.FALSE.equals(storeOrderInfo.getIsGift())) {
-                continue;
-            }
-            Integer payNum = storeOrderInfo.getPayNum();
-            for (int i = 0; i < payNum; i++) {
-                UserRedEnvelope userRedEnvelope = new UserRedEnvelope();
-                userRedEnvelope.setLinkId(storeOrder.getOrderId());
-                userRedEnvelope.setLinkType("order");
-                userRedEnvelope.setUid(storeOrder.getUid());
-                userRedEnvelope.setProductId(storeOrderInfo.getProductId());
-                userRedEnvelope.setProductPrice(storeOrderInfo.getPrice());
-                userRedEnvelope.setGiftProperty(storeOrderInfo.getGiftProperty());
-                BigDecimal price = storeOrderInfo.getPrice();
-                BigDecimal coefficient = new BigDecimal(2);
-                userRedEnvelope.setTotalAmount(price.multiply(coefficient));
-                userRedEnvelope.setSurplusAmount(price.multiply(coefficient));
-                userRedEnvelope.setStatus(1);
-                userRedEnvelopes.add(userRedEnvelope);
+        if (Boolean.TRUE.equals(storeOrder.getIsGift())) {
+            //广告
+            for (StoreOrderInfo storeOrderInfo : orderInfoList) {
+                //如果是礼包就生成红包
+                if (Boolean.FALSE.equals(storeOrderInfo.getIsGift())) {
+                    continue;
+                }
+                Integer payNum = storeOrderInfo.getPayNum();
+                for (int i = 0; i < payNum; i++) {
+                    UserRedEnvelope userRedEnvelope = new UserRedEnvelope();
+                    userRedEnvelope.setLinkId(storeOrder.getOrderId());
+                    userRedEnvelope.setLinkType("order");
+                    userRedEnvelope.setUid(storeOrder.getUid());
+                    userRedEnvelope.setProductId(storeOrderInfo.getProductId());
+                    userRedEnvelope.setProductPrice(storeOrderInfo.getPrice());
+                    userRedEnvelope.setGiftProperty(storeOrderInfo.getGiftProperty());
+                    BigDecimal price = storeOrderInfo.getPrice();
+                    BigDecimal coefficient = new BigDecimal(2);
+                    userRedEnvelope.setTotalAmount(price.multiply(coefficient));
+                    userRedEnvelope.setSurplusAmount(price.multiply(coefficient));
+                    userRedEnvelope.setStatus(1);
+                    userRedEnvelopes.add(userRedEnvelope);
+                }
             }
         }
 

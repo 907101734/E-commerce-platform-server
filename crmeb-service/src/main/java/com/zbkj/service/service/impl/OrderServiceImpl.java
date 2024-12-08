@@ -1393,6 +1393,7 @@ public class OrderServiceImpl implements OrderService {
         if ("buyNow".equals(request.getPreOrderType())) {// 立即购买
             // 立即购买只会有一条详情
             PreOrderDetailRequest detailRequest = request.getOrderDetails().get(0);
+            orderInfoVo.setIsGift(false);
             if (detailRequest.getSeckillId() > 0) {// 秒杀
                 detailVoList.add(validatePreOrderSeckill(detailRequest, user));
                 orderInfoVo.setSeckillId(detailRequest.getSeckillId());

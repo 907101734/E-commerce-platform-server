@@ -1,6 +1,7 @@
 # CRMEB 相关配置
 crmeb:
   version: CRMEB-JAVA-KY-v1.3.4 # 当前代码版本
+  imagePath: /home/op/fgxinye/ #/www/wwwroot/Crmeb-admin.jar path/ # 服务器图片路径配置 斜杠结尾
 
 server:
   port: 20001
