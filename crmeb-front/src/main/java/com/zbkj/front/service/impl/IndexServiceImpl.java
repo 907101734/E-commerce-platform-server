@@ -246,10 +246,12 @@ public class IndexServiceImpl implements IndexService {
     @Override
     public InformationResponse getInformation() {
         String informationName = systemConfigService.getValueByKey(InformationConstants.INFORMATION_NAME);
+        String informationPhone = systemConfigService.getValueByKey(InformationConstants.INFORMATION_PHONE);
         String informationDescription = systemConfigService.getValueByKey(InformationConstants.INFORMATION_DESCRIPTION);
         String informationImage = systemConfigService.getValueByKey(InformationConstants.INFORMATION_IMAGE);
         InformationResponse informationResponse = new InformationResponse();
         informationResponse.setName(informationName);
+        informationResponse.setPhone(informationPhone);
         informationResponse.setDescription(informationDescription);
         informationResponse.setImage(informationImage);
         return informationResponse;

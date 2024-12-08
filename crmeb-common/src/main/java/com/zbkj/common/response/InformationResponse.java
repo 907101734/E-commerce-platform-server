@@ -20,6 +20,9 @@ public class InformationResponse {
     @ApiModelProperty(value = "企业名称")
     private String name;
 
+    @ApiModelProperty(value = "企业电话")
+    private String phone;
+
     @ApiModelProperty(value = "企业图片")
     private String image;
 

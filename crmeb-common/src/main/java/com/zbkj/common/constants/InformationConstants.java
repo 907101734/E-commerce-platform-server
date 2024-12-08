@@ -21,4 +21,9 @@ public class InformationConstants {
      * 企业图片
      */
     public static final String INFORMATION_IMAGE = "wtj_qytp";
+
+    /**
+     * 联系电话
+     */
+    public static final String INFORMATION_PHONE = "wtj_lxdh";
 }

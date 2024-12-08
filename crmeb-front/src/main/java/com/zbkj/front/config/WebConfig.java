@@ -59,6 +59,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(frontTokenInterceptor()).
             addPathPatterns("/api/front/**").
             excludePathPatterns("/api/front/index").
+            excludePathPatterns("/api/front/index/information").
             excludePathPatterns("/api/front/qrcode/**").
             excludePathPatterns("/api/front/login/mobile").
             excludePathPatterns("/api/front/login").
@@ -77,6 +78,7 @@ public class WebConfig implements WebMvcConfigurer {
             excludePathPatterns("/api/front/groom/list/**").
             excludePathPatterns("/api/front/config").
             excludePathPatterns("/api/front/category").
+            excludePathPatterns("/api/front/reginCategory").
             excludePathPatterns("/api/front/seckill/*").
             excludePathPatterns("/api/front/seckill/list/*").
             excludePathPatterns("/api/front/seckill/detail/*").
