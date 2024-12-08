@@ -165,6 +165,11 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
                 break;
         }
 
+        //获取商品区域
+        if (request.getRegin() != null) {
+            lambdaQueryWrapper.eq(StoreProduct::getRegion, request.getRegin());
+        }
+
         //关键字搜索
         if (StrUtil.isNotBlank(request.getKeywords())) {
             lambdaQueryWrapper.and(i -> i
