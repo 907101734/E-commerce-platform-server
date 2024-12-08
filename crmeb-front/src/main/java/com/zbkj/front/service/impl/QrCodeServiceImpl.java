@@ -58,7 +58,7 @@ public class QrCodeServiceImpl implements QrCodeService {
                     if (scene.length() > 0) {
                         scene.append(",");
                     }
-                    scene.append(m.getKey()).append(":").append(m.getValue());
+                    scene.append(m.getKey()).append("=").append(m.getValue());
                 }
             }
         }catch (Exception e){
