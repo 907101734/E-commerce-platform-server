@@ -40,6 +40,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -308,7 +309,7 @@ public class UserExtractServiceImpl extends ServiceImpl<UserExtractDao, UserExtr
                 updateById(userExtract);
                 // userBrokerageRecordService.save(brokerageRecord);
                 //返还余额
-                userService.operationNowMoney(userExtract.getUid(), userExtract.getExtractPrice(), user.getBrokeragePrice(), "add");
+                userService.operationNowMoney(userExtract.getUid(), user.getNowMoney(), userExtract.getExtractPrice(), "add");
                 userBillService.save(userBill);
                 return Boolean.TRUE;
             });
@@ -328,6 +329,18 @@ public class UserExtractServiceImpl extends ServiceImpl<UserExtractDao, UserExtr
             if (ObjectUtil.isNull(userBill)) {
                 throw new CrmebException("对应的申请现金记录不存在");
             }
+            //提现金额
+            BigDecimal amount = userBill.getNumber();
+            // 定义 6% 的 BigDecimal 值
+            BigDecimal percentage = new BigDecimal("0.06");
+            // 计算金额乘以 6%
+            BigDecimal result = amount.multiply(percentage);
+            // 例如，保留两位小数，使用 ROUND_HALF_UP 舍入模式
+            BigDecimal roundedResult = result.setScale(2, RoundingMode.HALF_DOWN);
+            //实际转账
+            BigDecimal balance = amount.subtract(roundedResult);
+
+            userBill.setMark(userBill.getMark() + ",手续费扣款:" + roundedResult + ",实际转账：" + balance);
             execute = transactionTemplate.execute(e -> {
                 updateById(userExtract);
                 userBill.setStatus(1);
@@ -441,7 +454,7 @@ public class UserExtractServiceImpl extends ServiceImpl<UserExtractDao, UserExtr
         userBill.setType(Constants.USER_BILL_TYPE_EXTRACT);
         userBill.setNumber(extractPrice);
         userBill.setBalance(user.getNowMoney().subtract(extractPrice));
-        userBill.setMark(StrUtil.format("余额提现,增加{}", extractPrice));
+        userBill.setMark(StrUtil.format("余额提现,余额减少{}", extractPrice));
         userBill.setStatus(0);
         userBill.setCreateTime(DateUtil.nowDateTime());
 

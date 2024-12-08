@@ -9,26 +9,29 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zbkj.common.page.CommonPage;
-import com.zbkj.common.request.CartNumRequest;
-import com.zbkj.common.request.CartRequest;
-import com.zbkj.common.request.CartResetRequest;
-import com.zbkj.common.request.PageParamRequest;
-import com.zbkj.common.constants.Constants;
-import com.zbkj.common.constants.RedisConstatns;
-import com.zbkj.common.exception.CrmebException;
-import com.zbkj.common.response.CartInfoResponse;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zbkj.common.utils.RedisUtil;
+import com.zbkj.common.constants.Constants;
+import com.zbkj.common.exception.CrmebException;
 import com.zbkj.common.model.cat.StoreCart;
 import com.zbkj.common.model.product.StoreProduct;
 import com.zbkj.common.model.product.StoreProductAttrValue;
 import com.zbkj.common.model.system.SystemUserLevel;
 import com.zbkj.common.model.user.User;
+import com.zbkj.common.page.CommonPage;
+import com.zbkj.common.request.CartNumRequest;
+import com.zbkj.common.request.CartRequest;
+import com.zbkj.common.request.CartResetRequest;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.response.CartInfoResponse;
+import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.service.dao.StoreCartDao;
-import com.zbkj.service.service.*;
+import com.zbkj.service.service.StoreCartService;
+import com.zbkj.service.service.StoreProductAttrValueService;
+import com.zbkj.service.service.StoreProductService;
+import com.zbkj.service.service.SystemUserLevelService;
+import com.zbkj.service.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,11 +78,11 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
     private RedisUtil redisUtil;
 
     /**
-    * 列表
-    * @param pageParamRequest 分页类参数
-    * @param isValid 是否失效
-    * @return List<CartInfoResponse>
-    */
+     * 列表
+     * @param pageParamRequest 分页类参数
+     * @param isValid          是否失效
+     * @return List<CartInfoResponse>
+     */
     @Override
     public PageInfo<CartInfoResponse> getList(PageParamRequest pageParamRequest, boolean isValid) {
         Integer userId = userService.getUserIdException();
@@ -113,17 +116,17 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
             if (!isValid) {// 失效商品直接掠过
                 cartInfoResponse.setAttrStatus(false);
                 response.add(cartInfoResponse);
-                continue ;
+                continue;
             }
 
             // 获取对应的商品规格信息(只会有一条信息)
             List<StoreProductAttrValue> attrValueList = storeProductAttrValueService.getListByProductIdAndAttrId(storeCart.getProductId(),
-                    storeCart.getProductAttrUnique(), Constants.PRODUCT_TYPE_NORMAL);
+                storeCart.getProductAttrUnique(), Constants.PRODUCT_TYPE_NORMAL);
             // 规格不存在即失效
             if (CollUtil.isEmpty(attrValueList)) {
                 cartInfoResponse.setAttrStatus(false);
                 response.add(cartInfoResponse);
-                continue ;
+                continue;
             }
             StoreProductAttrValue attrValue = attrValueList.get(0);
             if (StrUtil.isNotBlank(attrValue.getImage())) {
@@ -136,7 +139,9 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
             cartInfoResponse.setAttrStatus(attrValue.getStock() > 0);
             cartInfoResponse.setStock(attrValue.getStock());
             if (ObjectUtil.isNotNull(userLevel)) {
-                BigDecimal vipPrice = attrValue.getPrice().multiply(new BigDecimal(userLevel.getDiscount())).divide(new BigDecimal(100), 2 ,BigDecimal.ROUND_HALF_UP);
+                BigDecimal vipPrice = attrValue.getPrice()
+                    .multiply(new BigDecimal(userLevel.getDiscount()))
+                    .divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
                 cartInfoResponse.setVipPrice(vipPrice);
             }
             response.add(cartInfoResponse);
@@ -170,6 +175,9 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
      */
     @Override
     public String saveCate(CartRequest storeCartRequest) {
+        if (true) {
+            throw new CrmebException("暂不支持购物车下单");
+        }
         // 判断商品正常
         StoreProduct product = storeProductService.getById(storeCartRequest.getProductId());
         if (ObjectUtil.isNull(product) || product.getIsDel() || !product.getIsShow()) {
@@ -192,15 +200,19 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
             StoreCart forUpdateStoreCart = existCarts.get(0);
             forUpdateStoreCart.setCartNum(forUpdateStoreCart.getCartNum() + storeCartRequest.getCartNum());
             boolean updateResult = updateById(forUpdateStoreCart);
-            if (!updateResult) throw new CrmebException("添加购物车失败");
-            return forUpdateStoreCart.getId()+"";
+            if (!updateResult) {
+                throw new CrmebException("添加购物车失败");
+            }
+            return forUpdateStoreCart.getId() + "";
         } else {// 新增购物车数据
             StoreCart storeCart = new StoreCart();
             BeanUtils.copyProperties(storeCartRequest, storeCart);
             storeCart.setUid(currentUser.getUid());
             storeCart.setType("product");
-            if (dao.insert(storeCart) <= 0) throw new CrmebException("添加购物车失败");
-            return storeCart.getId()+"";
+            if (dao.insert(storeCart) <= 0) {
+                throw new CrmebException("添加购物车失败");
+            }
+            return storeCart.getId() + "";
         }
     }
 
@@ -235,8 +247,10 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
         StoreCart storeCartPram = new StoreCart();
         storeCartPram.setProductId(productId);
         List<StoreCart> existStoreCartProducts = getByEntity(storeCartPram);
-        if (null == existStoreCartProducts) return true;
-        existStoreCartProducts.forEach(e-> e.setStatus(false));
+        if (null == existStoreCartProducts) {
+            return true;
+        }
+        existStoreCartProducts.forEach(e -> e.setStatus(false));
         return updateBatchById(existStoreCartProducts);
     }
 
@@ -250,13 +264,18 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
         LambdaQueryWrapper<StoreCart> lqw = new LambdaQueryWrapper<>();
         lqw.eq(StoreCart::getId, resetRequest.getId());
         StoreCart storeCart = dao.selectOne(lqw);
-        if (ObjectUtil.isNull(storeCart)) throw new CrmebException("购物车不存在");
-        if (ObjectUtil.isNull(resetRequest.getNum()) || resetRequest.getNum() <= 0 || resetRequest.getNum() >= 999)
+        if (ObjectUtil.isNull(storeCart)) {
+            throw new CrmebException("购物车不存在");
+        }
+        if (ObjectUtil.isNull(resetRequest.getNum()) || resetRequest.getNum() <= 0 || resetRequest.getNum() >= 999) {
             throw new CrmebException("数量不合法");
+        }
         storeCart.setCartNum(resetRequest.getNum());
         storeCart.setProductAttrUnique(resetRequest.getUnique() + "");
         boolean updateResult = dao.updateById(storeCart) > 0;
-        if (!updateResult) throw new CrmebException("重选添加购物车失败");
+        if (!updateResult) {
+            throw new CrmebException("重选添加购物车失败");
+        }
         productStatusEnableFlag(resetRequest.getId(), true);
         return updateResult;
     }
@@ -284,7 +303,9 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
         StoreCart storeCartPram = new StoreCart();
         storeCartPram.setProductId(productId);
         List<StoreCart> existStoreCartProducts = getByEntity(storeCartPram);
-        if (CollUtil.isNotEmpty(existStoreCartProducts)) return true;
+        if (CollUtil.isNotEmpty(existStoreCartProducts)) {
+            return true;
+        }
         List<Long> cartIds = existStoreCartProducts.stream().map(StoreCart::getId).collect(Collectors.toList());
         if (CollUtil.isNotEmpty(cartIds)) {
             deleteCartByIds(cartIds);
@@ -294,7 +315,7 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
 
     /**
      * 通过id和uid获取购物车信息
-     * @param id 购物车id
+     * @param id  购物车id
      * @param uid 用户uid
      * @return StoreCart
      */
@@ -310,7 +331,7 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
 
     /**
      * 获取购物车商品数量（不区分规格）
-     * @param uid 用户uid
+     * @param uid   用户uid
      * @param proId 商品id
      */
     @Override
@@ -328,21 +349,30 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
 
     /**
      * 修改购物车商品数量
-     * @param id 购物车id
+     * @param id     购物车id
      * @param number 数量
      */
     @Override
     public Boolean updateCartNum(Integer id, Integer number) {
-        if (ObjectUtil.isNull(number)) throw new CrmebException("商品数量不合法");
-        if (number <=0 || number > 99) throw new CrmebException("商品数量不能小于1大于99");
+        if (ObjectUtil.isNull(number)) {
+            throw new CrmebException("商品数量不合法");
+        }
+        if (number <= 0 || number > 99) {
+            throw new CrmebException("商品数量不能小于1大于99");
+        }
         StoreCart storeCart = getById(id);
-        if (ObjectUtil.isNull(storeCart)) throw new CrmebException("当前购物车不存在");
-        if (storeCart.getCartNum().equals(number)) return true;
+        if (ObjectUtil.isNull(storeCart)) {
+            throw new CrmebException("当前购物车不存在");
+        }
+        if (storeCart.getCartNum().equals(number)) {
+            return true;
+        }
         storeCart.setCartNum(number);
         return updateById(storeCart);
     }
 
     ///////////////////////////////////////////////////////////////////自定义方法
+
     /**
      * 购物车商品数量（条数）
      * @param userId Integer 用户id
@@ -380,15 +410,17 @@ public class StoreCartServiceImpl extends ServiceImpl<StoreCartDao, StoreCart> i
     /**
      * 根据购物车id更新状态
      * @param carId 购物车id
-     * @param flag 待更新状态值
+     * @param flag  待更新状态值
      * @return 更新结果
      */
     private Boolean productStatusEnableFlag(Long carId, Boolean flag) {
         StoreCart storeCartPram = new StoreCart();
         storeCartPram.setId(carId);
         List<StoreCart> existStoreCartProducts = getByEntity(storeCartPram);
-        if(ObjectUtil.isNull(existStoreCartProducts)) return false;
-        existStoreCartProducts = existStoreCartProducts.stream().map(e->{
+        if (ObjectUtil.isNull(existStoreCartProducts)) {
+            return false;
+        }
+        existStoreCartProducts = existStoreCartProducts.stream().map(e -> {
             e.setStatus(flag);
             return e;
         }).collect(Collectors.toList());

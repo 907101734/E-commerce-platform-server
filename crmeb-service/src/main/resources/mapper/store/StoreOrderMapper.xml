@@ -48,7 +48,8 @@
     <select id="getBrokerageData" resultType="com.zbkj.common.response.OrderBrokerageData">
         select count(*) as num, sum(o.pay_price) as price
         from eb_store_order as o
-        right join eb_user_brokerage_record as br on br.link_id = o.order_id and br.status = 3 and br.uid = #{spreadId}
-        where o.uid = #{uid} and o.status > 1;
+                 right join eb_user_brokerage_record as br
+                            on br.link_id = o.order_id and br.status = 3 and br.uid = #{spreadId}
+        where o.uid = #{uid};
     </select>
 </mapper>

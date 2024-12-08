@@ -1381,13 +1381,14 @@ public class OrderServiceImpl implements OrderService {
         OrderInfoVo orderInfoVo = new OrderInfoVo();
         List<OrderInfoDetailVo> detailVoList = CollUtil.newArrayList();
         if ("shoppingCart".equals(request.getPreOrderType())) {// 购物车购买
-            detailVoList = validatePreOrderShopping(request, user);
-            List<Long> cartIdList = request.getOrderDetails()
-                .stream()
-                .map(PreOrderDetailRequest::getShoppingCartId)
-                .distinct()
-                .collect(Collectors.toList());
-            orderInfoVo.setCartIdList(cartIdList);
+            throw new CrmebException("暂不支持购物车下单");
+            // detailVoList = validatePreOrderShopping(request, user);
+            // List<Long> cartIdList = request.getOrderDetails()
+            //     .stream()
+            //     .map(PreOrderDetailRequest::getShoppingCartId)
+            //     .distinct()
+            //     .collect(Collectors.toList());
+            // orderInfoVo.setCartIdList(cartIdList);
         }
         if ("buyNow".equals(request.getPreOrderType())) {// 立即购买
             // 立即购买只会有一条详情
