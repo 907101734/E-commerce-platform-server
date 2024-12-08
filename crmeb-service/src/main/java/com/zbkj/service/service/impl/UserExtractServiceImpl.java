@@ -309,7 +309,7 @@ public class UserExtractServiceImpl extends ServiceImpl<UserExtractDao, UserExtr
                 updateById(userExtract);
                 // userBrokerageRecordService.save(brokerageRecord);
                 //返还余额
-                userService.operationNowMoney(userExtract.getUid(), user.getNowMoney(), userExtract.getExtractPrice(), "add");
+                userService.operationNowMoney(userExtract.getUid(), userExtract.getExtractPrice(),user.getNowMoney(), "add");
                 userBillService.save(userBill);
                 return Boolean.TRUE;
             });
