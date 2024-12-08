@@ -75,10 +75,4 @@ public class IndexInfoResponse implements Serializable {
 
     @ApiModelProperty(value = "首页报单区展示")
     private List<GiftTypeVo> bdqMenus;
-
-    @ApiModelProperty(value = "门店区banner滚动图")
-    private List<HashMap<String, Object>> mdqBanner;
-
-    @ApiModelProperty(value = "生活区banner滚动图")
-    private List<HashMap<String, Object>> shqBanner;
 }

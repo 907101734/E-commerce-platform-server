@@ -6,6 +6,7 @@ import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.response.IndexInfoResponse;
 import com.zbkj.common.response.IndexProductResponse;
 import com.zbkj.common.response.InformationResponse;
+import com.zbkj.common.response.ReginBannerResponse;
 import com.zbkj.common.vo.MyRecord;
 
 import java.util.HashMap;
@@ -30,6 +31,12 @@ public interface IndexService {
      * @return IndexInfoResponse
      */
     IndexInfoResponse getIndexInfo();
+
+    /**
+     * 区域轮播图
+     * @return
+     */
+    ReginBannerResponse getReginBanner();
 
     /**
      * 热门搜索

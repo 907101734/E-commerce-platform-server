@@ -19,6 +19,7 @@ import com.zbkj.common.response.IndexInfoResponse;
 import com.zbkj.common.response.IndexProductResponse;
 import com.zbkj.common.response.InformationResponse;
 import com.zbkj.common.response.ProductActivityItemResponse;
+import com.zbkj.common.response.ReginBannerResponse;
 import com.zbkj.common.utils.CrmebUtil;
 import com.zbkj.common.vo.MyRecord;
 import com.zbkj.front.service.IndexService;
@@ -92,10 +93,6 @@ public class IndexServiceImpl implements IndexService {
 
         //门店区商品
         indexInfoResponse.setMdqImage(systemConfigService.getValueByKey(Constants.CONFIG_KEY_MDQ_LOGO));
-        indexInfoResponse.setMdqBanner(systemGroupDataService.getListMapByGid(Constants.GROUP_DATA_ID_MDQ_LIST_BANNNER));
-
-        //生活区
-        indexInfoResponse.setShqBanner(systemGroupDataService.getListMapByGid(Constants.GROUP_DATA_ID_SHQ_LIST_BANNNER));
 
         //设置报单区展示
         indexInfoResponse.setBdqMenus(storeProductService.getGiftTypes());
@@ -114,8 +111,13 @@ public class IndexServiceImpl implements IndexService {
         return indexInfoResponse;
     }
 
-    public static void main(String[] args) {
-        System.out.println(111);
+    @Override
+    public ReginBannerResponse getReginBanner() {
+        ReginBannerResponse response = new ReginBannerResponse();
+        response.setMdqBanner(systemGroupDataService.getListMapByGid(Constants.GROUP_DATA_ID_MDQ_LIST_BANNNER));
+        //生活区
+        response.setShqBanner(systemGroupDataService.getListMapByGid(Constants.GROUP_DATA_ID_SHQ_LIST_BANNNER));
+        return response;
     }
 
     /**

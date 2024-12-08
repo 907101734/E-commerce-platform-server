@@ -8,6 +8,7 @@ import com.zbkj.common.response.CommonResult;
 import com.zbkj.common.response.IndexInfoResponse;
 import com.zbkj.common.response.IndexProductResponse;
 import com.zbkj.common.response.InformationResponse;
+import com.zbkj.common.response.ReginBannerResponse;
 import com.zbkj.front.service.IndexService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -53,6 +54,16 @@ public class IndexController {
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public CommonResult<IndexInfoResponse> getIndexInfo() {
         return CommonResult.success(indexService.getIndexInfo());
+    }
+
+    /**
+     * 轮播图数据
+     * @return
+     */
+    @ApiOperation(value = "轮播图数据")
+    @RequestMapping(value = "/reginBanner", method = RequestMethod.GET)
+    public CommonResult<ReginBannerResponse> getReginBanner() {
+        return CommonResult.success(indexService.getReginBanner());
     }
 
     /**
