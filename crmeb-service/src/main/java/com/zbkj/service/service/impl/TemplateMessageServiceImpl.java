@@ -255,8 +255,9 @@ public class TemplateMessageServiceImpl extends ServiceImpl<TemplateMessageDao, 
 
         List<Integer> kidList = new ArrayList<>();
         collect.forEach(e -> {
-            if (map.containsKey(e)) {
-                kidList.add(map.get(e));
+            String key = e.replaceAll("\n","");
+            if (map.containsKey(key)) {
+                kidList.add(map.get(key));
             }
         });
         return kidList;

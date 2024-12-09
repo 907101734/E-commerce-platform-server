@@ -80,4 +80,11 @@ public interface UserRechargeService extends IService<UserRecharge> {
      * @return Integer
      */
     Integer getRechargeUserNumByPeriod(String startDate, String endDate);
+
+    /**
+     * 处理充值记录
+     * @param uid
+     * @param moneyValue
+     */
+    void operationNowMoney(Integer uid,BigDecimal moneyValue);
 }

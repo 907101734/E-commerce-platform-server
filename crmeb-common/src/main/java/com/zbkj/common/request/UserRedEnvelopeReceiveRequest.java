@@ -22,4 +22,8 @@ public class UserRedEnvelopeReceiveRequest {
     @NotNull(message = "红包id不能为空")
     @ApiModelProperty(value = "红包id")
     private Integer id;
+
+    @NotNull(message = "广告id不能为空")
+    @ApiModelProperty(value = "广告id")
+    private Integer adId;
 }

@@ -25,12 +25,11 @@ import com.zbkj.common.request.UserRedEnvelopeRecordRequest;
 import com.zbkj.common.response.UserRedEnvRecordCountResponse;
 import com.zbkj.common.response.UserRedEnvRecordListResponse;
 import com.zbkj.common.response.UserRedEnvRecordPriceResponse;
+import com.zbkj.common.response.UserRedVideoResponse;
 import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.common.vo.UserRedEnvelopeRecordVo;
 import com.zbkj.service.dao.UserRedEnvelopeRecordDao;
 import com.zbkj.service.service.AdvertisementService;
-import com.zbkj.service.service.StoreOrderInfoService;
-import com.zbkj.service.service.StoreOrderService;
 import com.zbkj.service.service.SystemAttachmentService;
 import com.zbkj.service.service.UserBillService;
 import com.zbkj.service.service.UserRedEnvelopeRecordService;
@@ -53,6 +52,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -77,12 +77,6 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
     private UserBillService userBillService;
 
     @Autowired
-    private StoreOrderService storeOrderService;
-
-    @Autowired
-    private StoreOrderInfoService storeOrderInfoService;
-
-    @Autowired
     private TransactionTemplate transactionTemplate;
 
     @Autowired
@@ -93,6 +87,8 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
 
     @Autowired
     private SystemAttachmentService systemAttachmentService;
+
+    private final Random random = new Random();
 
     @Override
     public List<UserRedEnvelopeRecordVo> findPageLList(UserRedEnvelopeRecordRequest request, PageParamRequest pageParamRequest) {
@@ -266,7 +262,11 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
         //设置为已领取
         userRedEnvelopeRecord.setStatus(1);
         userRedEnvelopeRecord.setReceiveTime(new Date());
+        userRedEnvelopeRecord.setLinkAdId(request.getId());
         User currentUser = userService.getInfo();
+
+        Advertisement advertisement = advertisementService.getById(request.getAdId());
+        advertisement.setViewCount(advertisement.getViewCount() + 1);
 
         // userBill现金增加记录
         UserBill userBill = new UserBill();
@@ -284,6 +284,8 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
         userBill.setCreateTime(DateUtil.date());
 
         Boolean execute = transactionTemplate.execute(e -> {
+            //更新视频
+            advertisementService.updateById(advertisement);
             //修改状态
             this.updateById(userRedEnvelopeRecord);
             // 加余额
@@ -298,6 +300,22 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
         userRedEnvRecordPriceResponse.setId(userRedEnvelopeRecord.getId());
         userRedEnvRecordPriceResponse.setPrice(userRedEnvelopeRecord.getPrice());
         return userRedEnvRecordPriceResponse;
+    }
+
+    @Override
+    public UserRedVideoResponse getVideo() {
+        //广告
+        LambdaQueryWrapper<Advertisement> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        objectLambdaQueryWrapper.eq(Advertisement::getStatus, 1);
+        List<Advertisement> advertisements = advertisementService.list(objectLambdaQueryWrapper);
+        if (advertisements.isEmpty()) {
+            throw new CrmebException("后台未设置广告！！");
+        }
+        int nextInt = random.nextInt(advertisements.size());
+        UserRedVideoResponse userRedVideoResponse = new UserRedVideoResponse();
+        userRedVideoResponse.setLinkAdId(advertisements.get(nextInt).getId());
+        userRedVideoResponse.setLinkAdAddr(advertisements.get(nextInt).getAttDir());
+        return userRedVideoResponse;
     }
 
     @Override

@@ -13,17 +13,46 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zbkj.common.constants.*;
+import com.zbkj.common.constants.Constants;
+import com.zbkj.common.constants.CouponConstants;
+import com.zbkj.common.constants.ExperienceRecordConstants;
+import com.zbkj.common.constants.IntegralRecordConstants;
+import com.zbkj.common.constants.RegularConstants;
+import com.zbkj.common.constants.SmsConstants;
+import com.zbkj.common.constants.SysConfigConstants;
 import com.zbkj.common.exception.CrmebException;
 import com.zbkj.common.model.coupon.StoreCoupon;
 import com.zbkj.common.model.coupon.StoreCouponUser;
 import com.zbkj.common.model.order.StoreOrder;
 import com.zbkj.common.model.record.UserVisitRecord;
 import com.zbkj.common.model.system.SystemUserLevel;
-import com.zbkj.common.model.user.*;
+import com.zbkj.common.model.user.User;
+import com.zbkj.common.model.user.UserBill;
+import com.zbkj.common.model.user.UserBrokerageRecord;
+import com.zbkj.common.model.user.UserExperienceRecord;
+import com.zbkj.common.model.user.UserIntegralRecord;
+import com.zbkj.common.model.user.UserLevel;
+import com.zbkj.common.model.user.UserSign;
 import com.zbkj.common.page.CommonPage;
-import com.zbkj.common.request.*;
-import com.zbkj.common.response.*;
+import com.zbkj.common.request.AdminIntegralSearchRequest;
+import com.zbkj.common.request.FundsMonitorSearchRequest;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.request.PasswordRequest;
+import com.zbkj.common.request.RegisterThirdUserRequest;
+import com.zbkj.common.request.RetailShopStairUserRequest;
+import com.zbkj.common.request.StoreCouponUserSearchRequest;
+import com.zbkj.common.request.UpdateUserLevelRequest;
+import com.zbkj.common.request.UserBindingPhoneUpdateRequest;
+import com.zbkj.common.request.UserEditRequest;
+import com.zbkj.common.request.UserOperateIntegralMoneyRequest;
+import com.zbkj.common.request.UserSearchRequest;
+import com.zbkj.common.request.UserUpdateRequest;
+import com.zbkj.common.request.UserUpdateSpreadRequest;
+import com.zbkj.common.response.SpreadOrderResponse;
+import com.zbkj.common.response.TopDetail;
+import com.zbkj.common.response.UserCenterResponse;
+import com.zbkj.common.response.UserResponse;
+import com.zbkj.common.response.UserSpreadPeopleItemResponse;
 import com.zbkj.common.token.FrontTokenComponent;
 import com.zbkj.common.utils.CommonUtil;
 import com.zbkj.common.utils.CrmebUtil;
@@ -31,7 +60,24 @@ import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.utils.RedisUtil;
 import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.service.dao.UserDao;
-import com.zbkj.service.service.*;
+import com.zbkj.service.service.StoreCouponService;
+import com.zbkj.service.service.StoreCouponUserService;
+import com.zbkj.service.service.StoreOrderService;
+import com.zbkj.service.service.StoreProductRelationService;
+import com.zbkj.service.service.SystemAttachmentService;
+import com.zbkj.service.service.SystemConfigService;
+import com.zbkj.service.service.SystemUserLevelService;
+import com.zbkj.service.service.UserBillService;
+import com.zbkj.service.service.UserBrokerageRecordService;
+import com.zbkj.service.service.UserExperienceRecordService;
+import com.zbkj.service.service.UserGroupService;
+import com.zbkj.service.service.UserIntegralRecordService;
+import com.zbkj.service.service.UserLevelService;
+import com.zbkj.service.service.UserRechargeService;
+import com.zbkj.service.service.UserService;
+import com.zbkj.service.service.UserSignService;
+import com.zbkj.service.service.UserTagService;
+import com.zbkj.service.service.UserVisitRecordService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,7 +89,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -122,6 +172,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     @Autowired
     private SystemAttachmentService systemAttachmentService;
+
+    @Autowired
+    private UserRechargeService userRechargeService;
 
     /**
      * 分页显示用户表
@@ -277,6 +330,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
                     userBillService.save(userBill);
                     operationNowMoney(user.getUid(), request.getMoneyValue(), user.getNowMoney(), "add");
+
+                    userRechargeService.operationNowMoney(user.getUid(), request.getMoneyValue());
                 } else {
                     userBill.setPm(0);
                     userBill.setType(Constants.USER_BILL_TYPE_SYSTEM_SUB);
@@ -676,8 +731,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
      * 根据用户id获取自己本身的推广用户
      */
     @Override
-    public List<UserSpreadPeopleItemResponse> getSpreadPeopleList(
-        List<Integer> userIdList, String keywords, String sortKey, String isAsc, PageParamRequest pageParamRequest) {
+    public List<UserSpreadPeopleItemResponse> getSpreadPeopleList(List<Integer> userIdList, String keywords, String sortKey, String isAsc, PageParamRequest pageParamRequest) {
 
         PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
 
@@ -890,8 +944,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         Page<User> pageUser = PageHelper.startPage(pageRequest.getPage(), pageRequest.getLimit());
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
         // id,头像，昵称，姓名，电话，推广用户数，推广订单数，推广订单额，佣金总金额，已提现金额，提现次数，未提现金额，上级推广人
-        lqw.select(User::getUid, User::getNickname, User::getRealName, User::getPhone, User::getAvatar,
-            User::getSpreadCount, User::getBrokeragePrice, User::getSpreadUid, User::getPromoterTime);
+        lqw.select(User::getUid, User::getNickname, User::getRealName, User::getPhone, User::getAvatar, User::getSpreadCount, User::getBrokeragePrice, User::getSpreadUid, User::getPromoterTime);
         lqw.eq(User::getIsPromoter, true);
         if (StrUtil.isNotBlank(keywords)) {
             lqw.and(i -> i.eq(User::getUid, keywords) //用户账号
@@ -1292,9 +1345,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     public List<User> getTopSpreadPeopleListByDate(String type, PageParamRequest pageParamRequest) {
         PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("count(spread_count) as spread_count, spread_uid")
-            .gt("spread_uid", 0)
-            .eq("status", true);
+        queryWrapper.select("count(spread_count) as spread_count, spread_uid").gt("spread_uid", 0).eq("status", true);
         if (StrUtil.isNotBlank(type)) {
             DateLimitUtilVo dateLimit = DateUtil.getDateLimit(type);
             queryWrapper.between("spread_time", dateLimit.getStartTime(), dateLimit.getEndTime());

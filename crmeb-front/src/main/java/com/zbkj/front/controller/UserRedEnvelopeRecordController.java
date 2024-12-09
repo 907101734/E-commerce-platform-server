@@ -7,6 +7,7 @@ import com.zbkj.common.response.CommonResult;
 import com.zbkj.common.response.UserRedEnvRecordCountResponse;
 import com.zbkj.common.response.UserRedEnvRecordListResponse;
 import com.zbkj.common.response.UserRedEnvRecordPriceResponse;
+import com.zbkj.common.response.UserRedVideoResponse;
 import com.zbkj.common.vo.UserRedEnvelopeRecordVo;
 import com.zbkj.service.service.UserRedEnvelopeRecordService;
 import io.swagger.annotations.Api;
@@ -57,6 +58,12 @@ public class UserRedEnvelopeRecordController {
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     public CommonResult<UserRedEnvRecordPriceResponse> receive(@RequestBody @Validated UserRedEnvelopeReceiveRequest request) {
         return CommonResult.success(userRedEnvelopeRecordService.receive(request));
+    }
+
+    @ApiOperation(value = "获取需要观看视频")
+    @RequestMapping(value = "/video", method = RequestMethod.POST)
+    public CommonResult<UserRedVideoResponse> getVideo() {
+        return CommonResult.success(userRedEnvelopeRecordService.getVideo());
     }
 
 }

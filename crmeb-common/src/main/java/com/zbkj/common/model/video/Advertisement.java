@@ -48,6 +48,9 @@ public class Advertisement implements Serializable {
     @ApiModelProperty(value = "附件类型")
     private String attType;
 
+    @ApiModelProperty(value = "浏览次数")
+    private Long viewCount;
+
     @ApiModelProperty(value = "状态：0-未上架 1已上架")
     private Integer status;
 

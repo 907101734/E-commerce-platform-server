@@ -9,6 +9,7 @@ import com.zbkj.common.request.UserRedEnvelopeRecordRequest;
 import com.zbkj.common.response.UserRedEnvRecordCountResponse;
 import com.zbkj.common.response.UserRedEnvRecordListResponse;
 import com.zbkj.common.response.UserRedEnvRecordPriceResponse;
+import com.zbkj.common.response.UserRedVideoResponse;
 import com.zbkj.common.vo.UserRedEnvelopeRecordVo;
 
 import java.math.BigDecimal;
@@ -54,6 +55,9 @@ public interface UserRedEnvelopeRecordService extends IService<UserRedEnvelopeRe
      * @return
      */
     UserRedEnvRecordPriceResponse receive(UserRedEnvelopeReceiveRequest request);
+
+
+    UserRedVideoResponse getVideo();
 
     /**
      * 生成红包金额

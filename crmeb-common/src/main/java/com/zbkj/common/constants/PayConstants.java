@@ -1,16 +1,16 @@
 package com.zbkj.common.constants;
 
 /**
- *  支付相关常量类
- *  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
+ * 支付相关常量类
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
  */
 public class PayConstants {
 
@@ -31,6 +31,8 @@ public class PayConstants {
     public static final String PAY_CHANNEL_ALI_PAY = "alipay"; //支付宝支付
     public static final String PAY_CHANNEL_ALI_APP_PAY = "appAliPay"; //支付宝App支付
 
+    public static final String PAY_CHANNEL_SYSTEM_PAY = "systemPay";//系统充值
+
     public static final String WX_PAY_TRADE_TYPE_JS = "JSAPI";
     public static final String WX_PAY_TRADE_TYPE_H5 = "MWEB";
 
@@ -48,9 +50,9 @@ public class PayConstants {
     public static final String WX_PAY_SIGN_TYPE_MD5 = "MD5";
     public static final String WX_PAY_SIGN_TYPE_SHA256 = "HMAC-SHA256";
 
-    public static final String PAY_BODY = "Crmeb支付中心-订单支付";
+    public static final String PAY_BODY = "支付中心-订单支付";
     public static final String FIELD_SIGN = "sign";
 
     // 公共号退款
-    public static final String WX_PAY_REFUND_API_URI= "secapi/pay/refund";
+    public static final String WX_PAY_REFUND_API_URI = "secapi/pay/refund";
 }
