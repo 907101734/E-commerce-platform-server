@@ -15,6 +15,7 @@ import com.zbkj.common.exception.CrmebException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zbkj.common.utils.CrmebUtil;
 import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.vo.DateLimitUtilVo;
 import com.zbkj.common.model.finance.UserRecharge;
@@ -115,6 +116,13 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
     @Override
     public HashMap<String, BigDecimal> getBalanceList() {
         HashMap<String, BigDecimal> map = new HashMap<>();
+
+        //后台充值
+        BigDecimal systemPay = dao.getSumByType("systemPay");
+        if (null == systemPay) {
+            systemPay = BigDecimal.ZERO;
+        }
+        map.put("systemPay", systemPay);
 
         BigDecimal routine = dao.getSumByType("routine");
         if (null == routine) {
@@ -258,6 +266,8 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
     @Override
     public void operationNowMoney(Integer uid, BigDecimal moneyValue) {
         UserRecharge userRecharge = new UserRecharge();
+        String orderId = CrmebUtil.getOrderNo("system");
+        userRecharge.setOrderId(orderId);
         userRecharge.setUid(uid);
         userRecharge.setPayTime(DateUtil.nowDateTime());
         userRecharge.setPaid(true);

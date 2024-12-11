@@ -31,10 +31,10 @@ spring:
         min-idle: 0 # 连接池中的最小空闲连接
         time-between-eviction-runs: -1 #逐出扫描的时间间隔(毫秒) 如果为负数,则不运行逐出线程, 默认-1
 
-debug: true
+debug: false
 logging:
   level:
-    root：debug
+    root: info
 #    io.swagger.*: error
 #    com.zbjk.crmeb: debug
 #    org.springframework.boot.autoconfigure: ERROR
