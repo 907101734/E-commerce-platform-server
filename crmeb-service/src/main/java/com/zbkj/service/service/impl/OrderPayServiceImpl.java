@@ -1118,9 +1118,9 @@ public class OrderPayServiceImpl implements OrderPayService {
         }
         UserToken userToken;
         HashMap<String, String> temMap = new HashMap<>();
-        if (!storeOrder.getPayType().equals(Constants.PAY_TYPE_WE_CHAT)) {
-            return;
-        }
+        // if (!storeOrder.getPayType().equals(Constants.PAY_TYPE_WE_CHAT)) {
+        //     return;
+        // }
         // 公众号
         if (storeOrder.getIsChannel().equals(Constants.ORDER_PAY_CHANNEL_PUBLIC) && payNotification.getIsWechat()
             .equals(1)) {
@@ -1136,8 +1136,8 @@ public class OrderPayServiceImpl implements OrderPayService {
             templateMessageService.pushTemplateMessage(payNotification.getWechatId(), temMap, userToken.getToken());
             return;
         }
-        if (storeOrder.getIsChannel().equals(Constants.ORDER_PAY_CHANNEL_PROGRAM) && payNotification.getIsRoutine()
-            .equals(1)) {
+        if ((storeOrder.getIsChannel().equals(Constants.ORDER_PAY_CHANNEL_PROGRAM) || storeOrder.getIsChannel()
+            .equals(Constants.ORDER_PAY_CHANNEL_YUE)) && payNotification.getIsRoutine().equals(1)) {
             // 小程序发送订阅消息
             userToken = userTokenService.getTokenByUserId(user.getUid(), UserConstants.USER_TOKEN_TYPE_ROUTINE);
             if (ObjectUtil.isNull(userToken)) {

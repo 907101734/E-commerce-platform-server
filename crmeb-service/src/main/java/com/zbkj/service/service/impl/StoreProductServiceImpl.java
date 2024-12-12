@@ -1280,7 +1280,7 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         lqw.eq(StoreProduct::getIsShow, true);
         StoreProduct storeProduct = dao.selectOne(lqw);
         if (ObjectUtil.isNull(storeProduct)) {
-            throw new CrmebException(StrUtil.format("未找到编号为{}的商品", id));
+            throw new CrmebException("商品已下架");
         }
 
         StoreProductDescription sd = storeProductDescriptionService.getOne(
