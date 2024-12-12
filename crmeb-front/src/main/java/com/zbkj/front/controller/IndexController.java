@@ -76,7 +76,7 @@ public class IndexController {
     @RequestMapping(value = "/index/product/{type}", method = RequestMethod.GET)
     @ApiImplicitParam(name = "type", value = "类型 【1 精品推荐 2 热门榜单 3首发新品 4促销单品】", dataType = "int", required = true)
     public CommonResult<CommonPage<IndexProductResponse>> getProductList(@PathVariable(value = "type") Integer type, PageParamRequest pageParamRequest) {
-        return CommonResult.success(indexService.findIndexProductList(type, RegionEnum.REGION_MDQ.getType(), null, null, pageParamRequest));
+        return CommonResult.success(indexService.findIndexProductList(type, -1, null, null, pageParamRequest));
     }
 
     @ApiOperation(value = "首页报单区商品列表")

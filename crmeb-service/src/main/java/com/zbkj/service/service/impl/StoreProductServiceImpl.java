@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zbkj.common.constants.Constants;
 import com.zbkj.common.enums.GiftPropertyEnum;
+import com.zbkj.common.enums.RegionEnum;
 import com.zbkj.common.exception.CrmebException;
 import com.zbkj.common.model.category.Category;
 import com.zbkj.common.model.coupon.StoreCoupon;
@@ -1171,7 +1172,15 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             }
         }
         if (region != null) {
-            lambdaQueryWrapper.eq(StoreProduct::getRegion, region);
+            if (region == -1) {
+                lambdaQueryWrapper.and(wrapper -> {
+                    wrapper.eq(StoreProduct::getRegion, RegionEnum.REGION_SHQ.getType())
+                        .or()
+                        .eq(StoreProduct::getRegion, RegionEnum.REGION_MDQ.getType());
+                });
+            } else {
+                lambdaQueryWrapper.eq(StoreProduct::getRegion, region);
+            }
         }
         if (ObjectUtil.isNotNull(categoryId) && categoryId > 0) {
             //查找当前类下的所有子类
