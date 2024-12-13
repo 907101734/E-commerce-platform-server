@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * GiftTypeVo
  * @author wtj
@@ -24,7 +26,7 @@ public class GiftTypeVo {
     private String name;
 
     @ApiModelProperty(value = "值")
-    private Integer value;
+    private BigDecimal value;
 
     @ApiModelProperty(value = "是否启用")
     private Boolean enable;

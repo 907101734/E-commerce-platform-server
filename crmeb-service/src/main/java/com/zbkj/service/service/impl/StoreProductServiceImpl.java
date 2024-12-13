@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -278,11 +279,37 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         }
 
         List<StoreProductAttrValueAddRequest> attrValueAddRequestList = request.getAttrValue();
+
+        boolean isGift;
+        BigDecimal giftPrice;
+        if (ObjectUtil.isNotNull(request.getRegion())) {
+            if (RegionEnum.REGION_BDQ.getType().equals(request.getRegion())) {
+                storeProduct.setIsGift(true);
+                storeProduct.setIsSupportBrokerage(true);
+                Integer giftProperty = request.getGiftProperty();
+                if (giftProperty > 4) {
+                    throw new CrmebException("礼品属性错误");
+                }
+                GiftPropertyEnum giftPropertyEnum = GiftPropertyEnum.getGiftPropertyByType(giftProperty);
+                giftPrice = giftPropertyEnum.getValue();
+                isGift = true;
+            } else {
+                giftPrice = BigDecimal.ZERO;
+                isGift = false;
+            }
+        } else {
+            giftPrice = BigDecimal.ZERO;
+            isGift = false;
+        }
         //计算价格
         StoreProductAttrValueAddRequest minAttrValue = attrValueAddRequestList.stream()
             .min(Comparator.comparing(StoreProductAttrValueAddRequest::getPrice))
             .get();
-        storeProduct.setPrice(minAttrValue.getPrice());
+        if (Boolean.TRUE.equals(isGift)) {
+            storeProduct.setPrice(giftPrice);
+        } else {
+            storeProduct.setPrice(minAttrValue.getPrice());
+        }
         storeProduct.setOtPrice(minAttrValue.getOtPrice());
         storeProduct.setCost(minAttrValue.getCost());
         storeProduct.setStock(attrValueAddRequestList.stream()
@@ -330,6 +357,9 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             attrValue.setSuk(getSku(e.getAttrValue()));
             attrValue.setQuota(0);
             attrValue.setQuotaShow(0);
+            if (Boolean.TRUE.equals(isGift)) {
+                attrValue.setPrice(giftPrice);
+            }
             attrValue.setType(Constants.PRODUCT_TYPE_NORMAL);
             attrValue.setImage(systemAttachmentService.clearPrefix(e.getImage()));
             return attrValue;
@@ -456,6 +486,28 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
 
         storeProduct.setIsSub(false);
 
+        boolean isGift;
+        BigDecimal giftPrice;
+        if (ObjectUtil.isNotNull(storeProductRequest.getRegion())) {
+            if (RegionEnum.REGION_BDQ.getType().equals(storeProductRequest.getRegion())) {
+                storeProduct.setIsGift(true);
+                storeProduct.setIsSupportBrokerage(true);
+                Integer giftProperty = storeProductRequest.getGiftProperty();
+                if (giftProperty > 4) {
+                    throw new CrmebException("礼品属性错误");
+                }
+                GiftPropertyEnum giftPropertyEnum = GiftPropertyEnum.getGiftPropertyByType(giftProperty);
+                giftPrice = giftPropertyEnum.getValue();
+                isGift = true;
+            } else {
+                giftPrice = BigDecimal.ZERO;
+                isGift = false;
+            }
+        } else {
+            giftPrice = BigDecimal.ZERO;
+            isGift = false;
+        }
+
         // 设置Activity活动
         storeProduct.setActivity(getProductActivityStr(storeProductRequest.getActivity()));
 
@@ -470,7 +522,11 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
         StoreProductAttrValueAddRequest minAttrValue = attrValueAddRequestList.stream()
             .min(Comparator.comparing(StoreProductAttrValueAddRequest::getPrice))
             .get();
-        storeProduct.setPrice(minAttrValue.getPrice());
+        if (Boolean.TRUE.equals(isGift)) {
+            storeProduct.setPrice(giftPrice);
+        } else {
+            storeProduct.setPrice(minAttrValue.getPrice());
+        }
         storeProduct.setOtPrice(minAttrValue.getOtPrice());
         storeProduct.setCost(minAttrValue.getCost());
         storeProduct.setStock(attrValueAddRequestList.stream()
@@ -502,6 +558,9 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductDao, StoreP
             BeanUtils.copyProperties(e, attrValue);
             attrValue.setSuk(getSku(e.getAttrValue()));
             attrValue.setImage(systemAttachmentService.clearPrefix(e.getImage()));
+            if (Boolean.TRUE.equals(isGift)) {
+                attrValue.setPrice(giftPrice);
+            }
             if (ObjectUtil.isNull(attrValue.getId()) || attrValue.getId().equals(0)) {
                 attrValue.setId(null);
                 attrValue.setProductId(storeProduct.getId());
