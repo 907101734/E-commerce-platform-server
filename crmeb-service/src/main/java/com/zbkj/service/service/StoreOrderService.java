@@ -28,7 +28,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
 
     /**
      * 列表（PC）
-     * @param request 请求参数
+     * @param request          请求参数
      * @param pageParamRequest 分页类参数
      * @return CommonPage<StoreOrderDetailResponse>
      */
@@ -36,7 +36,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
 
     /**
      * 核销列表
-     * @param request 请求参数
+     * @param request          请求参数
      * @param pageParamRequest 分页类参数
      * @return List<StoreOrder>
      */
@@ -45,20 +45,21 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 累计消费
      * @param userId Integer 用户id
+     * @return UserBalanceResponse
      * @author Mr.Zhang
      * @since 2020-06-10
-     * @return UserBalanceResponse
      */
     BigDecimal getSumBigDecimal(Integer userId, String date);
 
     /**
      * H5订单列表
-     * @param uid 用户uid
-     * @param status 评价等级|0=未支付,1=待发货,2=待收货,3=待评价,4=已完成,-3=售后/退款
+     * @param uid              用户uid
+     * @param status           评价等级|0=未支付,1=待发货,2=待收货,3=待评价,4=已完成,-3=售后/退款
      * @param pageParamRequest 分页参数
      * @return 订单结果列表
      */
     List<StoreOrder> getUserOrderList(Integer uid, Integer status, PageParamRequest pageParamRequest);
+
     /**
      * 创建订单
      * @param storeOrder 订单参数
@@ -96,7 +97,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 订单备注
      * @param orderNo 订单编号
-     * @param mark 备注
+     * @param mark    备注
      * @return Boolean
      */
     Boolean mark(String orderNo, String mark);
@@ -104,7 +105,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 拒绝退款
      * @param orderNo 订单编号
-     * @param reason String 原因
+     * @param reason  String 原因
      * @return Boolean
      */
     Boolean refundRefuse(String orderNo, String reason);
@@ -121,15 +122,14 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 根据时间参数统计订单价格
      * @param dateLimit 时间区间
-     * @param type 1=price 2=订单量
+     * @param type      1=price 2=订单量
      * @return 统计订单信息
      */
     StoreOrderStatisticsResponse orderStatisticsByTime(String dateLimit, Integer type);
 
     /**
      * 获取用户当天的秒杀数量
-     *
-     * @param uid 用户uid
+     * @param uid       用户uid
      * @param seckillId 秒杀商品id
      * @return 用户当天的秒杀商品订单数量
      */
@@ -137,15 +137,15 @@ public interface StoreOrderService extends IService<StoreOrder> {
 
     /**
      * 获取用户当前的砍价订单
-     * @param uid    用户uid
-     * @return  用户当前的砍价订单
+     * @param uid 用户uid
+     * @return 用户当前的砍价订单
      */
     List<StoreOrder> getUserCurrentBargainOrders(Integer uid, Integer bargainId);
 
     /**
      * 获取用户当前的拼团订单
-     * @param uid    用户uid
-     * @return  用户当前的拼团订单
+     * @param uid 用户uid
+     * @return 用户当前的拼团订单
      */
     List<StoreOrder> getUserCurrentCombinationOrders(Integer uid, Integer combinationId);
 
@@ -185,7 +185,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
 
     /**
      * 根据用户uid查询所有已支付订单
-     * @param userId 用户uid
+     * @param userId           用户uid
      * @param pageParamRequest 分页参数
      * @return List<StoreOrder>
      */
@@ -228,7 +228,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
 
     /**
      * 获取砍价订单
-     * @param bargainId 砍价商品id
+     * @param bargainId     砍价商品id
      * @param bargainUserId 用户砍价活动id
      * @return StoreOrder
      */
@@ -237,7 +237,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 获取订单状态数量
      * @param dateLimit 时间端
-     * @param type 订单类型：0普通订单，1-视频号订单, 2-全部订单
+     * @param type      订单类型：0普通订单，1-视频号订单, 2-全部订单
      * @return StoreOrderCountItemResponse
      */
     StoreOrderCountItemResponse getOrderStatusNum(String dateLimit, Integer type);
@@ -294,7 +294,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 通过日期获取支付订单金额
      * @param startDate 日期
-     * @param endDate 日期
+     * @param endDate   日期
      * @return BigDecimal
      */
     BigDecimal getPayOrderAmountByPeriod(String startDate, String endDate);
@@ -322,7 +322,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 根据日期获取下单用户数量
      * @param startDate 日期
-     * @param endDate 日期
+     * @param endDate   日期
      * @return Integer
      */
     Integer getOrderUserNumByPeriod(String startDate, String endDate);
@@ -337,7 +337,7 @@ public interface StoreOrderService extends IService<StoreOrder> {
     /**
      * 根据日期获取成交用户数量
      * @param startDate 日期
-     * @param endDate 日期
+     * @param endDate   日期
      * @return Integer
      */
     Integer getOrderPayUserNumByPeriod(String startDate, String endDate);
@@ -374,8 +374,20 @@ public interface StoreOrderService extends IService<StoreOrder> {
 
     /**
      * 获取佣金相关数据
-     * @param uid 用户uid
+     * @param uid      用户uid
      * @param spreadId 推广人uid
      */
     OrderBrokerageData getBrokerageData(Integer uid, Integer spreadId);
+
+    /**
+     * 查询当前产品30天购买数量
+     * @return
+     */
+    Integer getLastProductOrderInfo(Integer productId);
+
+    /**
+     * 获取报单区的商品
+     * @return
+     */
+    Integer getLastOrderInfoByGift(Integer giftProperty);
 }

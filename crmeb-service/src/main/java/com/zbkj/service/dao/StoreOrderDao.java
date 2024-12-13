@@ -64,8 +64,27 @@ public interface StoreOrderDao extends BaseMapper<StoreOrder> {
 
     /**
      * 获取佣金相关数据
-     * @param uid 用户uid
+     * @param uid      用户uid
      * @param spreadId 推广人uid
      */
     OrderBrokerageData getBrokerageData(@Param("uid") Integer uid, @Param("spreadId") Integer spreadId);
+
+    /**
+     * 获取最近商品的购买情况
+     * @param startTime
+     * @param endTime
+     * @param productId
+     * @return
+     */
+    Integer getLastProductOrderInfo(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("productId") Integer productId);
+
+    /**
+     *
+     * @param startTime
+     * @param endTime
+     * @param productId
+     * @return
+     */
+    Integer getLastOrderInfoByGift(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("giftProperty") Integer giftProperty);
+
 }

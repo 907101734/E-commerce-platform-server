@@ -52,4 +52,23 @@
                             on br.link_id = o.order_id and br.status = 3 and br.uid = #{spreadId}
         where o.uid = #{uid};
     </select>
+
+    <select id="getLastProductOrderInfo" resultType="java.lang.Integer">
+        select sum(esoi.pay_num)
+        from eb_store_order_info esoi
+                 left join eb_store_order eso on esoi.order_id = eso.id
+        where esoi.product_id = #{productId}
+          and eso.pay_time >= #{ startTime }
+          and eso.pay_time &lt; #{ endTime }
+    </select>
+
+    <select id="getLastOrderInfoByGift" resultType="java.lang.Integer">
+        select sum(esoi.pay_num)
+        from eb_store_order_info esoi
+                 left join eb_store_order eso on esoi.order_id = eso.id
+        where esoi.gift_property  = #{giftProperty}
+          and eso.pay_time >= #{ startTime }
+          and eso.pay_time &lt; #{ endTime }
+    </select>
+
 </mapper>
