@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -266,7 +265,11 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
         User currentUser = userService.getInfo();
 
         Advertisement advertisement = advertisementService.getById(request.getAdId());
+
         advertisement.setViewCount(advertisement.getViewCount() + 1);
+
+        userRedEnvelopeRecord.setLinkAdId(advertisement.getId());
+        userRedEnvelopeRecord.setLinkAdAddr(advertisement.getAttDir());
 
         // userBill现金增加记录
         UserBill userBill = new UserBill();
@@ -358,9 +361,9 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
         }
 
         //广告
-        LambdaQueryWrapper<Advertisement> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        objectLambdaQueryWrapper.eq(Advertisement::getStatus, 1);
-        List<Advertisement> advertisements = advertisementService.list(objectLambdaQueryWrapper);
+        // LambdaQueryWrapper<Advertisement> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // objectLambdaQueryWrapper.eq(Advertisement::getStatus, 1);
+        // List<Advertisement> advertisements = advertisementService.list(objectLambdaQueryWrapper);
 
         List<UserRedEnvelopeRecord> userRedEnvelopeRecords = new ArrayList<>();
         //当存在一类红包 按照15%
@@ -387,9 +390,9 @@ public class UserRedEnvelopeRecordServiceImpl extends ServiceImpl<UserRedEnvelop
             UserRedEnvelopeRecord userRedEnvelopeRecord = new UserRedEnvelopeRecord();
             userRedEnvelopeRecord.setUid(userRedEnvelope.getUid());
             userRedEnvelopeRecord.setRedEnvelopeId(userRedEnvelope.getId());
-            int nextInt = ThreadLocalRandom.current().nextInt(advertisements.size());
-            userRedEnvelopeRecord.setLinkAdId(advertisements.get(nextInt).getId());
-            userRedEnvelopeRecord.setLinkAdAddr(advertisements.get(nextInt).getAttDir());
+            // int nextInt = ThreadLocalRandom.current().nextInt(advertisements.size());
+            // userRedEnvelopeRecord.setLinkAdId(advertisements.get(nextInt).getId());
+            // userRedEnvelopeRecord.setLinkAdAddr(advertisements.get(nextInt).getAttDir());
             userRedEnvelopeRecord.setPrice(redEnvelope);
             userRedEnvelopeRecord.setGiftProperty(userRedEnvelope.getGiftProperty());
             userRedEnvelopeRecord.setStatus(0);

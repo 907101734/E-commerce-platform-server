@@ -5,7 +5,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.zbkj.common.constants.BrokerageRecordConstants;
 import com.zbkj.common.constants.Constants;
 import com.zbkj.common.constants.ExperienceRecordConstants;
@@ -35,7 +34,6 @@ import com.zbkj.common.model.user.UserIntegralRecord;
 import com.zbkj.common.model.user.UserRedEnvelope;
 import com.zbkj.common.model.user.UserRedEnvelopeRecord;
 import com.zbkj.common.model.user.UserToken;
-import com.zbkj.common.model.video.Advertisement;
 import com.zbkj.common.request.OrderPayRequest;
 import com.zbkj.common.response.OrderPayResultResponse;
 import com.zbkj.common.utils.CrmebUtil;
@@ -99,7 +97,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -292,9 +289,9 @@ public class OrderPayServiceImpl implements OrderPayService {
 
         //根据订单的商品详情，生成红包
         List<UserRedEnvelope> userRedEnvelopes = new ArrayList<>();
-        LambdaQueryWrapper<Advertisement> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        objectLambdaQueryWrapper.eq(Advertisement::getStatus, 1);
-        List<Advertisement> advertisements = advertisementService.list(objectLambdaQueryWrapper);
+        // LambdaQueryWrapper<Advertisement> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // objectLambdaQueryWrapper.eq(Advertisement::getStatus, 1);
+        // List<Advertisement> advertisements = advertisementService.list(objectLambdaQueryWrapper);
 
         if (Boolean.TRUE.equals(storeOrder.getIsGift())) {
             //广告
@@ -362,14 +359,14 @@ public class OrderPayServiceImpl implements OrderPayService {
             //生成
             List<UserRedEnvelopeRecord> userRedEnvelopeRecords = new ArrayList<>();
             for (UserRedEnvelope userRedEnvelope : userRedEnvelopes) {
-                int nextInt = ThreadLocalRandom.current().nextInt(advertisements.size());
+                // int nextInt = ThreadLocalRandom.current().nextInt(advertisements.size());
                 UserRedEnvelopeRecord userRedEnvelopeRecord = new UserRedEnvelopeRecord();
                 userRedEnvelopeRecord.setUid(storeOrder.getUid());
                 userRedEnvelopeRecord.setRedEnvelopeId(userRedEnvelope.getId());
-                if (CollUtil.isNotEmpty(advertisements)) {
-                    userRedEnvelopeRecord.setLinkAdId(advertisements.get(nextInt).getId());
-                    userRedEnvelopeRecord.setLinkAdAddr(advertisements.get(nextInt).getAttDir());
-                }
+                // if (CollUtil.isNotEmpty(advertisements)) {
+                //     userRedEnvelopeRecord.setLinkAdId(advertisements.get(nextInt).getId());
+                //     userRedEnvelopeRecord.setLinkAdAddr(advertisements.get(nextInt).getAttDir());
+                // }
                 BigDecimal balance = userRedEnvelopeRecordService.generateRedEnvelopePrice(user.getRedEnvelopeLevel(), userRedEnvelope.getGiftProperty());
                 userRedEnvelopeRecord.setPrice(balance);
                 userRedEnvelopeRecord.setGiftProperty(userRedEnvelope.getGiftProperty());
