@@ -54,7 +54,7 @@
     </select>
 
     <select id="getLastProductOrderInfo" resultType="java.lang.Integer">
-        select sum(esoi.pay_num)
+        select COALESCE(sum(esoi.pay_num))
         from eb_store_order_info esoi
                  left join eb_store_order eso on esoi.order_id = eso.id
         where esoi.product_id = #{productId}
@@ -63,7 +63,7 @@
     </select>
 
     <select id="getLastOrderInfoByGift" resultType="java.lang.Integer">
-        select sum(esoi.pay_num)
+        select COALESCE(sum(esoi.pay_num))
         from eb_store_order_info esoi
                  left join eb_store_order eso on esoi.order_id = eso.id
         where esoi.gift_property  = #{giftProperty}
