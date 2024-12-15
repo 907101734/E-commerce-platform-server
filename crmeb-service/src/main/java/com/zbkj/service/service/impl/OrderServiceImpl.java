@@ -1452,8 +1452,8 @@ public class OrderServiceImpl implements OrderService {
                     }
                     //查询30天当前区域内产品购买个数
                     Integer lastOrderInfoByGift = storeOrderService.getLastOrderInfoByGift(storeProduct.getGiftProperty(), user.getUid());
-                    if (lastOrderInfoByGift > 30) {
-                        throw new CrmebException("本区域商品每月限购30单");
+                    if (lastOrderInfoByGift > 10) {
+                        throw new CrmebException("本区域商品每月限购10单");
                     }
                 }
                 SystemUserLevel userLevel = null;
