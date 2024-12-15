@@ -60,7 +60,6 @@
         where esoi.product_id = #{productId}
           and eso.uid = #{uid}
           and eso.pay_time >= #{ startTime }
-          and eso.pay_time &lt; #{ endTime }
     </select>
 
     <select id="getLastOrderInfoByGift" resultType="java.lang.Integer">
@@ -70,7 +69,6 @@
         where esoi.gift_property = #{giftProperty}
           and eso.uid = #{uid}
           and eso.pay_time >= #{ startTime }
-          and eso.pay_time &lt; #{ endTime }
     </select>
 
 </mapper>
