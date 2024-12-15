@@ -97,14 +97,16 @@ public class UploadServiceImpl implements UploadService {
 
     public FileResultVo saveSystemAttachment(MultipartFile multipartFile, String model, Integer pid, String type, String extStr, Integer size) throws IOException {
         FileResultVo resultFile = this.upload(multipartFile, model, type, extStr, size);
-        SystemAttachment systemAttachment = new SystemAttachment();
-        systemAttachment.setName(resultFile.getFileName());
-        systemAttachment.setSattDir(resultFile.getUrl());
-        systemAttachment.setAttSize(resultFile.getFileSize().toString());
-        systemAttachment.setAttType(resultFile.getExtName());
-        systemAttachment.setImageType(resultFile.getUploadType());   //图片上传类型 1本地 2七牛云 3OSS 4COS, 默认本地，任务轮询数据库放入云服务
-        systemAttachment.setPid(pid);
-        systemAttachmentService.save(systemAttachment);
+        if(!"custom".equals(model)){
+            SystemAttachment systemAttachment = new SystemAttachment();
+            systemAttachment.setName(resultFile.getFileName());
+            systemAttachment.setSattDir(resultFile.getUrl());
+            systemAttachment.setAttSize(resultFile.getFileSize().toString());
+            systemAttachment.setAttType(resultFile.getExtName());
+            systemAttachment.setImageType(resultFile.getUploadType());   //图片上传类型 1本地 2七牛云 3OSS 4COS, 默认本地，任务轮询数据库放入云服务
+            systemAttachment.setPid(pid);
+            systemAttachmentService.save(systemAttachment);
+        }
         return resultFile;
     }
 

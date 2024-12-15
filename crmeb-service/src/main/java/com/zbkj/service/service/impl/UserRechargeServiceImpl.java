@@ -75,7 +75,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
      * @return List<UserRecharge>
      */
     @Override
-    public PageInfo<UserRechargeResponse> getList(UserRechargeSearchRequest request, PageParamRequest pageParamRequest) {
+    public PageInfo<UserRechargeResponse> getList(UserRechargeSearchRequest request, PageParamRequest pageParamRequest, String right) {
         Page<UserRecharge> userRechargesList = PageHelper.startPage(pageParamRequest.getPage(), pageParamRequest.getLimit());
 
         DateLimitUtilVo dateLimit = DateUtil.getDateLimit(request.getDateLimit());
@@ -100,6 +100,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
 
             lambdaQueryWrapper.between(UserRecharge::getCreateTime, dateLimit.getStartTime(), dateLimit.getEndTime());
         }
+
         lambdaQueryWrapper.orderByDesc(UserRecharge::getId);
 
         List<UserRecharge> userRecharges = dao.selectList(lambdaQueryWrapper);

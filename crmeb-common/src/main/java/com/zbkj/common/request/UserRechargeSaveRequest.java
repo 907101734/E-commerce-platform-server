@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -37,8 +39,9 @@ public class UserRechargeSaveRequest implements Serializable {
     @ApiModelProperty(value = "充值用户UID", required = true)
     private Integer uid;
 
-    @NotBlank(message = "充值金额不能为空")
     @ApiModelProperty(value = "充值金额", required = true)
+    @DecimalMin(value = "0.00")
+    @DecimalMax(value = "999999.99")
     private BigDecimal price;
 
     @ApiModelProperty(value = "支付凭证截图")

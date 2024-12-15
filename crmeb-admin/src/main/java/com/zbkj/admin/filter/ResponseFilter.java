@@ -1,6 +1,5 @@
 package com.zbkj.admin.filter;
 
-
 import com.zbkj.common.utils.RequestUtil;
 
 import javax.servlet.*;
@@ -8,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 
 /**
  * +----------------------------------------------------------------------
@@ -27,8 +25,8 @@ public class ResponseFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-            throws IOException, ServletException {
-        ResponseWrapper wrapperResponse = new ResponseWrapper((HttpServletResponse) response);//转换成代理类
+        throws IOException, ServletException {
+        ResponseWrapper wrapperResponse = new ResponseWrapper((HttpServletResponse)response);//转换成代理类
         // 这里只拦截返回，直接让请求过去，如果在请求前有处理，可以在这里处理
         filterChain.doFilter(request, wrapperResponse);
         byte[] content = wrapperResponse.getContent();//获取返回值
@@ -37,8 +35,10 @@ public class ResponseFilter implements Filter {
             String str = new String(content, StandardCharsets.UTF_8);
 
             try {
-                HttpServletRequest req = (HttpServletRequest) request;
-                str = new ResponseRouter().filter(str, RequestUtil.getUri(req));
+                HttpServletRequest req = (HttpServletRequest)request;
+                if (!req.getRequestURI().contains("api/admin/upload/image")) {
+                    str = new ResponseRouter().filter(str, RequestUtil.getUri(req));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,7 @@
 package com.zbkj.admin.controller;
 
+import com.zbkj.admin.service.AdminLoginService;
+import com.zbkj.common.constants.PayConstants;
 import com.zbkj.common.page.CommonPage;
 import com.zbkj.common.request.PageParamRequest;
 import com.zbkj.common.request.UserRechargeConfirmRequest;
@@ -7,6 +9,7 @@ import com.zbkj.common.request.UserRechargeReviewRequest;
 import com.zbkj.common.request.UserRechargeSaveRequest;
 import com.zbkj.common.request.UserRechargeSearchRequest;
 import com.zbkj.common.response.CommonResult;
+import com.zbkj.common.response.SystemAdminResponse;
 import com.zbkj.common.response.UserRechargeResponse;
 import com.zbkj.service.service.UserRechargeService;
 import io.swagger.annotations.Api;
@@ -44,6 +47,9 @@ public class UserRechargeController {
     @Autowired
     private UserRechargeService userRechargeService;
 
+    @Autowired
+    private AdminLoginService adminLoginService;
+
     /**
      * 分页显示用户充值表
      * @param request          搜索条件
@@ -53,7 +59,16 @@ public class UserRechargeController {
     @ApiOperation(value = "分页列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public CommonResult<CommonPage<UserRechargeResponse>> getList(@Validated UserRechargeSearchRequest request, @Validated PageParamRequest pageParamRequest) {
-        CommonPage<UserRechargeResponse> userRechargeCommonPage = CommonPage.restPage(userRechargeService.getList(request, pageParamRequest));
+        SystemAdminResponse infoByToken = adminLoginService.getInfoByToken();
+        String right = "";
+        if (infoByToken.getPermissionsList().contains("admin:recharge:create")) { //客服
+            right = PayConstants.PAY_ROLE_KF;
+        } else if (infoByToken.getPermissionsList().contains("admin:recharge:review")) { //财务
+            right = PayConstants.PAY_ROLE_CW;
+        } else if (infoByToken.getPermissionsList().contains("admin:recharge:confirm")) { //管理员
+            right = PayConstants.PAY_ROLE_GLY;
+        }
+        CommonPage<UserRechargeResponse> userRechargeCommonPage = CommonPage.restPage(userRechargeService.getList(request, pageParamRequest, right));
         return CommonResult.success(userRechargeCommonPage);
     }
 
@@ -85,7 +100,7 @@ public class UserRechargeController {
      * 充值总金额
      */
     @PreAuthorize("hasAuthority('admin:recharge:balance')")
-    @ApiOperation(value = "提现总金额")
+    @ApiOperation(value = "充值总金额")
     @RequestMapping(value = "/balance", method = RequestMethod.POST)
     public CommonResult<HashMap<String, BigDecimal>> balance() {
         return CommonResult.success(userRechargeService.getBalanceList());

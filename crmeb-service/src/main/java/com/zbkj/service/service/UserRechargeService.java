@@ -33,7 +33,7 @@ public interface UserRechargeService extends IService<UserRecharge> {
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
-    PageInfo<UserRechargeResponse> getList(UserRechargeSearchRequest request, PageParamRequest pageParamRequest);
+    PageInfo<UserRechargeResponse> getList(UserRechargeSearchRequest request, PageParamRequest pageParamRequest, String right);
 
     /**
      * 充值统计

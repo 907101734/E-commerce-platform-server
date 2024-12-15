@@ -64,4 +64,11 @@ public class PayConstants {
     public static final Integer PAY_STATUS_CW = 2;
 
     public static final Integer PAY_STATUS_CONFIRM = 3;
+
+    // 处理查询权限
+    public static final String PAY_ROLE_KF = "KF";
+
+    public static final String PAY_ROLE_CW = "cw";
+
+    public static final String PAY_ROLE_GLY = "gly";
 }
