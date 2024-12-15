@@ -94,11 +94,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -326,7 +328,7 @@ public class OrderPayServiceImpl implements OrderPayService {
         /**
          * 计算佣金，生成佣金记录
          */
-        List<UserBrokerageRecord> recordList = assignCommission(storeOrder);
+        List<UserBrokerageRecord> recordList = assignCommission(storeOrder, orderInfoList);
 
         // 分销员逻辑
         if (!user.getIsPromoter()) {
@@ -555,10 +557,11 @@ public class OrderPayServiceImpl implements OrderPayService {
 
     /**
      * 分配佣金
-     * @param storeOrder 订单
+     * @param storeOrder    订单
+     * @param orderInfoList 订单详情
      * @return List<UserBrokerageRecord>
      */
-    private List<UserBrokerageRecord> assignCommission(StoreOrder storeOrder) {
+    private List<UserBrokerageRecord> assignCommission(StoreOrder storeOrder, List<StoreOrderInfo> orderInfoList) {
         // 检测商城是否开启分销功能
         String isOpen = systemConfigService.getValueByKey(Constants.CONFIG_KEY_STORE_BROKERAGE_IS_OPEN);
         if (StrUtil.isBlank(isOpen) || "0".equals(isOpen)) {
@@ -568,6 +571,10 @@ public class OrderPayServiceImpl implements OrderPayService {
         if (Boolean.FALSE.equals(storeOrder.getIsGift())) {
             return CollUtil.newArrayList();
         }
+        AtomicReference<Integer> giftProperty = null;
+        orderInfoList.forEach(t -> {
+            giftProperty.set(t.getGiftProperty());
+        });
         // 营销产品不参与
         if (storeOrder.getCombinationId() > 0 || storeOrder.getSeckillId() > 0 || storeOrder.getBargainId() > 0) {
             return CollUtil.newArrayList();
@@ -579,7 +586,7 @@ public class OrderPayServiceImpl implements OrderPayService {
             return CollUtil.newArrayList();
         }
         // 获取参与分佣的人（两级）
-        List<MyRecord> spreadRecordList = getSpreadRecordList(user.getSpreadUid());
+        List<MyRecord> spreadRecordList = getSpreadRecordList(user.getSpreadUid(), giftProperty.get());
         if (CollUtil.isEmpty(spreadRecordList)) {
             return CollUtil.newArrayList();
         }
@@ -688,7 +695,7 @@ public class OrderPayServiceImpl implements OrderPayService {
      * @param spreadUid 一级分佣人Uid
      * @return List<MyRecord>
      */
-    private List<MyRecord> getSpreadRecordList(Integer spreadUid) {
+    private List<MyRecord> getSpreadRecordList(Integer spreadUid, Integer giftProperty) {
         List<MyRecord> recordList = CollUtil.newArrayList();
 
         // 第一级
@@ -698,14 +705,26 @@ public class OrderPayServiceImpl implements OrderPayService {
         }
         // 判断分销模式
         String model = systemConfigService.getValueByKey(Constants.CONFIG_KEY_STORE_BROKERAGE_MODEL);
+        if (StringUtils.isBlank(spreadUser.getRedEnvelopeTypes())) {
+            return recordList;
+        }
         if (StrUtil.isNotBlank(model) && "1".equals(model) && !spreadUser.getIsPromoter()) {
             // 指定分销模式下：不是推广员不参与分销
             return recordList;
         }
-        MyRecord firstRecord = new MyRecord();
-        firstRecord.set("index", 1);
-        firstRecord.set("spreadUid", spreadUid);
-        recordList.add(firstRecord);
+        if (StringUtils.isNotBlank(spreadUser.getRedEnvelopeTypes())) {
+            //查询用户最大分销
+            Optional<Integer> maxType = Arrays.stream(spreadUser.getRedEnvelopeTypes().split(","))
+                .map(Integer::parseInt)
+                .max(Integer::compareTo);
+            //如果上级分销存在红包且属性大于当前购买礼包的 享受佣金
+            if (giftProperty > maxType.get()) {
+                MyRecord firstRecord = new MyRecord();
+                firstRecord.set("index", 1);
+                firstRecord.set("spreadUid", spreadUid);
+                recordList.add(firstRecord);
+            }
+        }
 
         // 第二级
         User spreadSpreadUser = userService.getById(spreadUser.getSpreadUid());
@@ -716,10 +735,19 @@ public class OrderPayServiceImpl implements OrderPayService {
             // 指定分销模式下：不是推广员不参与分销
             return recordList;
         }
-        MyRecord secondRecord = new MyRecord();
-        secondRecord.set("index", 2);
-        secondRecord.set("spreadUid", spreadSpreadUser.getUid());
-        recordList.add(secondRecord);
+        if (StringUtils.isNotBlank(spreadSpreadUser.getRedEnvelopeTypes())) {
+            //查询用户最大分销
+            Optional<Integer> maxType = Arrays.stream(spreadSpreadUser.getRedEnvelopeTypes().split(","))
+                .map(Integer::parseInt)
+                .max(Integer::compareTo);
+            //如果上级分销存在红包且属性大于当前购买礼包的 享受佣金
+            if (giftProperty > maxType.get()) {
+                MyRecord secondRecord = new MyRecord();
+                secondRecord.set("index", 2);
+                secondRecord.set("spreadUid", spreadSpreadUser.getUid());
+                recordList.add(secondRecord);
+            }
+        }
         return recordList;
     }
 
