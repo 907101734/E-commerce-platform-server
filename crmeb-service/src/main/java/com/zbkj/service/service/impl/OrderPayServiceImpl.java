@@ -718,7 +718,7 @@ public class OrderPayServiceImpl implements OrderPayService {
                 .map(Integer::parseInt)
                 .max(Integer::compareTo);
             //如果上级分销存在红包且属性大于当前购买礼包的 享受佣金
-            if (giftProperty > maxType.get()) {
+            if (giftProperty <= maxType.get()) {
                 MyRecord firstRecord = new MyRecord();
                 firstRecord.set("index", 1);
                 firstRecord.set("spreadUid", spreadUid);
@@ -741,7 +741,7 @@ public class OrderPayServiceImpl implements OrderPayService {
                 .map(Integer::parseInt)
                 .max(Integer::compareTo);
             //如果上级分销存在红包且属性大于当前购买礼包的 享受佣金
-            if (giftProperty > maxType.get()) {
+            if (giftProperty <= maxType.get()) {
                 MyRecord secondRecord = new MyRecord();
                 secondRecord.set("index", 2);
                 secondRecord.set("spreadUid", spreadSpreadUser.getUid());
