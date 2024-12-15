@@ -55,4 +55,13 @@ public class PayConstants {
 
     // 公共号退款
     public static final String WX_PAY_REFUND_API_URI = "secapi/pay/refund";
+
+    //0、待提交 1、客服提交 2、财务提交 3、审核通过
+    public static final Integer PAY_STATUS_NO = 0;
+
+    public static final Integer PAY_STATUS_KF = 1;
+
+    public static final Integer PAY_STATUS_CW = 2;
+
+    public static final Integer PAY_STATUS_CONFIRM = 3;
 }

@@ -1,9 +1,12 @@
 package com.zbkj.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zbkj.common.request.PageParamRequest;
 import com.github.pagehelper.PageInfo;
 import com.zbkj.common.model.finance.UserRecharge;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.request.UserRechargeConfirmRequest;
+import com.zbkj.common.request.UserRechargeReviewRequest;
+import com.zbkj.common.request.UserRechargeSaveRequest;
 import com.zbkj.common.request.UserRechargeSearchRequest;
 import com.zbkj.common.response.UserRechargeResponse;
 
@@ -11,22 +14,22 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 
 /**
-* UserRechargeService 接口
-*  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
-*/
+ * UserRechargeService 接口
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
+ */
 public interface UserRechargeService extends IService<UserRecharge> {
 
     /**
      * 充值记录列表
-     * @param request 请求参数
+     * @param request          请求参数
      * @param pageParamRequest 分页参数
      * @return PageInfo
      */
@@ -76,7 +79,7 @@ public interface UserRechargeService extends IService<UserRecharge> {
     /**
      * 根据时间获取充值用户数量
      * @param startDate 日期
-     * @param endDate 日期
+     * @param endDate   日期
      * @return Integer
      */
     Integer getRechargeUserNumByPeriod(String startDate, String endDate);
@@ -86,5 +89,23 @@ public interface UserRechargeService extends IService<UserRecharge> {
      * @param uid
      * @param moneyValue
      */
-    void operationNowMoney(Integer uid,BigDecimal moneyValue);
+    void operationNowMoney(Integer uid, BigDecimal moneyValue);
+
+    /**
+     * 提交充值记录
+     * @param userRechargeSaveRequest
+     */
+    void create(UserRechargeSaveRequest userRechargeSaveRequest);
+
+    /**
+     * 财务提交记录
+     * @param userRechargeReviewRequest
+     */
+    void review(UserRechargeReviewRequest userRechargeReviewRequest);
+
+    /**
+     * 最终确认
+     * @param userRechargeConfirmRequest
+     */
+    void confirm(UserRechargeConfirmRequest userRechargeConfirmRequest);
 }

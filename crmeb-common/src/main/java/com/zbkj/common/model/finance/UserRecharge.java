@@ -1,17 +1,17 @@
 package com.zbkj.common.model.finance;
 
-import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import java.util.Date;
-
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 用户充值表
@@ -29,10 +29,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("eb_user_recharge")
-@ApiModel(value="UserRecharge对象", description="用户充值表")
+@ApiModel(value = "UserRecharge对象", description = "用户充值表")
 public class UserRecharge implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
@@ -64,5 +64,22 @@ public class UserRecharge implements Serializable {
     @ApiModelProperty(value = "退款金额")
     private BigDecimal refundPrice;
 
+    @ApiModelProperty(value = "支付凭证截图")
+    private String paymentVoucherImages;
+
+    @ApiModelProperty(value = "客服备注信息")
+    private String kfRemark;
+
+    @ApiModelProperty(value = "财务凭证截图")
+    private String financeVoucherImages;
+
+    @ApiModelProperty(value = "财务备注信息")
+    private String cwRemark;
+
+    @ApiModelProperty(value = "备注信息")
+    private String remark;
+
+    @ApiModelProperty(value = "0、待提交 1、客服提交 2、财务提交 3、审核通过")
+    private Integer status;
 
 }

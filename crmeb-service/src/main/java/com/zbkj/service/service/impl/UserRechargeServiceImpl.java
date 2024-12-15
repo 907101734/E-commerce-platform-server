@@ -7,27 +7,33 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zbkj.common.constants.PayConstants;
-import com.zbkj.common.page.CommonPage;
-import com.zbkj.common.request.PageParamRequest;
-import com.zbkj.common.constants.Constants;
-import com.zbkj.common.exception.CrmebException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zbkj.common.constants.Constants;
+import com.zbkj.common.constants.PayConstants;
+import com.zbkj.common.exception.CrmebException;
+import com.zbkj.common.model.finance.UserRecharge;
+import com.zbkj.common.model.user.User;
+import com.zbkj.common.model.user.UserBill;
+import com.zbkj.common.page.CommonPage;
+import com.zbkj.common.request.PageParamRequest;
+import com.zbkj.common.request.UserRechargeConfirmRequest;
+import com.zbkj.common.request.UserRechargeReviewRequest;
+import com.zbkj.common.request.UserRechargeSaveRequest;
+import com.zbkj.common.request.UserRechargeSearchRequest;
+import com.zbkj.common.response.UserRechargeResponse;
 import com.zbkj.common.utils.CrmebUtil;
 import com.zbkj.common.utils.DateUtil;
 import com.zbkj.common.vo.DateLimitUtilVo;
-import com.zbkj.common.model.finance.UserRecharge;
-import com.zbkj.common.request.UserRechargeSearchRequest;
-import com.zbkj.common.response.UserRechargeResponse;
-import com.zbkj.common.model.user.User;
 import com.zbkj.service.dao.UserRechargeDao;
+import com.zbkj.service.service.UserBillService;
 import com.zbkj.service.service.UserRechargeService;
 import com.zbkj.service.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -56,6 +62,12 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserBillService userBillService;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
     /**
      * 列表
      * @param request          请求参数
@@ -76,7 +88,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
             lambdaQueryWrapper.like(UserRecharge::getOrderId, request.getKeywords()); //订单号
         }
         //是否充值
-        lambdaQueryWrapper.eq(UserRecharge::getPaid, true);
+        // lambdaQueryWrapper.eq(UserRecharge::getPaid, true);
 
         //时间范围
         if (StrUtil.isNotBlank(dateLimit.getStartTime()) && StrUtil.isNotBlank(dateLimit.getEndTime())) {
@@ -89,6 +101,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
             lambdaQueryWrapper.between(UserRecharge::getCreateTime, dateLimit.getStartTime(), dateLimit.getEndTime());
         }
         lambdaQueryWrapper.orderByDesc(UserRecharge::getId);
+
         List<UserRecharge> userRecharges = dao.selectList(lambdaQueryWrapper);
         if (CollUtil.isEmpty(userRecharges)) {
             return CommonPage.copyPageInfo(userRechargesList, CollUtil.newArrayList());
@@ -277,6 +290,93 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
         userRecharge.setRefundPrice(BigDecimal.ZERO);
         userRecharge.setRechargeType(PayConstants.PAY_CHANNEL_SYSTEM_PAY);
         this.save(userRecharge);
+    }
+
+    @Override
+    public void create(UserRechargeSaveRequest userRechargeSaveRequest) {
+        UserRecharge userRecharge;
+        if (userRechargeSaveRequest.getUserRechargeId() == null) {
+            userRecharge = new UserRecharge();
+            String orderId = CrmebUtil.getOrderNo("system");
+            userRecharge.setOrderId(orderId);
+            userRecharge.setUid(userRechargeSaveRequest.getUid());
+            userRecharge.setPayTime(DateUtil.nowDateTime());
+            userRecharge.setPaid(false);
+            userRecharge.setCreateTime(DateUtil.nowDateTime());
+            userRecharge.setGivePrice(BigDecimal.ZERO);
+            userRecharge.setRefundPrice(BigDecimal.ZERO);
+            userRecharge.setRechargeType(PayConstants.PAY_CHANNEL_SYSTEM_PAY);
+        } else {
+            userRecharge = getById(userRechargeSaveRequest.getUserRechargeId());
+        }
+        userRecharge.setPrice(userRechargeSaveRequest.getPrice());
+        userRecharge.setUid(userRechargeSaveRequest.getUid());
+        userRecharge.setKfRemark(userRechargeSaveRequest.getKfRemark());
+        userRecharge.setPaymentVoucherImages(userRechargeSaveRequest.getPaymentVoucherImages());
+        userRecharge.setStatus(PayConstants.PAY_STATUS_KF);
+        if (userRechargeSaveRequest.getUserRechargeId() == null) {
+            this.save(userRecharge);
+        } else {
+            this.updateById(userRecharge);
+        }
+    }
+
+    @Override
+    public void review(UserRechargeReviewRequest userRechargeReviewRequest) {
+        UserRecharge userRecharge = this.getById(userRechargeReviewRequest.getUserRechargeId());
+        if (userRecharge == null) {
+            throw new CrmebException("充值单不存在");
+        }
+        if (userRechargeReviewRequest.getAuditStatus().equals(1)) {
+            userRecharge.setStatus(PayConstants.PAY_STATUS_CW);
+        } else {
+            userRecharge.setStatus(PayConstants.PAY_STATUS_NO);
+        }
+        userRecharge.setFinanceVoucherImages(userRechargeReviewRequest.getFinanceVoucherImages());
+        userRecharge.setCwRemark(userRecharge.getCwRemark());
+        this.updateById(userRecharge);
+    }
+
+    @Override
+    public void confirm(UserRechargeConfirmRequest userRechargeConfirmRequest) {
+        UserRecharge userRecharge = this.getById(userRechargeConfirmRequest.getUserRechargeId());
+        if (userRecharge == null) {
+            throw new CrmebException("充值单不存在");
+        }
+        Boolean execute = transactionTemplate.execute(e -> {
+            if (userRechargeConfirmRequest.getAuditStatus().equals(1)) {
+                userRecharge.setStatus(PayConstants.PAY_STATUS_CONFIRM);
+                userRecharge.setPaid(true);
+
+                User user = userService.getById(userRecharge.getUid());
+                // 生成UserBill
+                UserBill userBill = new UserBill();
+                userBill.setUid(userRecharge.getUid());
+                userBill.setLinkId("0");
+                userBill.setTitle("后台操作");
+                userBill.setCategory(Constants.USER_BILL_CATEGORY_MONEY);
+                userBill.setNumber(userRecharge.getPrice());
+                userBill.setStatus(1);
+                userBill.setCreateTime(DateUtil.nowDateTime());
+
+                userBill.setPm(1);
+                userBill.setType(Constants.USER_BILL_TYPE_SYSTEM_ADD);
+                userBill.setBalance(user.getNowMoney().add(userRecharge.getPrice()));
+                userBill.setMark(StrUtil.format("后台操作增加了{}余额", userRecharge.getPrice()));
+
+                userBillService.save(userBill);
+                userService.operationNowMoney(user.getUid(), userRecharge.getPrice(), user.getNowMoney(), "add");
+
+            } else {
+                userRecharge.setStatus(PayConstants.PAY_STATUS_NO);
+            }
+            userRecharge.setRemark(userRecharge.getRemark());
+            this.updateById(userRecharge);
+            return Boolean.TRUE;
+        });
+        if (!execute) {
+            throw new CrmebException("充值审批处理异常");
+        }
     }
 }
 

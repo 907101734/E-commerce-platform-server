@@ -1,7 +1,5 @@
 package com.zbkj.common.response;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -58,4 +56,22 @@ public class UserRechargeResponse {
 
     @ApiModelProperty(value = "昵称")
     private String nickname;
+
+    @ApiModelProperty(value = "支付凭证截图")
+    private String paymentVoucherImages;
+
+    @ApiModelProperty(value = "客服备注信息")
+    private String kfRemark;
+
+    @ApiModelProperty(value = "财务凭证截图")
+    private String financeVoucher;
+
+    @ApiModelProperty(value = "财务备注信息")
+    private String cwRemark;
+
+    @ApiModelProperty(value = "备注信息")
+    private String remark;
+
+    @ApiModelProperty(value = "0、待提交 1、客服提交 2、财务提交 3、审核通过")
+    private Integer status;
 }
