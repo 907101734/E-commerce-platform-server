@@ -1452,15 +1452,15 @@ public class StoreOrderServiceImpl extends ServiceImpl<StoreOrderDao, StoreOrder
     }
 
     @Override
-    public Integer getLastProductOrderInfo(Integer productId) {
+    public Integer getLastProductOrderInfo(Integer productId,Integer uid) {
         DateLimitUtilVo dateLimit = DateUtil.getDateLimit(Constants.SEARCH_DATE_LATELY_30);
-        return dao.getLastProductOrderInfo(dateLimit.getStartTime(), dateLimit.getEndTime(), productId);
+        return dao.getLastProductOrderInfo(dateLimit.getStartTime(), dateLimit.getEndTime(), productId,uid);
     }
 
     @Override
-    public Integer getLastOrderInfoByGift(Integer giftProperty) {
+    public Integer getLastOrderInfoByGift(Integer giftProperty,Integer uid) {
         DateLimitUtilVo dateLimit = DateUtil.getDateLimit(Constants.SEARCH_DATE_LATELY_30);
-        return dao.getLastOrderInfoByGift(dateLimit.getStartTime(), dateLimit.getEndTime(), giftProperty);
+        return dao.getLastOrderInfoByGift(dateLimit.getStartTime(), dateLimit.getEndTime(), giftProperty,uid);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////// 以下为自定义方法

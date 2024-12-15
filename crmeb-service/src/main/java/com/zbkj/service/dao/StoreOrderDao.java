@@ -76,7 +76,7 @@ public interface StoreOrderDao extends BaseMapper<StoreOrder> {
      * @param productId
      * @return
      */
-    Integer getLastProductOrderInfo(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("productId") Integer productId);
+    Integer getLastProductOrderInfo(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("productId") Integer productId,@Param("uid") Integer uid);
 
     /**
      *
@@ -85,6 +85,6 @@ public interface StoreOrderDao extends BaseMapper<StoreOrder> {
      * @param productId
      * @return
      */
-    Integer getLastOrderInfoByGift(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("giftProperty") Integer giftProperty);
+    Integer getLastOrderInfoByGift(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("giftProperty") Integer giftProperty,@Param("uid") Integer uid);
 
 }

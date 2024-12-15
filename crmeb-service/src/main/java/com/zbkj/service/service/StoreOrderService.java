@@ -383,11 +383,11 @@ public interface StoreOrderService extends IService<StoreOrder> {
      * 查询当前产品30天购买数量
      * @return
      */
-    Integer getLastProductOrderInfo(Integer productId);
+    Integer getLastProductOrderInfo(Integer productId,Integer uid);
 
     /**
      * 获取报单区的商品
      * @return
      */
-    Integer getLastOrderInfoByGift(Integer giftProperty);
+    Integer getLastOrderInfoByGift(Integer giftProperty,Integer uid);
 }

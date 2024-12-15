@@ -1446,12 +1446,12 @@ public class OrderServiceImpl implements OrderService {
                         throw new CrmebException("商品每月限购3单");
                     }
                     //查询30天内当前产品购买礼品的个数
-                    Integer lastProductOrderInfo = storeOrderService.getLastProductOrderInfo(storeProduct.getId());
+                    Integer lastProductOrderInfo = storeOrderService.getLastProductOrderInfo(storeProduct.getId(), user.getUid());
                     if ((lastProductOrderInfo + detailRequest.getProductNum()) > 3) {
                         throw new CrmebException("商品每月限购3单");
                     }
                     //查询30天当前区域内产品购买个数
-                    Integer lastOrderInfoByGift = storeOrderService.getLastOrderInfoByGift(storeProduct.getGiftProperty());
+                    Integer lastOrderInfoByGift = storeOrderService.getLastOrderInfoByGift(storeProduct.getGiftProperty(), user.getUid());
                     if (lastOrderInfoByGift > 30) {
                         throw new CrmebException("本区域商品每月限购30单");
                     }
@@ -1488,9 +1488,7 @@ public class OrderServiceImpl implements OrderService {
                 detailVoList.add(detailVo);
             }
         }
-        if ("again".
-
-            equals(request.getPreOrderType())) {// 再次购买
+        if ("again".equals(request.getPreOrderType())) {// 再次购买
             PreOrderDetailRequest detailRequest = request.getOrderDetails().get(0);
             detailVoList = validatePreOrderAgain(detailRequest, user);
         }
@@ -1947,6 +1945,24 @@ public class OrderServiceImpl implements OrderService {
             if (attrValue.getStock() < detailVo.getPayNum()) {
                 throw new CrmebException("商品规格库存不足，请刷新后重新选择");
             }
+            //如果是礼品需要判断30内是否购买超过30单，超过30单不允许购买
+            //30天内单个商品不能购买超过30个
+            if (Boolean.TRUE.equals(storeProduct.getIsGift())) {
+                if (detailRequest.getProductNum() > 3) {
+                    throw new CrmebException("商品每月限购3单");
+                }
+                //查询30天内当前产品购买礼品的个数
+                Integer lastProductOrderInfo = storeOrderService.getLastProductOrderInfo(storeProduct.getId(), user.getUid());
+                if ((lastProductOrderInfo + detailRequest.getProductNum()) > 3) {
+                    throw new CrmebException("商品每月限购3单");
+                }
+                //查询30天当前区域内产品购买个数
+                Integer lastOrderInfoByGift = storeOrderService.getLastOrderInfoByGift(storeProduct.getGiftProperty(), user.getUid());
+                if (lastOrderInfoByGift > 30) {
+                    throw new CrmebException("本区域商品每月限购30单");
+                }
+            }
+
             OrderInfoDetailVo tempDetailVo = new OrderInfoDetailVo();
             tempDetailVo.setProductId(storeProduct.getId());
             tempDetailVo.setProductName(storeProduct.getStoreName());

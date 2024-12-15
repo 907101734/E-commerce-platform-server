@@ -568,7 +568,7 @@ public class OrderPayServiceImpl implements OrderPayService {
         if (Boolean.FALSE.equals(storeOrder.getIsGift())) {
             return CollUtil.newArrayList();
         }
-        AtomicReference<Integer> giftProperty = null;
+        AtomicReference<Integer> giftProperty = new AtomicReference<>();
         orderInfoList.forEach(t -> {
             giftProperty.set(t.getGiftProperty());
         });
