@@ -73,7 +73,7 @@
             </choose>
         </if>
         <if test="keywords != '' and keywords != null ">
-            and ( u.phone like #{keywords, jdbcType=VARCHAR} or u.nickname like "%"#{keywords, jdbcType=VARCHAR}"%" or u.mark like #{keywords, jdbcType=VARCHAR})
+            and ( u.phone like "%"#{keywords, jdbcType=VARCHAR}"%" or u.nickname like "%"#{keywords, jdbcType=VARCHAR}"%" or u.mark like #{keywords, jdbcType=VARCHAR})
         </if>
         ORDER BY u.uid desc
     </select>
