@@ -502,6 +502,7 @@ public class UserCenterServiceImpl extends ServiceImpl<UserDao, User> implements
     public LoginResponse weChatAuthorizeProgramLogin(String code, RegisterThirdUserRequest request) {
         WeChatMiniAuthorizeVo response = wechatNewService.miniAuthCode(code);
         System.out.println("小程序登陆成功 = " + JSON.toJSONString(response));
+        System.out.println("小程序前端请求参数 = " + JSON.toJSONString(request));
 
         //检测是否存在
         UserToken userToken = userTokenService.getByOpenidAndType(response.getOpenId(), Constants.THIRD_LOGIN_TOKEN_TYPE_PROGRAM);

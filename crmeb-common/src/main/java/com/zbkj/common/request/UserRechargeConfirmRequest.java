@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * UserRechargeReviewRequest
@@ -16,14 +16,14 @@ import javax.validation.constraints.NotBlank;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value = "UserRechargeReviewRequest对象", description = "用户充值记录审核对象")
+@ApiModel(value = "UserRechargeConfirmRequest对象", description = "用户充值记录管理员审核对象")
 public class UserRechargeConfirmRequest {
 
-    @NotBlank(message = "充值记录不能为空")
+    @NotNull(message = "充值记录不能为空")
     @ApiModelProperty(value = "充值记录id")
     private Integer userRechargeId;
 
-    @NotBlank(message = "审核不能为空")
+    @NotNull(message = "审核不能为空")
     @ApiModelProperty(value = "审核动作 0不通过，1通过")
     private Integer auditStatus;
 

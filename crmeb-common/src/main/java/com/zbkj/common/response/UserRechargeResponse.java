@@ -57,6 +57,9 @@ public class UserRechargeResponse {
     @ApiModelProperty(value = "昵称")
     private String nickname;
 
+    @ApiModelProperty("电话号码")
+    private String phone;
+
     @ApiModelProperty(value = "支付凭证截图")
     private String paymentVoucherImages;
 
@@ -64,7 +67,7 @@ public class UserRechargeResponse {
     private String kfRemark;
 
     @ApiModelProperty(value = "财务凭证截图")
-    private String financeVoucher;
+    private String financeVoucherImages;
 
     @ApiModelProperty(value = "财务备注信息")
     private String cwRemark;

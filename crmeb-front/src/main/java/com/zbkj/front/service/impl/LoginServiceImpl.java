@@ -99,7 +99,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public LoginResponse phoneLogin(LoginMobileRequest loginRequest) {
         //检测验证码
-        // checkValidateCode(loginRequest.getPhone(), loginRequest.getCaptcha());
+        checkValidateCode(loginRequest.getPhone(), loginRequest.getCaptcha());
         Integer spreadPid = Optional.ofNullable(loginRequest.getSpreadPid()).orElse(0);
         //查询手机号信息
         User user = userService.getByPhone(loginRequest.getPhone());

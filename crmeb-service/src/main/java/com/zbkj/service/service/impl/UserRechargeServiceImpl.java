@@ -87,6 +87,9 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
         if (StrUtil.isNotBlank(request.getKeywords())) {
             lambdaQueryWrapper.like(UserRecharge::getOrderId, request.getKeywords()); //订单号
         }
+        if (request.getStatus() != null) {
+            lambdaQueryWrapper.eq(UserRecharge::getStatus, request.getStatus());
+        }
         //是否充值
         // lambdaQueryWrapper.eq(UserRecharge::getPaid, true);
 
@@ -117,6 +120,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
             if (null != user) {
                 r.setAvatar(user.getAvatar());
                 r.setNickname(user.getNickname());
+                r.setPhone(CrmebUtil.maskMobile(user.getPhone()));
             }
             return r;
         }).collect(Collectors.toList());
@@ -309,6 +313,9 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
             userRecharge.setRechargeType(PayConstants.PAY_CHANNEL_SYSTEM_PAY);
         } else {
             userRecharge = getById(userRechargeSaveRequest.getUserRechargeId());
+            if (!userRecharge.getStatus().equals(PayConstants.PAY_STATUS_NO)) {
+                throw new CrmebException("当前充值单无法操作");
+            }
         }
         userRecharge.setPrice(userRechargeSaveRequest.getPrice());
         userRecharge.setUid(userRechargeSaveRequest.getUid());
@@ -328,13 +335,16 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
         if (userRecharge == null) {
             throw new CrmebException("充值单不存在");
         }
+        if (!userRecharge.getStatus().equals(PayConstants.PAY_STATUS_KF)) {
+            throw new CrmebException("当前充值单无法操作");
+        }
         if (userRechargeReviewRequest.getAuditStatus().equals(1)) {
             userRecharge.setStatus(PayConstants.PAY_STATUS_CW);
         } else {
             userRecharge.setStatus(PayConstants.PAY_STATUS_NO);
         }
         userRecharge.setFinanceVoucherImages(userRechargeReviewRequest.getFinanceVoucherImages());
-        userRecharge.setCwRemark(userRecharge.getCwRemark());
+        userRecharge.setCwRemark(userRechargeReviewRequest.getCwRemark());
         this.updateById(userRecharge);
     }
 
@@ -343,6 +353,9 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
         UserRecharge userRecharge = this.getById(userRechargeConfirmRequest.getUserRechargeId());
         if (userRecharge == null) {
             throw new CrmebException("充值单不存在");
+        }
+        if (!userRecharge.getStatus().equals(PayConstants.PAY_STATUS_CW)) {
+            throw new CrmebException("当前充值单无法操作");
         }
         Boolean execute = transactionTemplate.execute(e -> {
             if (userRechargeConfirmRequest.getAuditStatus().equals(1)) {
@@ -354,7 +367,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
                 UserBill userBill = new UserBill();
                 userBill.setUid(userRecharge.getUid());
                 userBill.setLinkId("0");
-                userBill.setTitle("后台操作");
+                userBill.setTitle("后台充值");
                 userBill.setCategory(Constants.USER_BILL_CATEGORY_MONEY);
                 userBill.setNumber(userRecharge.getPrice());
                 userBill.setStatus(1);
@@ -363,7 +376,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
                 userBill.setPm(1);
                 userBill.setType(Constants.USER_BILL_TYPE_SYSTEM_ADD);
                 userBill.setBalance(user.getNowMoney().add(userRecharge.getPrice()));
-                userBill.setMark(StrUtil.format("后台操作增加了{}余额", userRecharge.getPrice()));
+                userBill.setMark(StrUtil.format("后台充值增加了{}余额", userRecharge.getPrice()));
 
                 userBillService.save(userBill);
                 userService.operationNowMoney(user.getUid(), userRecharge.getPrice(), user.getNowMoney(), "add");
@@ -371,7 +384,7 @@ public class UserRechargeServiceImpl extends ServiceImpl<UserRechargeDao, UserRe
             } else {
                 userRecharge.setStatus(PayConstants.PAY_STATUS_NO);
             }
-            userRecharge.setRemark(userRecharge.getRemark());
+            userRecharge.setRemark(userRechargeConfirmRequest.getRemark());
             this.updateById(userRecharge);
             return Boolean.TRUE;
         });

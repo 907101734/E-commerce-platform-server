@@ -39,16 +39,16 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- *  微信公用服务实现类
- *  +----------------------------------------------------------------------
- *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
- *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
- *  +----------------------------------------------------------------------
- *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
- *  +----------------------------------------------------------------------
- *  | Author: CRMEB Team <admin@crmeb.com>
- *  +----------------------------------------------------------------------
+ * 微信公用服务实现类
+ * +----------------------------------------------------------------------
+ * | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ * +----------------------------------------------------------------------
+ * | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+ * +----------------------------------------------------------------------
+ * | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ * +----------------------------------------------------------------------
+ * | Author: CRMEB Team <admin@crmeb.com>
+ * +----------------------------------------------------------------------
  */
 @Service
 public class WechatNewServiceImpl implements WechatNewService {
@@ -93,10 +93,9 @@ public class WechatNewServiceImpl implements WechatNewService {
         WeChatAccessTokenVo accessTokenVo = getAccessToken(appId, secret, "public");
         // 缓存accessToken
         redisUtil.set(WeChatConstants.REDIS_WECAHT_PUBLIC_ACCESS_TOKEN_KEY, accessTokenVo.getAccessToken(),
-                accessTokenVo.getExpiresIn().longValue() - 1800L, TimeUnit.SECONDS);
+            accessTokenVo.getExpiresIn().longValue() - 1800L, TimeUnit.SECONDS);
         return accessTokenVo.getAccessToken();
     }
-
 
     /**
      * 获取小程序accessToken
@@ -120,7 +119,7 @@ public class WechatNewServiceImpl implements WechatNewService {
         WeChatAccessTokenVo accessTokenVo = getAccessToken(appId, secret, "mini");
         // 缓存accessToken
         redisUtil.set(WeChatConstants.REDIS_WECAHT_MINI_ACCESS_TOKEN_KEY, accessTokenVo.getAccessToken(),
-                accessTokenVo.getExpiresIn().longValue() - 1800L, TimeUnit.SECONDS);
+            accessTokenVo.getExpiresIn().longValue() - 1800L, TimeUnit.SECONDS);
         return accessTokenVo.getAccessToken();
     }
 
@@ -141,6 +140,7 @@ public class WechatNewServiceImpl implements WechatNewService {
             throw new CrmebException("微信公众号secret未设置");
         }
         String url = StrUtil.format(WeChatConstants.WECHAT_OAUTH2_ACCESS_TOKEN_URL, appId, secret, code);
+        logger.info("开放平台获取accessToken的url:{}", url);
         JSONObject data = restTemplateUtil.getData(url);
         if (ObjectUtil.isNull(data)) {
             throw new CrmebException("微信平台接口异常，没任何数据返回！");
@@ -158,14 +158,15 @@ public class WechatNewServiceImpl implements WechatNewService {
     /**
      * 获取开放平台用户信息
      * @param accessToken 调用凭证
-     * @param openid 普通用户的标识，对当前开发者帐号唯一
-     * 公众号使用
+     * @param openid      普通用户的标识，对当前开发者帐号唯一
+     *                    公众号使用
      * @return 开放平台用户信息对象
      */
     @Override
     public WeChatAuthorizeLoginUserInfoVo getSnsUserInfo(String accessToken, String openid) {
         String url = StrUtil.format(WeChatConstants.WECHAT_SNS_USERINFO_URL, accessToken, openid, "zh_CN");
         JSONObject data = restTemplateUtil.getData(url);
+        logger.info("开放平台获取用户的url:{}", url);
         if (ObjectUtil.isNull(data)) {
             throw new CrmebException("微信平台接口异常，没任何数据返回！");
         }
@@ -194,6 +195,7 @@ public class WechatNewServiceImpl implements WechatNewService {
             throw new CrmebException("微信小程序secret未设置");
         }
         String url = StrUtil.format(WeChatConstants.WECHAT_MINI_SNS_AUTH_CODE2SESSION_URL, appId, secret, code);
+        logger.info("小程序登录凭证校验的url:{}", url);
         JSONObject data = restTemplateUtil.getData(url);
         if (ObjectUtil.isNull(data)) {
             throw new CrmebException("微信平台接口异常，没任何数据返回！");
@@ -219,7 +221,6 @@ public class WechatNewServiceImpl implements WechatNewService {
         } catch (UnsupportedEncodingException e) {
             throw new CrmebException("url无法解析！");
         }
-
         String appId = systemConfigService.getValueByKey(WeChatConstants.WECHAT_PUBLIC_APPID);
         if (StrUtil.isBlank(appId)) {
             throw new CrmebException("微信公众号appId未设置");
@@ -227,7 +228,7 @@ public class WechatNewServiceImpl implements WechatNewService {
         String ticket = getJsApiTicket();
         String nonceStr = CrmebUtil.getUuid();
         Long timestamp = DateUtil.currentSeconds();
-        String signature = getJsSDKSignature(nonceStr, ticket, timestamp , url);
+        String signature = getJsSDKSignature(nonceStr, ticket, timestamp, url);
 
         WeChatJsSdkConfigResponse response = new WeChatJsSdkConfigResponse();
         response.setUrl(url);
@@ -242,7 +243,7 @@ public class WechatNewServiceImpl implements WechatNewService {
 
     /**
      * 生成小程序码
-     * @param page 必须是已经发布的小程序存在的页面
+     * @param page  必须是已经发布的小程序存在的页面
      * @param scene 最大32个可见字符，只支持数字，大小写英文以及部分特殊字符：!#$&'()*+,/:;=?@-._~，其它字符请自行编码为合法字符
      * @return 小程序码
      */
@@ -254,10 +255,11 @@ public class WechatNewServiceImpl implements WechatNewService {
         map.put("scene", scene);
         map.put("page", page);
         map.put("width", 200);
+        logger.info("小程序生成小程序码的url:{},请求参数：{}", url, new JSONObject(map).toJSONString());
         byte[] bytes = restTemplateUtil.postJsonDataAndReturnBuffer(url, new JSONObject(map));
         String response = new String(bytes);
-        if (StringUtils.contains(response,"errcode")) {
-            logger.error("微信生成小程序码异常"+response);
+        if (StringUtils.contains(response, "errcode")) {
+            logger.error("微信生成小程序码异常" + response);
             JSONObject data = JSONObject.parseObject(response);
             // 保存到微信异常表
             wxExceptionDispose(data, "微信小程序生成小程序码异常");
@@ -267,8 +269,8 @@ public class WechatNewServiceImpl implements WechatNewService {
                 url = StrUtil.format(WeChatConstants.WECHAT_MINI_QRCODE_UNLIMITED_URL, miniAccessToken);
                 bytes = restTemplateUtil.postJsonDataAndReturnBuffer(url, new JSONObject(map));
                 response = new String(bytes);
-                if (StringUtils.contains(response,"errcode")) {
-                    logger.error("微信生成小程序码重试异常"+response);
+                if (StringUtils.contains(response, "errcode")) {
+                    logger.error("微信生成小程序码重试异常" + response);
                     JSONObject data2 = JSONObject.parseObject(response);
                     // 保存到微信异常表
                     wxExceptionDispose(data2, "微信小程序重试生成小程序码异常");
@@ -301,6 +303,7 @@ public class WechatNewServiceImpl implements WechatNewService {
         try {
             String url = PayConstants.WX_PAY_API_URL + PayConstants.WX_PAY_API_URI;
             String request = XmlUtil.objectToXml(unifiedorderVo);
+            logger.info("微信支付接口请求地址:{},请求参数：{}", url, request);
             String xml = restTemplateUtil.postXml(url, request);
             HashMap<String, Object> map = XmlUtil.xmlToMap(xml);
             if (null == map) {
@@ -315,7 +318,7 @@ public class WechatNewServiceImpl implements WechatNewService {
                 wxPayExceptionDispose(map, "微信支付预下单异常");
                 wechatPayInfo.setErrCode(map.get("return_code").toString());
                 wechatPayInfoService.save(wechatPayInfo);
-                throw new CrmebException("微信下单失败1！" +  responseVo.getReturnMsg());
+                throw new CrmebException("微信下单失败1！" + responseVo.getReturnMsg());
             }
 
             if ("FAIL".equals(responseVo.getResultCode().toUpperCase())) {
@@ -374,6 +377,7 @@ public class WechatNewServiceImpl implements WechatNewService {
         String url = PayConstants.WX_PAY_API_URL + PayConstants.WX_PAY_ORDER_QUERY_API_URI;
         try {
             String request = XmlUtil.mapToXml(payVo);
+            logger.info("微信支付接口请求地址:{},请求参数：{}", url, request);
             String xml = restTemplateUtil.postXml(url, request);
             HashMap<String, Object> map = XmlUtil.xmlToMap(xml);
             MyRecord record = new MyRecord();
@@ -383,7 +387,7 @@ public class WechatNewServiceImpl implements WechatNewService {
             record.setColums(map);
             if ("FAIL".equals(record.getStr("return_code").toUpperCase())) {
                 wxPayQueryExceptionDispose(record, "微信支付查询订单通信异常");
-                throw new CrmebException("微信订单查询失败1！" +  record.getStr("return_msg"));
+                throw new CrmebException("微信订单查询失败1！" + record.getStr("return_msg"));
             }
 
             if ("FAIL".equals(record.getStr("result_code").toUpperCase())) {
@@ -412,6 +416,7 @@ public class WechatNewServiceImpl implements WechatNewService {
         String accessToken = getPublicAccessToken();
         String url = StrUtil.format(WeChatConstants.WECHAT_PUBLIC_SEND_TEMPLATE_URL, accessToken);
         JSONObject jsonData = JSONObject.parseObject(JSONObject.toJSONString(templateMessage));
+        logger.info("公众号发送模板消息的url:{},请求参数：{}", url, jsonData.toJSONString());
         String result = restTemplateUtil.postJsonData(url, jsonData);
         JSONObject data = JSONObject.parseObject(result);
         if (ObjectUtil.isNull(data)) {
@@ -436,6 +441,7 @@ public class WechatNewServiceImpl implements WechatNewService {
         String accessToken = getMiniAccessToken();
         String url = StrUtil.format(WeChatConstants.WECHAT_MINI_SEND_SUBSCRIBE_URL, accessToken);
         JSONObject messAge = JSONObject.parseObject(JSONObject.toJSONString(templateMessage));
+        logger.info("小程序发送订阅消息的url:{},请求参数：{}", url, messAge.toJSONString());
         String result = restTemplateUtil.postJsonData(url, messAge);
         JSONObject data = JSONObject.parseObject(result);
         if (ObjectUtil.isNull(data)) {
@@ -475,6 +481,7 @@ public class WechatNewServiceImpl implements WechatNewService {
     public JSONObject getPublicCustomMenu() {
         String accessToken = getPublicAccessToken();
         String url = StrUtil.format(WeChatConstants.WECHAT_PUBLIC_MENU_GET_URL, accessToken);
+        logger.info("公众号获取自定义菜单配置的url :{}", url);
         JSONObject result = restTemplateUtil.getData(url);
         if (ObjectUtil.isNull(result)) {
             throw new CrmebException("微信平台接口异常，没任何数据返回！");
@@ -550,7 +557,7 @@ public class WechatNewServiceImpl implements WechatNewService {
     /**
      * 微信申请退款
      * @param wxRefundVo 微信申请退款对象
-     * @param path 商户p12证书绝对路径
+     * @param path       商户p12证书绝对路径
      * @return 申请退款结果对象
      */
     @Override
@@ -573,7 +580,7 @@ public class WechatNewServiceImpl implements WechatNewService {
         WxRefundResponseVo responseVo = CrmebUtil.mapToObj(map, WxRefundResponseVo.class);
         if ("FAIL".equals(responseVo.getReturnCode().toUpperCase())) {
             wxPayExceptionDispose(map, "微信申请退款异常1");
-            throw new CrmebException("微信申请退款失败1！" +  responseVo.getReturnMsg());
+            throw new CrmebException("微信申请退款失败1！" + responseVo.getReturnMsg());
         }
 
         if ("FAIL".equals(responseVo.getResultCode().toUpperCase())) {
@@ -765,10 +772,10 @@ public class WechatNewServiceImpl implements WechatNewService {
 
     /**
      * 获取JS-SDK的签名
-     * @param nonceStr 随机字符串
-     * @param ticket ticket
+     * @param nonceStr  随机字符串
+     * @param ticket    ticket
      * @param timestamp 时间戳
-     * @param url url
+     * @param url       url
      * @return 签名
      */
     private String getJsSDKSignature(String nonceStr, String ticket, Long timestamp, String url) {
@@ -808,14 +815,15 @@ public class WechatNewServiceImpl implements WechatNewService {
 
     /**
      * 获取微信accessToken
-     * @param appId appId
+     * @param appId  appId
      * @param secret secret
-     * @param type mini-小程序，public-公众号，app-app
+     * @param type   mini-小程序，public-公众号，app-app
      * @return WeChatAccessTokenVo
      */
     private WeChatAccessTokenVo getAccessToken(String appId, String secret, String type) {
         String url = StrUtil.format(WeChatConstants.WECHAT_ACCESS_TOKEN_URL, appId, secret);
         JSONObject data = restTemplateUtil.getData(url);
+        logger.info("获取accessToken的url:{}", url);
         if (ObjectUtil.isNull(data)) {
             throw new CrmebException("微信平台接口异常，没任何数据返回！");
         }
@@ -832,7 +840,7 @@ public class WechatNewServiceImpl implements WechatNewService {
     /**
      * 微信异常处理
      * @param jsonObject 微信返回数据
-     * @param remark 备注
+     * @param remark     备注
      */
     private void wxExceptionDispose(JSONObject jsonObject, String remark) {
         WechatExceptions wechatExceptions = new WechatExceptions();
@@ -847,12 +855,12 @@ public class WechatNewServiceImpl implements WechatNewService {
 
     /**
      * 微信支付异常处理
-     * @param map 微信返回数据
+     * @param map    微信返回数据
      * @param remark 备注
      */
     private void wxPayExceptionDispose(HashMap<String, Object> map, String remark) {
         WechatExceptions wechatExceptions = new WechatExceptions();
-        String returnCode = (String) map.get("return_code");
+        String returnCode = (String)map.get("return_code");
         if ("FAIL".equals(returnCode.toUpperCase())) {
             wechatExceptions.setErrcode("-100");
             wechatExceptions.setErrmsg(map.get("return_msg").toString());

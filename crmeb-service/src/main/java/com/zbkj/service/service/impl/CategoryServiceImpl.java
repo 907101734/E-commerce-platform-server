@@ -358,6 +358,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, Category> impl
         objectQueryWrapper.eq("status", CategoryConstants.CATEGORY_STATUS_NORMAL);
         objectQueryWrapper.eq("pid", pid);
         objectQueryWrapper.eq("type", type);
+        objectQueryWrapper.orderByDesc("sort");
         return dao.selectList(objectQueryWrapper);
     }
 

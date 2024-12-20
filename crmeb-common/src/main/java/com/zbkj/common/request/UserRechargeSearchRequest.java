@@ -36,4 +36,7 @@ public class UserRechargeSearchRequest implements Serializable {
 
     @ApiModelProperty(value = "用户uid")
     private Integer uid;
+
+    @ApiModelProperty(value = "0、待提交 1、客服提交 2、财务提交 3、审核通过")
+    private Integer status;
 }
